@@ -3,4 +3,4 @@ A base library for building web scrapers for statistical data, and a helper onto
 
 For updates and discussion: https://www.facebook.com/groups/skrejperpark
 
-By [Journalism++ Stockholm](http://jplusplus.se), and Robin Lindeborg ([SVT Pejl](http://svt.se/nyheter)).
+By [Journalism++ Stockholm](http://jplusplus.se), and Robin Linderborg ([SVT Pejl](http://svt.se/nyheter)).
