@@ -6,11 +6,14 @@
 Welcome to statscraper's documentation!
 =======================================
 
-Temporary text.
+Statscraper provides a common set of guidelines, base classes and standards for writing scrapers for Swedish agencies' websites. Each scraper is developed independently.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   about
+   example_usage
 
 
 
