@@ -9,25 +9,29 @@ Statscraper provides a common set of guidelines, base classes and standards for 
 ### Exploring sites
 Some sites are simple, with a basic list of datasets as its only pre-dataset layer.
 
-    import AMS
+```python
+import AMS
 
-    scraper = AMS()
-    scraper.list()
-    # [<Dataset: 'unemployment'>, <Dataset: 'youth-unemployment'>]
+scraper = AMS()
+scraper.list()
+# [<Dataset: 'unemployment'>, <Dataset: 'youth-unemployment'>]
+```
 
 Others are more complex, consisting of multiple navigation layers. The scraper provides a cursor-like object for navigating the data.
 
-    import SCB
+```python
+import SCB
 
-    scraper = SCB()
-    scraper.list()
-    # [<Topic: 'Labor market'>, <Topic: 'Population'> ...]
-    topic = scraper.get('Labor market')
-    topic.list()
-    # [<Topic: 'AKU'>, <Topic: 'Labour cost index'> ...]
+scraper = SCB()
+scraper.list()
+# [<Topic: 'Labor market'>, <Topic: 'Population'> ...]
+topic = scraper.get('Labor market')
+topic.list()
+# [<Topic: 'AKU'>, <Topic: 'Labour cost index'> ...]
 
-    # Alternatively:
-    scraper.get('Labor market').get('AKU')
+# Alternatively:
+scraper.get('Labor market').get('AKU')
+```
 
 The primary methods of navigating a site is `list` and `get`. The former lists all available topics or data sets at the current level, whereas the latter selects a level and/or dataset.
 
@@ -35,80 +39,90 @@ The primary methods of navigating a site is `list` and `get`. The former lists a
 ### Exploring data sets
 Some data sets represents search interfaces, whereas others are simply tables without configuration settings.
 
-    unemployment = scraper.topic('unemployment')
-    unemployment.label
-    # u"Arbetslöshet"
+```python
+unemployment = scraper.topic('unemployment')
+unemployment.label
+# u"Arbetslöshet"
 
-    unemployment.dimensions
-    # ['gender', 'municipality', 'period']
+unemployment.dimensions
+# ['gender', 'municipality', 'period']
 
-    gender = unemployment.dimension("gender")
-    gender.allowed_values
-    # ["all", "male", "female"]
-    gender.default
-    # "all"
-    gender.label
-    # "Kön"
+gender = unemployment.dimension("gender")
+gender.allowed_values
+# ["all", "male", "female"]
+gender.default
+# "all"
+gender.label
+# "Kön"
 
-    men = gender.category("male")
-    men.label
-    # u"Män"
+men = gender.category("male")
+men.label
+# u"Män"
 
-    unemployment.id
-    # u"male"
+unemployment.id
+# u"male"
+```
 
 Simple data sets are fetched using:
 
-    resultset = unemployment.get()
+```python
+resultset = unemployment.get()
+```
 
 Queryable data sets take parameters:
 
-    resultset = unemployment.get({
-        "municipality": "Huddinge kommun",
-        "period": "2016-12", 
-    })
+```python
+resultset = unemployment.get({
+    'municipality': 'Huddinge kommun',
+    'period': '2016-12', 
+})
+```
 
 ### Exploring the actual data
 Resultsets have a `describe` method which provides some basic information about the data.
 
-    resultset.describe()
-    # Length:     123456
-    # Dimensions: ['gender', 'municipality', 'period']
-    # Measures:   ['count', 'rate', 'change']
-    # ...
+```python
+resultset.describe()
+# Length:     123456
+# Dimensions: ['gender', 'municipality', 'period']
+# Measures:   ['count', 'rate', 'change']
+# ...
 
-    resultset.length
-    # 123456
+resultset.length
+# 123456
 
-    resultset.dimensions
-    # ['gender', 'municipality', 'period']
+resultset.dimensions
+# ['gender', 'municipality', 'period']
 
-    regions = resultset.dimension("municipality")
-    regions.categories
-    # ['Huddinge kommun']
+regions = resultset.dimension("municipality")
+regions.categories
+# ['Huddinge kommun']
 
-    regions.note
-    # u'Hebys gränser förändrades 2007'
+regions.note
+# u'Hebys gränser förändrades 2007'
 
-    huddinge = regions.category("Huddinge kommun")
-    huddinge.id
-    # 'Huddinge kommun'
-    huddinge.label
-    # 'Huddinge kommun'
+huddinge = regions.category("Huddinge kommun")
+huddinge.id
+# 'Huddinge kommun'
+huddinge.label
+# 'Huddinge kommun'
 
-    resultset.measures
-    # ['count', 'rate', 'change']
+resultset.measures
+# ['count', 'rate', 'change']
 
-    count = resultset.measure('count')
-    count.label
-    # 'Antal öppet arbetslösa'
+count = resultset.measure('count')
+count.label
+# 'Antal öppet arbetslösa'
+```python
 
 ### Exporting data
 
-    resultset.to_dataframe()
-    resultset.to_dictlist()
+```python
+resultset.to_dataframe()
+resultset.to_dictlist()
 
-    resultset.to_csv("my_data.csv")
-    resultset.to_xlsx("my_data.xlsx")
-    resultset.to_json("my_data.json")
-    resultset.to_jsonstat("my_jsonstat.json")
+resultset.to_csv('my_data.csv')
+resultset.to_xlsx('my_data.xlsx')
+resultset.to_json('my_data.json')
+resultset.to_jsonstat('my_jsonstat.json')
+```
