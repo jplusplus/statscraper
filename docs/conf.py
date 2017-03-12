@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'statscraper'
-copyright = '2017, Jens Finnäs, Leo Wallentin, Robin Linderborg'
-author = 'Jens Finnäs, Leo Wallentin, Robin Linderborg'
+copyright = u'2017, Jens Finnäs, Leo Wallentin, Robin Linderborg'
+author = u'Jens Finnäs, Leo Wallentin, Robin Linderborg'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -128,7 +128,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'statscraper.tex', 'statscraper Documentation',
-     'Jens Finnäs, Leo Wallentin, Robin Linderborg', 'manual'),
+     u'Jens Finnäs, Leo Wallentin, Robin Linderborg', 'manual'),
 ]
 
 
