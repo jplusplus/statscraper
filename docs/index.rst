@@ -3,23 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to statscraper's documentation!
-=======================================
+===========================================
+Statscraper: Standardizing Swedish scrapers
+===========================================
 
-Statscraper provides a common set of guidelines, base classes and standards for writing scrapers for Swedish agencies' websites. Each scraper is developed independently.
+**Statscraper** provides a common set of guidelines, base classes and standards for writing scrapers for Swedish agencies' websites. Scrapers that comply with these standards provide a unified abstraction layer to the end-user, in terms of both usage and data output.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    about
-   example_usage
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   using_scrapers
+   developing_scrapers
+   api
