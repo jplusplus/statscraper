@@ -55,7 +55,7 @@ Some data sets represents search interfaces, whereas others are simply tables wi
 
     >>> resultset = unemployment.fetch({
     ...    'municipality': ['Stockholms kommun', 'Solna kommun' ],
-    ...    'period': ['2016-01', 2016-02, 2016-03'], 
+    ...    'period': ['2016-01', '2016-02', '2016-03'], 
     ... })
 
 When querying a data set you should not have to worry about the naming convention of the given site. You can use a standarized one defined in our ontology, or one that you are comfortable with. 
@@ -117,8 +117,7 @@ Resultsets have a `describe` method which provides some basic information about 
     >>> resultset.describe()
     {
         'shape': (8350, 14),
-        'dimensions': ['gender', 'municipality', 'period'],
-        'measures': ['count', 'rate', 'change']
+        'dimensions': ['gender', 'municipality', 'period', 'measure']
     }
 
     >>> resultset.shape
@@ -146,12 +145,6 @@ You can explore a resultset with the same methods that you explore a dataset (eg
     >>> huddinge.label
     'Huddinge kommun'
 
-    >>> resultset.measures
-    ['count', 'rate', 'change']
-
-    >>> count = resultset.measure('count')
-    >>> count.label
-    u'Antal öppet arbetslösa'
 
 Exporting data
 --------------
