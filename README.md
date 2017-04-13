@@ -6,3 +6,6 @@ Documentation: [http://statscraper.readthedocs.io/en/latest/](statscraper.readth
 For updates and discussion: https://www.facebook.com/groups/skrejperpark
 
 By [Journalism++ Stockholm](http://jplusplus.se), and Robin Linderborg ([SVT Pejl](http://svt.se/nyheter)).
+
+## Tests
+Run `python -m unittest` from the root.
