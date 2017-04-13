@@ -113,11 +113,9 @@ resultset.measures
 count = resultset.measure('count')
 count.label
 # 'Antal öppet arbetslösa'
-```python
 
 ### Exporting data
 
-```python
 resultset.to_dataframe()
 resultset.to_dictlist()
 
