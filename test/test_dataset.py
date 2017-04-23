@@ -16,11 +16,15 @@ class TestCSVData(unittest.TestCase):
           'n': dimensions.SWEREF99X(),
           'e': dimensions.SWEREF99Y(),
           'kommunkod': dimensions.MunicipalityCode(),
+          'temp': dimensions.Custom(),
+          'matt_flode': dimensions.Custom(),
+          'bedomt_flode': dimensions.Custom(),
+          'ph': dimensions.Custom(),
+          'ledningsformaga': dimensions.Custom(),
           'kalltyp': dimensions.Custom(),
           'registrerad_datum': dimensions.Date()
         }
-        measures = ['temp', 'matt_flode', 'bedomt_flode', 'ph', 'ledningsformaga']
-        dataset = Dataset('Källor', measures=measures, dimensions=dims)
+        dataset = Dataset('Källor', dimensions=dims)
         self.dataset = dataset
 
     def test_label(self):

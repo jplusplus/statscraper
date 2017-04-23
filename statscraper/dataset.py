@@ -1,9 +1,8 @@
 class Dataset():
     """A dataset."""
-    def __init__(self, label, dimensions=None, measures=None):
+    def __init__(self, label, dimensions=None):
         self.label = label
         self.dimensions = dimensions
-        self.measures = measures
 
     def load(self, data):
         self.data = data
