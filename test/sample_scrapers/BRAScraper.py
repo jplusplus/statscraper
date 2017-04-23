@@ -9,7 +9,17 @@ class BRA():
         """Display metadata for a dataset."""
         raise NotImplementedError
 
-    def get(self, fragment):
+    def select(self, fragment):
+        raise NotImplementedError
+
+    def unselect(self):
+        raise NotImplementedError
+
+    def reset(self):
+        raise NotImplementedError
+
+    @property
+    def topics(self):
         raise NotImplementedError
 
     def fetch(self, params):

@@ -40,22 +40,12 @@ class TestSOS(unittest.TestCase):
     def setUp(self):
         self.sos = SOS()
 
-    @unittest.skip("Expected failure")
     def test_list_topics(self):
         self.assertIn('Familjerätt', [x['text'] for x in self.sos.topics])
 
-    @unittest.skip("Expected failure")
     def test_fetch(self):
-        self.sos.get('Hjärtinfarkter')
-        dataset = self.sos.fetch({
-            'division': 'Fördelning på hemortslän',
-            'indicator': 'Avlidna med någon akut hjärtinfarktdiagnos',
-            'region': 'Stockholm',
-            'age-from': '20-24 år',
-            'age-to': '85- år',
-            'gender': 'Män',
-            'year': 2011
-        })
+        self.sos.select('Hjärtinfarkter')
+        dataset = self.sos.fetch({})
         self.assertIn('Ålder', dataset.dimensions)
         self.assertEqual(dataset.data[5][1], 4)
 
@@ -71,7 +61,7 @@ class TestBRA(unittest.TestCase):
 
     @unittest.skip("Expected failure")
     def test_fetch(self):
-        self.bra.get('Anmälda brott')
+        self.bra.select('Anmälda brott')
         dataset = self.bra.fetch({
             'crime': 'Sexualbrott, Blottning',
             'region': 'Arvika kommun',
