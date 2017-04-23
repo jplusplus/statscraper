@@ -3,7 +3,9 @@ import json
 from statscraper import Dataset
 
 class SCB():
-    url = 'http://api.scb.se/OV0104/v1/doris/sv/ssd'
+    base_url = 'http://api.scb.se/OV0104/v1/doris/sv/ssd'
+    url = base_url
+    cached_url = None
     query = {'query': [], 'response': {}}
 
     def describe(self):
@@ -12,16 +14,32 @@ class SCB():
         self.content = r.json()
         return self.content
 
-    def get(self, fragment):
-        fragment = fragment.strip()
-        if self.url.endswith('/'):
-            if fragment.startswith('/'):
-                fragment = fragment[1:]
+    def select(self, identifier, by_label=True):
+        """Select a topic or dataset by label or unique identifier."""
+        if not by_label:
+            self.url = '{}/{}'.format(self.url, identifier)
         else:
-            if not fragment.startswith('/'):
-                fragment = '/%s' % fragment
-        self.url += fragment
+            label = next(filter(lambda x: x['text'] == identifier, self.topics)).get('id')
+            self.url = '{}/{}'.format(self.url, label)
         return self
+
+    def unselect(self):
+        """Unselect, or "rewind", a previous selection."""
+        self.url = self.url.rsplit('/', 1)[0]
+
+    def reset(self):
+        """Go back to the root level."""
+        self.url = self.base_url
+
+    @property
+    def topics(self):
+        """List topics at the current level. Do some light-weight caching."""
+        if self.cached_url == self.url:
+            return self._topics
+        self.cached_url = self.url
+        r = requests.get(self.url)
+        self._topics = r.json()
+        return self._topics
 
     def fetch(self, params):
         """Fetch a dataset."""
