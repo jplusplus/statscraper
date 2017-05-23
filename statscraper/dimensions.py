@@ -18,6 +18,7 @@ class SourceName(Dimension):
 class SWEREF99X(Dimension):
     """SWEREF99 X coordinate. EPSG:3006."""
     allowed_dtypes = [int, float]
+
     def __repr__(self):
         return '<Dimension, SWEREF99X>'
 
@@ -25,6 +26,7 @@ class SWEREF99X(Dimension):
 class SWEREF99Y(Dimension):
     """SWEREF99 Y coordinate. EPSG:3006."""
     allowed_dtypes = [int, float]
+
     def __repr__(self):
         return '<Dimension, SWEREF99Y>'
 

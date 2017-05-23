@@ -1,6 +1,7 @@
 import csv
 import requests
 
+
 class BaseScraper():
     """Base class from which all scrapers inherit."""
     def select(self, label):
