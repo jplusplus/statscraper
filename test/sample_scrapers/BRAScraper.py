@@ -1,5 +1,5 @@
-import requests
-from statscraper import Dataset
+# encoding: utf-8
+
 
 class BRA():
     """Scraper for Brottsförebyggande rådet."""
