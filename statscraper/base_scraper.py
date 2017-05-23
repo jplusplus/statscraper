@@ -1,12 +1,15 @@
+# encoding: utf-8
 import csv
 import requests
 
 
 class BaseScraper():
     """Base class from which all scrapers inherit."""
+
     def select(self, label):
         """Select a dataset."""
-        filterfunc = lambda x: x.label == label
+        def filterfunc(x):
+            return x.label == label
         self.selection = next(filter(filterfunc, self._datasets))
         return self
 
