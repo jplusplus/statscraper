@@ -1,7 +1,7 @@
 # encoding: utf-8
 import requests
 import json
-from ...statscraper import Dataset
+from statscraper import Dataset
 
 
 class SCB():
