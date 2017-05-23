@@ -1,6 +1,8 @@
+# encoding: utf-8
 import requests
 import json
 from statscraper import Dataset
+
 
 class SCB():
     base_url = 'http://api.scb.se/OV0104/v1/doris/sv/ssd'
@@ -43,7 +45,13 @@ class SCB():
 
     def fetch(self, params):
         """Fetch a dataset."""
-        _filter = {'code': params['code'], 'selection': {'filter': params['kind'], 'values': params['values']}}
+        _filter = {
+            'code': params['code'],
+            'selection': {
+                'filter': params['kind'],
+                'values': params['values']
+            }
+        }
         self.query['query'] = [_filter]
 
         self.query['response'] = {'format': params['format']}
