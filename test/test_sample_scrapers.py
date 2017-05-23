@@ -1,3 +1,4 @@
+# encoding: utf-8
 import unittest
 from .sample_scrapers.SCBScraper import SCB
 from .sample_scrapers.SOSScraper import SOS
