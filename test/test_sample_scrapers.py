@@ -1,8 +1,8 @@
 import unittest
-import json
 from .sample_scrapers.SCBScraper import SCB
 from .sample_scrapers.SOSScraper import SOS
 from .sample_scrapers.BRAScraper import BRA
+
 
 class TestSCB(unittest.TestCase):
     """Tests SCB scraper."""
@@ -24,10 +24,10 @@ class TestSCB(unittest.TestCase):
     def test_fetch(self):
         self.scb.select('BE/BE0101/BE0101H/FoddaK', by_label=False)
         dataset = self.scb.fetch({
-            'code':'Tid',
-            'kind':'item',
-            'values':['2014'],
-            'format':'json'
+            'code': 'Tid',
+            'kind': 'item',
+            'values': ['2014'],
+            'format': 'json'
         })
         self.assertIn('år', dataset.dimensions)
         self.assertIn('Levande födda', dataset.dimensions)

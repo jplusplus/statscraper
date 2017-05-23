@@ -10,19 +10,19 @@ class TestCSVData(unittest.TestCase):
     is stored in CSV files.
     """
     def setUp(self):
-        dims= {
-          'id': dimensions.SourceId(),
-          'namn': dimensions.SourceName(),
-          'n': dimensions.SWEREF99X(),
-          'e': dimensions.SWEREF99Y(),
-          'kommunkod': dimensions.MunicipalityCode(),
-          'temp': dimensions.Custom(),
-          'matt_flode': dimensions.Custom(),
-          'bedomt_flode': dimensions.Custom(),
-          'ph': dimensions.Custom(),
-          'ledningsformaga': dimensions.Custom(),
-          'kalltyp': dimensions.Custom(),
-          'registrerad_datum': dimensions.Date()
+        dims = {
+            'id': dimensions.SourceId(),
+            'namn': dimensions.SourceName(),
+            'n': dimensions.SWEREF99X(),
+            'e': dimensions.SWEREF99Y(),
+            'kommunkod': dimensions.MunicipalityCode(),
+            'temp': dimensions.Custom(),
+            'matt_flode': dimensions.Custom(),
+            'bedomt_flode': dimensions.Custom(),
+            'ph': dimensions.Custom(),
+            'ledningsformaga': dimensions.Custom(),
+            'kalltyp': dimensions.Custom(),
+            'registrerad_datum': dimensions.Date()
         }
         dataset = Dataset('Källor', dimensions=dims)
         self.dataset = dataset
