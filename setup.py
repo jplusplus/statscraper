@@ -26,4 +26,5 @@ A base class for building web scrapers for statistical data.\
     test_suite='nose.collector',
     tests_require=['nose'],
     include_package_data=True,
+    download_url="https://github.com/jplusplus/skrejperpark/archive/0.0.1.tar.gz",
 )
