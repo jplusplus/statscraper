@@ -1,3 +1,4 @@
+# encoding: utf-8
 from setuptools import setup
 
 
@@ -21,9 +22,9 @@ A base class for building web scrapers for statistical data.\
     zip_safe=False,
     install_requires=[
         "hashlib",
-        "json",
         "pandas",
     ],
     test_suite='nose.collector',
     tests_require=['nose'],
+    include_package_data=True,
 )
