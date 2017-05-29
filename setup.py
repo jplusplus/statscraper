@@ -21,7 +21,6 @@ A base class for building web scrapers for statistical data.\
     packages=['statscraper'],
     zip_safe=False,
     install_requires=[
-        "hashlib",
         "pandas",
     ],
     test_suite='nose.collector',
