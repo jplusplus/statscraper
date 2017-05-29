@@ -9,10 +9,11 @@ For updates and discussion: Facebook_
 
 By `Journalism++ Stockholm <http://jplusplus.se>`_, and Robin Linderborg.
 
+
 Tests
 -----
 
-Run `python -m unittest` from the root.
+Run `python setup.py test` from the root directory. This will install everything needed for testing, before running NoseTests.
 
 
 Changelog
