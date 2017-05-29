@@ -1,2 +1,0 @@
-import unittest
-from statscraper import BaseScraper
