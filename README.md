@@ -9,3 +9,8 @@ By [Journalism++ Stockholm](http://jplusplus.se), and Robin Linderborg ([SVT Pej
 
 ## Tests
 Run `python -m unittest` from the root.
+
+## Changelog
+
+- 0.0.1
+    + First working version
