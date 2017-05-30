@@ -1,9 +1,11 @@
-Statscraper for end users
-=========================
+Statscraper is a base library for building web scrapers for statistical data, with a helper ontology for (primarily Swedish) statistical data. A set of ready-to-use scrapers are included.
 
-Statscraper is a base library for building web scrapers for statistical data, and a helper ontology for (primarily Swedish) statistical data. A set of ready-to-use scrapers are included.
+For users
+=========
 
-Full documentation: Documentation_
+You can use Statscraper as a foundation for your next scraper, or try out any of the included scrapers. With Statscraper comes a unified interface for scraping, and some useful helper methods for scraper authors.
+
+Full documentation: http://statscraper.readthedocs.io
 
 For updates and discussion: Facebook_
 
@@ -12,19 +14,60 @@ By `Journalism++ Stockholm <http://jplusplus.se>`_, and Robin Linderborg.
 Installing
 ----------
 
+.. code:: bash
+
   pip install statscraper
 
-Statscraper for developers
-==========================
+Using a scraper
+---------------
+Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Here's a simple example, with a scraper that returns only a single dataset:
 
-Installing
-----------
+.. code:: python
+
+    # encoding: utf-8
+    """ Get the number of cranes at Hornborgarsjön """
+    from statscraper.scrapers.CranesScraper import Cranes
+
+    scraper = Cranes()
+    print scraper.items  # List available datasets
+    # [<Dataset: Number of cranes>]
+
+    dataset = scraper.items[0]
+    print dataset.dimensions
+    # [<Dimension: date (date)>, <Dimension: month (month)>, <Dimension: year (year)>]
+
+    print dataset.data[0]  # Print first row of data
+    # {'date': u'1', 'year': u'2010', 'value': u'', 'month': u'januari'}
+
+Building a scraper
+------------------
+Scrapers are built by extending a base scraper, or a derative of that. You need to provide a method for listing datasets or collections of datasets, and for fetching data.
+
+Statscraper is built for statistical data, meaning that it's most useful when the data you are scraping/fetching can be organized with a numerical value in each row:
+
+========  ======  =======
+  city     year    value
+========  ======  =======
+Voi       2009    45483
+Kabarnet  2006    10191
+Taveta    2009    67505
+========  ======  =======
+
+For developers
+==============
+
+Downloading
+-----------
+
+.. code:: bash
 
   git clone https://github.com/jplusplus/skrejperpark
   python setup.py install
 
 Tests
 -----
+
+.. code:: bash
 
   python setup.py test
 
@@ -36,11 +79,10 @@ Changelog
 
 - 0.0.2
     
-  - Added demo scrapers
+  - Added some demo scrapers
 
 - 0.0.1
     
   - First version
 
-.. _Documentation: http://statscraper.readthedocs.io/en/latest/
 .. _Facebook: https://www.facebook.com/groups/skrejperpark
