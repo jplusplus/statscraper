@@ -255,7 +255,7 @@ class BaseScraper(object):
     def __init__(self, *args, **kwargs):
         self._items.scraper = self
         for f in self._hooks["init"]:
-            f(self, args, kwargs)
+            f(self, *args, **kwargs)
 
     @property
     def items(self):
