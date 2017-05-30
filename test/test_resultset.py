@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from statscraper.base_scraper import ResultSet
+from statscraper import ResultSet
 from pandas.api import types as ptypes
 
 
