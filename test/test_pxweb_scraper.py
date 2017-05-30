@@ -9,6 +9,5 @@ class TestPXWeb(TestCase):
         """ Setup an run a PXWeb scraper, make sure we get
             some collections from a reliabel source.
         """
-        scraper = PXWeb()
-        scraper.base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/"
+        scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
         self.assertTrue(len(scraper.items))
