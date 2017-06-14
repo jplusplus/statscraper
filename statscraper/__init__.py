@@ -5,3 +5,6 @@ from .base_scraper import NoSuchItem, InvalidData
 from .base_scraper import ResultSet, Itemslist, AllowedValue, Dimension
 from .base_scraper import Item, Collection, Dataset
 from .base_scraper import BaseScraper
+
+# Contants
+from .base_scraper import ROOT, TYPE_DATASET, TYPE_COLLECTION
