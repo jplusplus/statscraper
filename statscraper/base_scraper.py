@@ -5,18 +5,18 @@
  though an hierarchy of collections and datasets. Collections and datasets
  are refered to as “items”.
 
-              ┏━ Collection ━━━ Collection ━┳━ Dataset
- BaseScraper ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
-              ┗━ Collection ┓┗━ Dataset     ┗━ Dataset
-                            ┗━━ Dataset
+       ┏━ Collection ━━━ Collection ━┳━ Dataset
+ ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
+       ┗━ Collection  ┣━ Dataset     ┗━ Dataset
+                      ┗━ Dataset
 
-                 ╰────────────────────┬──────────────────╯
-                                  items
+ ╰─────────────────────────┬───────────────────────╯
+                      items
 
  A scraper can override three methods:
-  * _fetch_itemslist() to yield collections or datasets at the current position
-  * _fetch_dimensions() to yield dimensions available on a dataset
-  * _fetch_data() to yield rows from a dataset
+  * _fetch_itemslist(item) yields items at the current position
+  * _fetch_dimensions(dataset) yields dimensions available on a dataset
+  * _fetch_data(dataset) syield rows from a dataset
 
  A number of hooks are avaiable for more advanced scrapers. These are called
  by adding the on decorator on a method:
