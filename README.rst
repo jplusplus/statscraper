@@ -63,13 +63,14 @@ Kabarnet  2006    10191
 Taveta    2009    67505
 ========  ======  =======
 
-A scraper can override three methods:
+A scraper can override these methods:
 
 * `_fetch_itemslist(item)` to yield collections or datasets at the current cursor position
-* `_fetch_dimensions(dataset)` to yield dimensions available for the currently selected dataset
 * `_fetch_data(dataset)` to yield rows from the currently selected dataset
+* `_fetch_dimensions(dataset)` to yield dimensions available for the currently selected dataset
+* `_fetch_allowed_values(dimension)` to yield allowed values for a dimension
 
- A number of hooks are avaiable for more advanced scrapers. These are called by adding the on decorator on a method:
+A number of hooks are avaiable for more advanced scrapers. These are called by adding the on decorator on a method:
 
 .. code:: python
 
@@ -103,7 +104,7 @@ Tests
 
   python setup.py test
 
-Run `python setup.py test` from the root directory. This will install everything needed for testing, before running tests with NoseTests.
+Run `python setup.py test` from the root directory. This will install everything needed for testing, before running tests with `nosetests`.
 
 
 Changelog
