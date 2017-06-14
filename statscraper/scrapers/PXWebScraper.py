@@ -11,8 +11,8 @@
 """
 import requests
 from simplejson.scanner import JSONDecodeError
-from statscraper.base_scraper import (BaseScraper, Collection,
-                                      Dataset, Dimension, InvalidData)
+from statscraper import (BaseScraper, Collection,
+                         Dataset, Dimension, InvalidData)
 
 
 class PXWeb(BaseScraper):
@@ -29,7 +29,7 @@ class PXWeb(BaseScraper):
 
     @property
     def _api_path(self):
-        """ Get the API path for the cirrent cursor position """
+        """ Get the API path for the current cursor position """
         if self.base_url is None:
             raise NotImplementedError("base_url not set")
         path = "/".join([x.blob["id"] for x in self._collection_path])
