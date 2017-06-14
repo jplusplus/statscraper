@@ -32,7 +32,7 @@ Scrapers acts like “cursors” that move around a hierarchy of datasets and co
   ╰─────────────────────────┬───────────────────────╯
                        items
 
- Here's a simple example, with a scraper that returns only a single dataset:
+Here's a simple example, with a scraper that returns only a single dataset:
 
 .. code:: python
 
