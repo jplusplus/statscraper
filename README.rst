@@ -20,24 +20,34 @@ Installing
 
 Using a scraper
 ---------------
-Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Here's a simple example, with a scraper that returns only a single dataset:
+Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
+
+        ┏━ Collection ━━━ Collection ━┳━ Dataset
+  ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
+        ┗━ Collection  ┣━ Dataset     ┗━ Dataset
+                       ┗━ Dataset
+
+  ╰─────────────────────────┬───────────────────────╯
+                       items
+
+ Here's a simple example, with a scraper that returns only a single dataset:
 
 .. code:: python
 
-    # encoding: utf-8
-    """ Get the number of cranes at Hornborgarsjön """
-    from statscraper.scrapers.CranesScraper import Cranes
+  # encoding: utf-8
+  """ Get the number of cranes at Hornborgarsjön """
+  from statscraper.scrapers.CranesScraper import Cranes
 
-    scraper = Cranes()
-    print scraper.items  # List available datasets
-    # [<Dataset: Number of cranes>]
+  scraper = Cranes()
+  print scraper.items  # List available datasets
+  # [<Dataset: Number of cranes>]
 
-    dataset = scraper.items[0]
-    print dataset.dimensions
-    # [<Dimension: date (date)>, <Dimension: month (month)>, <Dimension: year (year)>]
+  dataset = scraper.items[0]
+  print dataset.dimensions
+  # [<Dimension: date (date)>, <Dimension: month (month)>, <Dimension: year (year)>]
 
-    print dataset.data[0]  # Print first row of data
-    # {'date': u'1', 'year': u'2010', 'value': u'', 'month': u'januari'}
+  print dataset.data[0]  # Print first row of data
+  # {'date': u'1', 'year': u'2010', 'value': u'', 'month': u'januari'}
 
 Building a scraper
 ------------------
@@ -52,6 +62,21 @@ Voi       2009    45483
 Kabarnet  2006    10191
 Taveta    2009    67505
 ========  ======  =======
+
+A scraper can override three methods:
+ * `_fetch_itemslist(item)` to yield collections or datasets at the current cursor position
+ * `_fetch_dimensions(dataset)` to yield dimensions available for the currently selected dataset
+ * `_fetch_data(dataset)` to yield rows from the currently selected dataset
+
+ A number of hooks are avaiable for more advanced scrapers. These are called by adding the on decorator on a method:
+
+.. code:: python
+
+  @on("up")
+  def my_method(self):
+    # Do something when the user moves up one level
+
+
 
 For developers
 ==============
