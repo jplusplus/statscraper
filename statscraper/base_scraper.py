@@ -230,8 +230,8 @@ class Dataset(Item):
 class BaseScraper(object):
     """ The base class for scapers """
 
-    _items = Itemslist()  # List of collections or datasets at current position
-    _collection_path = []  # All the parents of the current position
+    # _items  # List of collections or datasets at current position
+    # _collection_path  # All the parents of the current position
 
     current_item = Collection(ROOT)  # Current collection or dataset object
 
@@ -253,7 +253,9 @@ class BaseScraper(object):
         return u'<Scraper: %s>' % self.__class__.__name__
 
     def __init__(self, *args, **kwargs):
+        self._items = Itemslist()
         self._items.scraper = self
+        self._collection_path = []
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
 
@@ -291,11 +293,9 @@ class BaseScraper(object):
 
     def select(self, id_):
         """ Select an item by its id """
-        def filterfunc(x):
-            return x.id == id_
         try:
             # Move cursor to new item, and reset the cached list of subitems
-            self.current_item = filter(filterfunc, self._items).pop()
+            self.current_item = filter(lambda x: x.id == id_, self.items).pop()
             self._collection_path.append(self.current_item)
             self._items.empty()
         except StopIteration:
