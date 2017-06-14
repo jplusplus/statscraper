@@ -5,7 +5,7 @@ For users
 
 You can use Statscraper as a foundation for your next scraper, or try out any of the included scrapers. With Statscraper comes a unified interface for scraping, and some useful helper methods for scraper authors.
 
-Full documentation: http://statscraper.readthedocs.io
+Full documentation: ReadTheDocs_
 
 For updates and discussion: Facebook_
 
@@ -64,9 +64,10 @@ Taveta    2009    67505
 ========  ======  =======
 
 A scraper can override three methods:
- * `_fetch_itemslist(item)` to yield collections or datasets at the current cursor position
- * `_fetch_dimensions(dataset)` to yield dimensions available for the currently selected dataset
- * `_fetch_data(dataset)` to yield rows from the currently selected dataset
+
+* `_fetch_itemslist(item)` to yield collections or datasets at the current cursor position
+* `_fetch_dimensions(dataset)` to yield dimensions available for the currently selected dataset
+* `_fetch_data(dataset)` to yield rows from the currently selected dataset
 
  A number of hooks are avaiable for more advanced scrapers. These are called by adding the on decorator on a method:
 
@@ -76,10 +77,16 @@ A scraper can override three methods:
   def my_method(self):
     # Do something when the user moves up one level
 
+Available hooks are:
+
+* `init`: Called when initiating the BaseScraper
+* `up`: Called when trying to go up one level
+* `select`: Called when trying to select a Collection or Dataset
 
 
 For developers
 ==============
+These instructions are for developers working on the BaseScraper. See above for instructions for developing a scraper using the BaseScraper.
 
 Downloading
 -----------
@@ -111,3 +118,4 @@ Changelog
   - First version
 
 .. _Facebook: https://www.facebook.com/groups/skrejperpark
+.. _ReadTheDocs: http://statscraper.readthedocs.io
