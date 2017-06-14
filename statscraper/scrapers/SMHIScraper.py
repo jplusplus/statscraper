@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from statscraper.base_scraper import BaseScraper, Collection, Dataset
+from statscraper import BaseScraper, Collection, Dataset
 
 VERSION = "1.0"
 # LEVELS = ["api","parameter"]
@@ -38,14 +38,13 @@ class SMHIScraper(BaseScraper):
     def _fetch_dimensions(self, dataset):
         self.url = "http://opendata-download-{}.smhi.se/api/version/{}/parameter/{}.json"\
             .format(dataset.key, VERSION, )
-        yield("Timepoint")
-            parameter = self.parent
+        parameter = self.parent
 
-            data = requests.get(parameter.url)
-            for resource in self.current_item.blob["resource"]:
-                key = resource["key"]
-                #label = u"{}, {}".format(resource["title"], resource["summary"])
-                yield SMHIDataset(key, blob=resource)
+        data = requests.get(parameter.url)
+        for resource in self.current_item.blob["resource"]:
+            key = resource["key"]
+            #label = u"{}, {}".format(resource["title"], resource["summary"])
+            yield SMHIDataset(key, blob=resource)
 
     def _fetch_dimensions(self, parameter):
         yield(Dimension("timepoint"))
