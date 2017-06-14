@@ -11,11 +11,11 @@ from statscraper import BaseScraper, Dataset, Dimension
 
 class Cranes(BaseScraper):
 
-    def _fetch_itemslist(self):
+    def _fetch_itemslist(self, item):
         """There is only one dataset"""
         yield Dataset("Number of cranes")
 
-    def _fetch_dimensions(self):
+    def _fetch_dimensions(self, dataset):
         """ Declaring available dimensions like this is not mandatory,
          but nice, especially if they differ from dataset to dataset.
         """
@@ -23,7 +23,7 @@ class Cranes(BaseScraper):
         yield Dimension(u"month")
         yield Dimension(u"year")
 
-    def _fetch_data(self, query=None):
+    def _fetch_data(self, dataset, query=None):
         html = requests.get("http://web05.lansstyrelsen.se/transtat_O/transtat.asp").text
         soup = BeautifulSoup(html, 'html.parser')
         table = soup.find("table", "line").find_all("table")[2].findNext("table")

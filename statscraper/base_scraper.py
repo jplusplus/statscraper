@@ -134,7 +134,7 @@ class Dimension(object):
     def values(self):
         """ Return a list of allowed values """
         if self.allowed_values is None:
-            self.allowed_values = self.scraper._fetch_allowed_values()
+            self.allowed_values = self.scraper._fetch_allowed_values(self)
         return self.allowed_values
 
 
@@ -198,7 +198,7 @@ class Dataset(Item):
         hash_ = self._hash
         if hash_ not in self._data:
             self._data[hash_] = ResultSet()
-            for row in self.scraper._fetch_data(query=query):
+            for row in self.scraper._fetch_data(self, query=query):
                 self._data[hash_].append(row)
         return self._data[hash_]
 
@@ -210,7 +210,7 @@ class Dataset(Item):
     def dimensions(self):
         if self._dimensions is None:
             self._dimensions = []
-            for d in self.scraper._fetch_dimensions():
+            for d in self.scraper._fetch_dimensions(self):
                 d.dataset = self
                 d.scraper = self.scraper
                 self._dimensions.append(d)
@@ -265,7 +265,7 @@ class BaseScraper(object):
             return None
 
         if len(self._items) == 0:
-            for i in self._fetch_itemslist():
+            for i in self._fetch_itemslist(self.current_item):
                 self._items.append(i)
         return self._items
 
@@ -305,7 +305,7 @@ class BaseScraper(object):
             f(self)
         return self
 
-    def _fetch_itemslist(self):
+    def _fetch_itemslist(self, item):
         """
          Should yield items (Collections or Datasets) at the
          current cursor position. E.g something like this:
@@ -319,18 +319,18 @@ class BaseScraper(object):
         """
         raise Exception("This scraper has no method for fetching list items!")
 
-    def _fetch_dimensions(self):
+    def _fetch_dimensions(self, dataset):
         """ Should yield dimensions used in a dataset.
         """
         raise Exception("This scraper has no method for fetching dimensions!")
 
-    def _fetch_allowed_values(self):
+    def _fetch_allowed_values(self, dimension):
         """ Can be used the fetch allowed values for a dimension, if those
             were not known when the dimension was created
         """
         return None
 
-    def _fetch_data(self, query=None):
+    def _fetch_data(self, dataset, query=None):
         """ Should yield dataset rows
         """
         raise Exception("This scraper has no method for fetching data!")

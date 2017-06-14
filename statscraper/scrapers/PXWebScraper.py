@@ -35,7 +35,7 @@ class PXWeb(BaseScraper):
         path = "/".join([x.blob["id"] for x in self._collection_path])
         return "/".join([self.base_url, path])
 
-    def _fetch_itemslist(self):
+    def _fetch_itemslist(self, item):
         data = requests.get(self._api_path).json()
 
         for d in data:
@@ -44,12 +44,12 @@ class PXWeb(BaseScraper):
             else:
                 yield Dataset(d["text"], blob=d)
 
-    def _fetch_dimensions(self):
+    def _fetch_dimensions(self, dataset):
         data = requests.get(self._api_path).json()
         for d in data["variables"]:
             yield Dimension(d["code"], label=d["text"])
 
-    def _fetch_data(self, query=None):
+    def _fetch_data(self, dataset, query=None):
         body = {
             'query': [{
                 'code': key,
