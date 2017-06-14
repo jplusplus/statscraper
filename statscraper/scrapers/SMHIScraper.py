@@ -7,12 +7,18 @@ from statscraper.base_scraper import (BaseScraper, Collection,
 
 VERSION = "1.0"
 LEVELS = ["api","parameter"]
+PERIODS = [
+    "corrected-archive",
+    "latest-hour",
+    "latest-day",
+    "latest-months",
+]
 
 class SMHIScraper(BaseScraper):
     base_url = "http://opendata.smhi.se/apidocs/"
 
 
-    def _fetch_itemslist(self):
+    def _fetch_itemslist(self, item):
         """ Get a all available apis
         """
         if self.current_item.is_root:
@@ -29,19 +35,23 @@ class SMHIScraper(BaseScraper):
 
             data = requests.get(parameter.url)
             for resource in self.current_item.blob["resource"]:
-                label = u"{}, {}".format(resource["title"], resource["summary"])
-                yield Dataset(label, blob=resource)
+                key = resource["key"]
+                #label = u"{}, {}".format(resource["title"], resource["summary"])
+                yield SMHIDataset(key, blob=resource)
 
 
 
-    def _fetch_dimensions(self):
-        parameter = self.current_item
-        import pdb;pdb.set_trace()
-        self._collection_path[0]
-        import pdb;pdb.set_trace()
-        self.url = "http://opendata-download-{}.smhi.se/api/version/{}/parameter/{}.json"\
-            .format(parameter.key, VERSION, )
-        yield("Timepoint")
+    def _fetch_dimensions(self, parameter):
+        yield(Dimension("timepoint"))
+        yield(Dimension("station"))
+        yield(Dimension("period", allowed_values=PERIODS))
+
+    def _fetch_data(self, dataset, query=None):
+        """ Should yield dataset rows
+        """
+
+        data = dataset.json_data
+        raise NotImplementedError("work in progress")
 
 class API(Collection):
     level = "api"
@@ -71,7 +81,18 @@ class API(Collection):
 
 
 
-class Parameter(Collection):
-    level = "parameter"
+class SMHIDataset(Dataset):
 
+    @property
+    def url(self):
+        # Här vill jag hämta in
+        api = self.scraper.current_item
+        return "http://opendata-download-{}.smhi.se/api/version/{}/parameter/{}.json"\
+            .format(api.key, VERSION, self.id)
+
+    @property
+    def json_data(self):
+        if not hasattr(self, "_json_data"):
+            self._json_data = requests.get(self.url).json()
+        return self._json_data
 
