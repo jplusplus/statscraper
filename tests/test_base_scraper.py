@@ -39,7 +39,24 @@ class TestBaseScraper(TestCase):
         scraper.select("Dataset_1")
         self.assertTrue(isinstance(scraper.current_item, Dataset))
 
+    def test_select_missing_item(self):
+        # Should throw something like a KeyError?
+        scraper = Scraper()
+        scraper.select("non_existing_item")
+
     def test_fetch_dataset(self):
         scraper = Scraper()
         dataset = scraper.items[0]
         self.assertTrue(dataset.data[0]["municipality"] == "Robertsfors")
+
+    def test_select_dimension(self):
+        # I want to be able to select a
+        scraper = Scraper()
+        scraper.select("Dataset_1")
+        dataset = scraper.current_item
+        dim = dataset.dimension("date")
+        self.assertTrue(isinstance(dim, Dimension))
+
+        # Or is "select" a better method name?
+        dim = dataset.get("date")
+        self.assertTrue(isinstance(dim, Dimension))
