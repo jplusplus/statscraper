@@ -13,6 +13,7 @@ PERIODS = [
     "latest-months",
 ]
 
+
 class SMHIScraper(BaseScraper):
     base_url = "http://opendata.smhi.se/apidocs/"
 
@@ -32,19 +33,9 @@ class SMHIScraper(BaseScraper):
             # parameter = current_item.parent
             # data = requests.get(parameter.url)
             for resource in current_item.blob["resource"]:
-                label = u"{}, {}".format(resource["title"], resource["summary"])
-                yield Dataset(label, blob=resource)
-
-    def _fetch_dimensions(self, dataset):
-        self.url = "http://opendata-download-{}.smhi.se/api/version/{}/parameter/{}.json"\
-            .format(dataset.key, VERSION, )
-        parameter = self.parent
-
-        data = requests.get(parameter.url)
-        for resource in self.current_item.blob["resource"]:
-            key = resource["key"]
-            #label = u"{}, {}".format(resource["title"], resource["summary"])
-            yield SMHIDataset(key, blob=resource)
+                key = resource["key"]
+                # label = u"{}, {}".format(resource["title"], resource["summary"])
+                yield Dataset(key, blob=resource)
 
     def _fetch_dimensions(self, parameter):
         yield(Dimension("timepoint"))
