@@ -22,6 +22,8 @@ Using a scraper
 ---------------
 Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
 
+:: 
+
         ┏━ Collection ━━━ Collection ━┳━ Dataset
   ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
         ┗━ Collection  ┣━ Dataset     ┗━ Dataset
