@@ -80,6 +80,12 @@ class TestBaseScraper(TestCase):
         scraper.move_up().move_up().move_up().move_up()
         self.assertTrue(scraper.current_item.is_root)
 
+    def test_itemslist_contains(self):
+        """Make sure 'in' keyword works with Itemslist."""
+        scraper = Scraper()
+        self.assertTrue("Dataset_1" in scraper.items)
+        self.assertTrue(scraper.items[0] in scraper.items)
+
     def test_select_missing_item(self):
         """Select an Item by ID that doesn't exist."""
         scraper = Scraper()
