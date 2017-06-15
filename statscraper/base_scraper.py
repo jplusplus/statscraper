@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-"""
+u"""
  This file contains the base class for scrapers. The scraper can navigate
  though an hierarchy of collections and datasets. Collections and datasets
  are refered to as “items”.
@@ -37,46 +37,46 @@ ROOT = "<root>"  # Special id for root position
 
 
 class NoSuchItem(IndexError):
-    """ No such Collection or Dataset """
+    """No such Collection or Dataset."""
+
     pass
 
 
 class InvalidData(Exception):
-    """ The scraper encountered some invalid data """
+    """The scraper encountered some invalid data."""
+
     pass
 
 
 class ResultSet(list):
-    """ The result of a dataset query
-    """
+    """The result of a dataset query."""
+
     _pandas = None
 
     @property
     def pandas(self):
-        """ Return a Pandas dataframe
-        """
+        """Return a Pandas dataframe."""
         if self._pandas is None:
             self._pandas = pd.DataFrame().from_records(self)
         return self._pandas
 
 
 class Itemslist(list):
-    """ A one dimensional list of items,
-     with some conventience getters and setters for scrapers
+    """A one dimensional list of items.
+
+    Has some conventience getters and setters for scrapers
     """
 
     @property
     def type(self):
-        """ Check if this is a list of Collections or Datasets """
+        """Check if this is a list of Collections or Datasets."""
         try:
             return self[0].type
         except IndexError:
             return None
 
     def get(self, key):
-        """
-         Make it possible to get item by id
-        """
+        """Make it possible to get item by id."""
         try:
             val = filter(lambda x: key == x.id, self).pop()
             return val
@@ -264,6 +264,7 @@ class BaseScraper(object):
     _hooks = {
         'init': [],  # Called when initiating the class
         'up': [],  # Called when trying to go up one level
+        'top': [],  # Called when moving to top level
         'select': [],  # Called when trying to move to a Collection or Dataset
     }
 
@@ -307,6 +308,15 @@ class BaseScraper(object):
         else:
             return None
 
+    def move_to_top(self):
+        """Move to root item"""
+        self._collection_path = []
+        self.current_item = Collection(ROOT)
+        self._items.empty()
+        for f in self._hooks["top"]:
+            f(self)
+        return self
+
     def move_up(self):
         """ Move up one level in the hierarchy, unless already on top"""
         try:
@@ -314,6 +324,8 @@ class BaseScraper(object):
             self.current_item = self._collection_path[-1]
         except IndexError:
             self.current_item = Collection(ROOT)
+            for f in self._hooks["top"]:
+                f(self)
         self._items.empty()  # FIXME cache us?
         for f in self._hooks["up"]:
             f(self)
