@@ -179,6 +179,7 @@ class Item(object):
     """ Common base class for collections and datasets """
 
     parent_ = None  # Populated when added to an itemlist
+    _items = None  # Itemslist with children
 
     def __init__(self, id_, label=None, blob=None):
         self.id = id_
@@ -217,27 +218,42 @@ https://github.com/jplusplus/statscraper/issues""")
 
 
 class Collection(Item):
-    """ A collection can contain either a number of other
-        collections or datasets.
-        `id` should be Unicode, utf-8
-    """
+    """A collection can contain collection of datasets."""
 
     def __repr__(self):
         return '<Collection: %s>' % str(self)
 
     @property
     def is_root(self):
+        """Check if root element."""
         if self.id == ROOT:
             return True
         else:
             return None
 
+    @property
+    def items(self):
+        """Itemslist of children."""
+        if self._items is None:
+            self._items = Itemslist()
+            self._items.scraper = self.scraper
+            for i in self.scraper._fetch_itemslist(self):
+                i.parent_ = self
+                self._items.append(i)
+        return self._items
+
 
 class Dataset(Item):
-    """ A dataset. Can be empty """
+    """A dataset. Can be empty."""
+
     _data = {}  # We store one ResultSet for each unique query
-    query = None
     _dimensions = None
+    query = None
+
+    @property
+    def items(self):
+        """A dataset has no children."""
+        return None
 
     @property
     def _hash(self):
@@ -323,9 +339,8 @@ class BaseScraper(object):
 
     def __init__(self, *args, **kwargs):
         """Initiate with a ROOT collection on top."""
-        self._items = Itemslist()
-        self._items.scraper = self
         self.current_item = Collection(ROOT)
+        self.current_item.scraper = self
         self._collection_path = deque([self.current_item])
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
@@ -336,14 +351,7 @@ class BaseScraper(object):
 
         None will be returned in case of no further levels
         """
-        if self.current_item.type == TYPE_DATASET:
-            return None
-
-        if len(self._items) == 0:
-            for i in self._fetch_itemslist(self.current_item):
-                i.parent_ = self.current_item
-                self._items.append(i)
-        return self._items
+        return self.current_item.items
 
     @property
     def parent(self):
@@ -365,7 +373,6 @@ class BaseScraper(object):
         self.current_item = self._collection_path.popleft()
         self._collection_path.clear()
         self._collection_path.append(self.current_item)
-        self._items.empty()
         for f in self._hooks["top"]:
             f(self)
         return self
@@ -375,7 +382,6 @@ class BaseScraper(object):
         if len(self._collection_path) > 1:
             self._collection_path.pop()
             self.current_item = self._collection_path[-1]
-            self._items.empty()  # FIXME cache us
 
         for f in self._hooks["up"]:
             f(self)
@@ -390,7 +396,6 @@ class BaseScraper(object):
             # Move cursor to new item, and reset the cached list of subitems
             self.current_item = self.items[id_]
             self._collection_path.append(self.current_item)
-            self._items.empty()
         except (StopIteration, IndexError, NoSuchItem):
             raise NoSuchItem
         print self._hooks
