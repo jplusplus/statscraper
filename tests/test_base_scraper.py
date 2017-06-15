@@ -89,9 +89,10 @@ class TestBaseScraper(TestCase):
     def test_item_knows_parent(self):
         """Make sure an item knows who its parent is."""
         scraper = Scraper()
+        parent = scraper.current_item
         dataset = scraper.items["Dataset_1"]
         scraper.move_to("Dataset_1")
-        self.assertTrue(scraper.parent.id == dataset.parent.id)
+        self.assertTrue(scraper.parent.id == dataset.parent.id == parent.id)
 
     def test_fetch_dataset(self):
         """Query a dataset for some data."""
