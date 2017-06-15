@@ -128,7 +128,7 @@ class TestBaseScraper(TestCase):
         self.assertTrue(len(dataset.dimensions))
         self.assertTrue(isinstance(dataset.dimensions[0], Dimension))
 
-        dim = dataset.dimension("municipality")
+        dim = dataset.dimensions["municipality"]
         self.assertTrue(isinstance(dim, Dimension))
 
     def test_select_allowed_value(self):
