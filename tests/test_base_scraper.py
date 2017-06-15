@@ -92,7 +92,8 @@ class TestBaseScraper(TestCase):
         parent = scraper.current_item
         dataset = scraper.items["Dataset_1"]
         scraper.move_to("Dataset_1")
-        self.assertTrue(scraper.parent.id == dataset.parent.id == parent.id)
+        self.assertTrue(scraper.parent.id == dataset.parent.id ==
+                        scraper.current_item.parent.id == parent.id)
 
     def test_fetch_dataset(self):
         """Query a dataset for some data."""
@@ -100,8 +101,22 @@ class TestBaseScraper(TestCase):
         dataset = scraper.items[0]
         self.assertTrue(dataset.data[0]["municipality"] == "Robertsfors")
 
+    def test_unselected_visible_dataset(self):
+        """Query a dataset not selected, but visible."""
+        scraper = Scraper()
+        dataset = scraper.items["Dataset_1"]
+        scraper.move_to("Dataset_2")
+        self.assertTrue(dataset.data[0]["municipality"] == "Robertsfors")
+
+    def test_cached_data(self):
+        """Query a dataset not selected but cached."""
+        scraper = Scraper()
+        data_1 = scraper.items["Dataset_1"].data
+        scraper.move_up().move_to("Dataset_2")
+        self.assertTrue(data_1[0]["municipality"] == "Robertsfors")
+
     def test_get_dimension(self):
-        """ Get dimensions for a dataset """
+        """Get dimensions for a dataset."""
         scraper = Scraper()
         dataset = scraper.items[0]
         self.assertTrue(len(dataset.dimensions))
