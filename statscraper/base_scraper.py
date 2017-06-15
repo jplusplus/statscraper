@@ -95,7 +95,7 @@ class Itemslist(list):
             return val
         except IndexError:
             # No such id
-            raise KeyError("No such item in Itemslist")
+            raise NoSuchItem("No such item in Itemslist")
 
     def get(self, key):
         return self.__getitem__(key)
@@ -348,19 +348,13 @@ class BaseScraper(object):
         return self
 
     def move_to(self, id_):
-        """ Select an item by id (str), or dataset """
+        """Select a child item by id (str), reference or index."""
         try:
             # Move cursor to new item, and reset the cached list of subitems
-            if isinstance(id_, basestring):
-                def f(x): return (x.id == id_)
-            elif isinstance(id_, Item):
-                def f(x): return (x is id_)
-            else:
-                raise StopIteration
-            self.current_item = filter(f, self.items).pop()
+            self.current_item = self.items[id_]
             self._collection_path.append(self.current_item)
             self._items.empty()
-        except (StopIteration, IndexError):
+        except (StopIteration, IndexError, NoSuchItem):
             raise NoSuchItem
         print self._hooks
         for f in self._hooks["select"]:
