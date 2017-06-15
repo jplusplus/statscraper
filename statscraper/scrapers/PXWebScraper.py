@@ -29,10 +29,10 @@ class PXWeb(BaseScraper):
 
     @property
     def _api_path(self):
-        """ Get the API path for the current cursor position """
+        """Get the API path for the current cursor position."""
         if self.base_url is None:
             raise NotImplementedError("base_url not set")
-        path = "/".join([x.blob["id"] for x in self._collection_path])
+        path = "/".join([x.blob["id"] for x in self.path])
         return "/".join([self.base_url, path])
 
     def _fetch_itemslist(self, item):

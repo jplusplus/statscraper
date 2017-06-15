@@ -300,12 +300,7 @@ class Dataset(Item):
 
 
 class BaseScraper(object):
-    """ The base class for scapers """
-
-    # _items  # List of collections or datasets at current position
-    # _collection_path  # All the parents of the current position
-
-    current_item = Collection(ROOT)  # Current collection or dataset object
+    """The base class for scapers."""
 
     # Hooks
     _hooks = {
@@ -317,6 +312,7 @@ class BaseScraper(object):
 
     @classmethod
     def on(cls, hook):
+        """Hook decorator."""
         def decorator(function_):
             cls._hooks[hook].append(function_)
             return function_
@@ -326,16 +322,20 @@ class BaseScraper(object):
         return u'<Scraper: %s>' % self.__class__.__name__
 
     def __init__(self, *args, **kwargs):
+        """Initiate with a ROOT collection on top."""
         self._items = Itemslist()
         self._items.scraper = self
-        self._collection_path = deque()
+        self.current_item = Collection(ROOT)
+        self._collection_path = deque([self.current_item])
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
 
     @property
     def items(self):
-        """ View the collections or datasets at the current position,
-            or None, if no further items. """
+        """Itemslist of collections or datasets at the current position.
+
+        None will be returned in case of no further levels
+        """
         if self.current_item.type == TYPE_DATASET:
             return None
 
@@ -347,18 +347,24 @@ class BaseScraper(object):
 
     @property
     def parent(self):
-        """ Return the item above the current, if any """
+        """Return the item above the current, if any."""
         if len(self._collection_path) > 1:
             return self._collection_path[-2]
-        elif len(self._collection_path) == 1:
-            return Collection(ROOT)
         else:
             return None
 
+    @property
+    def path(self):
+        """All named collections above, including the current, but not root."""
+        steps = list(self._collection_path)
+        steps.pop(0)
+        return steps
+
     def move_to_top(self):
-        """Move to root item"""
-        self._collection_path = []
-        self.current_item = Collection(ROOT)
+        """Move to root item."""
+        self.current_item = self._collection_path.popleft()
+        self._collection_path.clear()
+        self._collection_path.append(self.current_item)
         self._items.empty()
         for f in self._hooks["top"]:
             f(self)
@@ -366,16 +372,16 @@ class BaseScraper(object):
 
     def move_up(self):
         """Move up one level in the hierarchy, unless already on top."""
-        try:
+        if len(self._collection_path) > 1:
             self._collection_path.pop()
             self.current_item = self._collection_path[-1]
-        except IndexError:
-            self.current_item = Collection(ROOT)
-            for f in self._hooks["top"]:
-                f(self)
-        self._items.empty()  # FIXME cache us?
+            self._items.empty()  # FIXME cache us
+
         for f in self._hooks["up"]:
             f(self)
+        if len(self._collection_path) == 1:
+            for f in self._hooks["top"]:
+                f(self)
         return self
 
     def move_to(self, id_):
