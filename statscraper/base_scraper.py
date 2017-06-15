@@ -143,9 +143,13 @@ class Item(object):
 
     parent_ = None  # Populated when added to an itemlist
 
-    def __init__(self, id_, blob=None):
+    def __init__(self, id_, label=None, blob=None):
         self.id = id_
         self.blob = blob
+        if label is None:
+            self.label = id_
+        else:
+            self.label = label
 
     def __str__(self):
         try:
