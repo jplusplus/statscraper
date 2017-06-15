@@ -214,7 +214,7 @@ class Dataset(Item):
         """
         # First of all: Select this dataset
         if self.scraper.current_item is not self:
-            self.scraper.select(self)
+            self.scraper.move_to(self)
         # Fetch can be called multiple times with different queries
         hash_ = self._hash
         if hash_ not in self._data:
@@ -231,7 +231,7 @@ class Dataset(Item):
     def dimensions(self):
         # First of all: Select this dataset
         if self.scraper.current_item is not self:
-            self.scraper.select(self)
+            self.scraper.move_to(self)
 
         if self._dimensions is None:
             self._dimensions = []
@@ -264,7 +264,7 @@ class BaseScraper(object):
     _hooks = {
         'init': [],  # Called when initiating the class
         'up': [],  # Called when trying to go up one level
-        'select': [],  # Called when trying to select a Collection or Dataset
+        'select': [],  # Called when trying to move to a Collection or Dataset
     }
 
     @classmethod
@@ -307,7 +307,7 @@ class BaseScraper(object):
         else:
             return None
 
-    def up(self):
+    def move_up(self):
         """ Move up one level in the hierarchy, unless already on top"""
         try:
             self._collection_path.pop()
@@ -319,7 +319,7 @@ class BaseScraper(object):
             f(self)
         return self
 
-    def select(self, id_):
+    def move_to(self, id_):
         """ Select an item by id (str), or dataset """
         try:
             # Move cursor to new item, and reset the cached list of subitems

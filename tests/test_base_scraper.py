@@ -41,30 +41,30 @@ class TestBaseScraper(TestCase):
         """ Moving the cursor up and down the tree,
             selecting by id and reference """
         scraper = Scraper()
-        scraper.select("Dataset_1")
+        scraper.move_to("Dataset_1")
         self.assertTrue(isinstance(scraper.current_item, Dataset))
 
-        scraper.up()
-        scraper.select(scraper.items[0])
+        scraper.move_up()
+        scraper.move_to(scraper.items[0])
         self.assertTrue(isinstance(scraper.current_item, Dataset))
 
     def test_stop_at_root(self):
         """ Trying to move up from the root should do nothing """
         scraper = Scraper()
-        scraper.up().up().up().up()
+        scraper.move_up().move_up().move_up().move_up()
         self.assertTrue(scraper.current_item.id == ROOT)
 
     def test_select_missing_item(self):
         """ Select an Item by ID that doesn't exist """
         scraper = Scraper()
         with self.assertRaises(NoSuchItem):
-            scraper.select("non_existing_item")
+            scraper.move_to("non_existing_item")
 
     def test_item_knows_parent(self):
         """ Make sure an item knows who its parent is """
         scraper = Scraper()
         dataset = scraper.items.get("Dataset_1")
-        scraper.select(dataset)
+        scraper.move_to(dataset)
         self.assertTrue(scraper.parent.id == dataset.parent.id)
 
     def test_fetch_dataset(self):
@@ -80,10 +80,13 @@ class TestBaseScraper(TestCase):
         self.assertTrue(len(dataset.dimensions))
         self.assertTrue(isinstance(dataset.dimensions[0], Dimension))
 
+        dim = dataset.dimension("municipality")
+        self.assertTrue(isinstance(dim, Dimension))
+
     def test_select_allowed_value(self):
         scraper = Scraper()
-        scraper.select("Dataset_1")
-        dataset = scraper.current_item
+        dataset = scraper.items[0]
+
         dim = dataset.dimension("municipality")
         municipality = dim.get("Robertsfors")
 

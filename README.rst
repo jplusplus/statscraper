@@ -115,6 +115,11 @@ Changelog
 - 0.0.2
     
   - Added some demo scrapers
+  - The cursor is now always updated when accessing datasets
+  - New names for methods moving cursor:
+   + move_up()
+   + move_to_child()
+  - Added tests
 
 - 0.0.1
     
