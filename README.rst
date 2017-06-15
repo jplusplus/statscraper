@@ -84,7 +84,8 @@ Available hooks are:
 
 * `init`: Called when initiating the BaseScraper
 * `up`: Called when trying to go up one level
-* `select`: Called when trying to select a Collection or Dataset
+* `select`: Called when trying to move to a Collection or Dataset
+* `top`: Called when reaching the top level
 
 
 For developers
@@ -119,6 +120,7 @@ Changelog
   - New names for methods moving cursor:
    + move_up()
    + move_to_child()
+  - Added move_to_top method and corresponding top hook
   - Added tests
 
 - 0.0.1
