@@ -68,6 +68,32 @@ class ResultSet(list):
         return self._pandas
 
 
+class Dimensionslist(list):
+    """A one dimensional list of dimensions."""
+
+    def __getitem__(self, key):
+        """Make it possible to get dimension by id or identity."""
+        if isinstance(key, basestring):
+            def f(x): return (x.id == key)
+        elif isinstance(key, Item):
+            def f(x): return (x is key)
+        else:
+            return list.__getitem__(self, key)
+        try:
+            val = filter(f, self).pop()
+            return val
+        except IndexError:
+            # No such id
+            raise NoSuchItem("No such dimension")
+
+    def __contains__(self, item):
+        """Make it possible to use 'in' keyword with id."""
+        if isinstance(item, basestring):
+            return bool(len(filter(lambda x: x.id == item, self)))
+        else:
+            return super(Itemslist, self).__contains__(item)
+
+
 class Itemslist(list):
     """A one dimensional list of items.
 
@@ -96,7 +122,6 @@ class Itemslist(list):
             def f(x): return (x is key)
         else:
             return list.__getitem__(self, key)
-
         try:
             val = filter(f, self).pop()
             return val
@@ -271,34 +296,38 @@ class Dataset(Item):
         if hash_ in self._data:
             return self._data[hash_]
 
-        # Try moving cursor to this dataset, by looking
-        # in among children and siblings
         if self.scraper.current_item is not self:
-            if self in self.parent.items:
-                self.scraper.move_up()
-
-            try:
-                self.scraper.move_to(self.id)
-            except NoSuchItem:
-                raise DatasetNotInView()
+            self._move_here()
 
         self._data[hash_] = ResultSet()
         for row in self.scraper._fetch_data(self, query=query):
             self._data[hash_].append(row)
         return self._data[hash_]
 
+    def _move_here(self):
+        """Try to move the cursor here, if this item i visible."""
+        if self in self.parent.items:
+            self.scraper.move_up()
+
+        try:
+            self.scraper.move_to(self.id)
+        except NoSuchItem:
+            raise DatasetNotInView()
+
     @property
     def data(self):
+        """Data as a property, given current query."""
         return self.fetch(query=self.query)
 
     @property
     def dimensions(self):
+        """Available dimensions, if defined."""
         # First of all: Select this dataset
         if self.scraper.current_item is not self:
-            self.scraper.move_to(self)
+            self._move_here()
 
         if self._dimensions is None:
-            self._dimensions = []
+            self._dimensions = Dimensionslist()
             for d in self.scraper._fetch_dimensions(self):
                 d.dataset = self
                 d.scraper = self.scraper
@@ -307,7 +336,7 @@ class Dataset(Item):
 
     @property
     def shape(self):
-        """Computes the shape of the dataset as (rows, cols)."""
+        """Compute the shape of the dataset as (rows, cols)."""
         if not self.data:
             return (0, 0)
         return (len(self.data), len(self.dimensions))
