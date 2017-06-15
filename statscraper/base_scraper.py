@@ -247,9 +247,9 @@ class BaseScraper(object):
     }
 
     @classmethod
-    def on(class_, hook):
+    def on(cls, hook):
         def decorator(function_):
-            class_._hooks[hook].append(function_)
+            cls._hooks[hook].append(function_)
             return function_
         return decorator
 
