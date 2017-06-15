@@ -1,8 +1,8 @@
-#encoding:utf-8
+# encoding:utf-8
 from unittest import TestCase
 
 from statscraper import (BaseScraper, Dataset, Dimension, AllowedValue,
-    ROOT)
+                         ROOT, NoSuchItem)
 
 
 class Scraper(BaseScraper):
@@ -15,7 +15,7 @@ class Scraper(BaseScraper):
     def _fetch_dimensions(self, dataset):
         yield Dimension(u"date")
         yield Dimension(u"municipality",
-            allowed_values=["Robertsfors",u"Umeå"])
+                        allowed_values=["Robertsfors", u"Umeå"])
 
     def _fetch_data(self, dataset, query=None):
         yield {
@@ -38,14 +38,27 @@ class TestBaseScraper(TestCase):
         self.assertTrue(scraper.items[0] == scraper.items.get("Dataset_1"))
 
     def test_select_item(self):
+        """ Moving the cursor up and down the tree,
+            selecting by id and reference """
         scraper = Scraper()
         scraper.select("Dataset_1")
         self.assertTrue(isinstance(scraper.current_item, Dataset))
 
-    def test_select_missing_item(self):
-        # Should throw something like a KeyError?
+        scraper.up()
+        scraper.select(scraper.items[0])
+        self.assertTrue(isinstance(scraper.current_item, Dataset))
+
+    def test_stop_at_root(self):
+        """ Trying to move up from the root should do nothing """
         scraper = Scraper()
-        scraper.select("non_existing_item")
+        scraper.up().up().up().up()
+        self.assertTrue(scraper.current_item.id == ROOT)
+
+    def test_select_missing_item(self):
+        """ Select an Item by ID that doesn't exist """
+        scraper = Scraper()
+        with self.assertRaises(NoSuchItem):
+            scraper.select("non_existing_item")
 
     def test_fetch_dataset(self):
         scraper = Scraper()
