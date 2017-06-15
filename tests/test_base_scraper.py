@@ -60,6 +60,13 @@ class TestBaseScraper(TestCase):
         with self.assertRaises(NoSuchItem):
             scraper.select("non_existing_item")
 
+    def test_item_knows_parent(self):
+        """ Make sure an item knows who its parent is """
+        scraper = Scraper()
+        dataset = scraper.items.get("Dataset_1")
+        scraper.select(dataset)
+        self.assertTrue(scraper.parent.id == dataset.parent.id)
+
     def test_fetch_dataset(self):
         scraper = Scraper()
         dataset = scraper.items[0]
