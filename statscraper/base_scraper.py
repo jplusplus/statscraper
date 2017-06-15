@@ -75,14 +75,30 @@ class Itemslist(list):
         except IndexError:
             return None
 
-    def get(self, key):
-        """Make it possible to get item by id."""
+    def __getitem__(self, key):
+        """Make it possible to get item by id, identity or index.
+
+        All of these will work:
+         scraper.items[0]
+         scraper.items["dataset_1"]
+         scraper.items[dataset]
+        """
+        if isinstance(key, basestring):
+            def f(x): return (x.id == key)
+        elif isinstance(key, Item):
+            def f(x): return (x is key)
+        else:
+            return list.__getitem__(self, key)
+
         try:
-            val = filter(lambda x: key == x.id, self).pop()
+            val = filter(f, self).pop()
             return val
         except IndexError:
             # No such id
             raise KeyError("No such item in Itemslist")
+
+    def get(self, key):
+        return self.__getitem__(key)
 
     def empty(self):
         """ Empty this list (delete all contents) """

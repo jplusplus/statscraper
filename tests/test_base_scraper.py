@@ -26,20 +26,20 @@ class Scraper(BaseScraper):
 
 
 class TestBaseScraper(TestCase):
+    """Testing base functionality."""
 
     def test_init(self):
-        """ Extending the basescraper """
+        """Extending the basescraper."""
         scraper = Scraper()
         self.assertTrue(scraper.current_item.id == ROOT)
 
     def test_inspect_item(self):
-        """ Fecthing items from an itemlist """
+        """Fetching items from an itemlist."""
         scraper = Scraper()
-        self.assertTrue(scraper.items[0] == scraper.items.get("Dataset_1"))
+        self.assertTrue(scraper.items[0] == scraper.items["Dataset_1"])
 
     def test_select_item(self):
-        """ Moving the cursor up and down the tree,
-            selecting by id and reference """
+        """Moving the cursor up and down the tree."""
         scraper = Scraper()
         scraper.move_to("Dataset_1")
         self.assertTrue(isinstance(scraper.current_item, Dataset))
@@ -63,7 +63,7 @@ class TestBaseScraper(TestCase):
     def test_item_knows_parent(self):
         """ Make sure an item knows who its parent is """
         scraper = Scraper()
-        dataset = scraper.items.get("Dataset_1")
+        dataset = scraper.items["Dataset_1"]
         scraper.move_to(dataset)
         self.assertTrue(scraper.parent.id == dataset.parent.id)
 
