@@ -42,6 +42,12 @@ class NoSuchItem(IndexError):
     pass
 
 
+class DatasetNotInView(IndexError):
+    """Tried to operate on a dataset that is no longer visible."""
+
+    pass
+
+
 class InvalidData(Exception):
     """The scraper encountered some invalid data."""
 
@@ -96,6 +102,13 @@ class Itemslist(list):
         except IndexError:
             # No such id
             raise NoSuchItem("No such item in Itemslist")
+
+    def __contains__(self, item):
+        """Make it possible to use 'in' keyword with id."""
+        if isinstance(item, basestring):
+            return bool(len(filter(lambda x: x.id == item, self)))
+        else:
+            return item in self
 
     def get(self, key):
         """For compatibility with statscraper 0.0.1."""
@@ -227,23 +240,33 @@ class Dataset(Item):
 
     @property
     def _hash(self):
-        """ Return a hash for the current query.
-            This hash is _not_ a unique representation of the dataset!
+        """Return a hash for the current query.
+
+        This hash is _not_ a unique representation of the dataset!
         """
         return md5(dumps(self.query, sort_keys=True)).hexdigest()
 
     def fetch(self, query=None):
-        """ Ask the scraper to return data for the current dataset
-        """
-        # First of all: Select this dataset
-        if self.scraper.current_item is not self:
-            self.scraper.move_to(self)
-        # Fetch can be called multiple times with different queries
+        """Ask scraper to return data for the current dataset."""
+        self.query = query
+
         hash_ = self._hash
-        if hash_ not in self._data:
-            self._data[hash_] = ResultSet()
-            for row in self.scraper._fetch_data(self, query=query):
-                self._data[hash_].append(row)
+        if hash_ in self._data:
+            return self._data[hash_]
+
+        # Try moving cursor to this dataset, by looking
+        # in among children and siblings
+        if self.scraper.current_item is not self:
+            if self.scraper.items is None:
+                self.scraper.move_up()
+            try:
+                self.scraper.move_to(self.id)
+            except NoSuchItem:
+                raise DatasetNotInView()
+
+        self._data[hash_] = ResultSet()
+        for row in self.scraper._fetch_data(self, query=query):
+            self._data[hash_].append(row)
         return self._data[hash_]
 
     @property
