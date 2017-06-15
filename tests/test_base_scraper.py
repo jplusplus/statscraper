@@ -68,21 +68,17 @@ class TestBaseScraper(TestCase):
         self.assertTrue(scraper.parent.id == dataset.parent.id)
 
     def test_fetch_dataset(self):
+        """ Auery a dataset for some data """
         scraper = Scraper()
         dataset = scraper.items[0]
         self.assertTrue(dataset.data[0]["municipality"] == "Robertsfors")
 
-    def test_select_dimension(self):
-        # I want to be able to select a dimension from a dataset
+    def test_get_dimension(self):
+        """ Get dimensions for a dataset """
         scraper = Scraper()
-        scraper.select("Dataset_1")
-        dataset = scraper.current_item
-        dim = dataset.dimension("date")
-        self.assertTrue(isinstance(dim, Dimension))
-
-        # Or is "select" a better method name?
-        dim = dataset.get("date")
-        self.assertTrue(isinstance(dim, Dimension))
+        dataset = scraper.items[0]
+        self.assertTrue(len(dataset.dimensions))
+        self.assertTrue(isinstance(dataset.dimensions[0], Dimension))
 
     def test_select_allowed_value(self):
         scraper = Scraper()
