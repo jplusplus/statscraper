@@ -157,7 +157,10 @@ class Item(object):
     def parent(self):
         """ Return the parent item """
         if self.parent_ is None:
-            raise Exception("You tried to access an uninitiated item. This should not be possible.")
+            raise Exception("""\
+You tried to access an uninitiated item. \
+This should not be possible. Please file a bug report at \
+https://github.com/jplusplus/statscraper/issues""")
         return self.parent_
 
     @property
