@@ -176,7 +176,7 @@ class Dimension(object):
 
 
 class Item(object):
-    """ Common base class for collections and datasets """
+    """Common base class for collections and datasets."""
 
     parent_ = None  # Populated when added to an itemlist
     _items = None  # Itemslist with children
@@ -207,7 +207,7 @@ https://github.com/jplusplus/statscraper/issues""")
 
     @property
     def type(self):
-        """ Check if this is a list of Collections or Datasets """
+        """Check if this is a Collection or Dataset."""
         try:
             if isinstance(self, Collection):
                 return TYPE_COLLECTION
@@ -274,8 +274,9 @@ class Dataset(Item):
         # Try moving cursor to this dataset, by looking
         # in among children and siblings
         if self.scraper.current_item is not self:
-            if self.scraper.items is None:
+            if self in self.parent.items:
                 self.scraper.move_up()
+
             try:
                 self.scraper.move_to(self.id)
             except NoSuchItem:
