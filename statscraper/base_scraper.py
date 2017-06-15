@@ -229,6 +229,10 @@ class Dataset(Item):
 
     @property
     def dimensions(self):
+        # First of all: Select this dataset
+        if self.scraper.current_item is not self:
+            self.scraper.select(self)
+
         if self._dimensions is None:
             self._dimensions = []
             for d in self.scraper._fetch_dimensions(self):
