@@ -29,6 +29,7 @@ u"""
 from hashlib import md5
 from json import dumps
 import pandas as pd
+from collections import deque
 
 TYPE_DATASET = "Dataset"
 TYPE_COLLECTION = "Collection"
@@ -327,7 +328,7 @@ class BaseScraper(object):
     def __init__(self, *args, **kwargs):
         self._items = Itemslist()
         self._items.scraper = self
-        self._collection_path = []
+        self._collection_path = deque()
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
 
