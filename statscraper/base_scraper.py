@@ -341,7 +341,7 @@ class BaseScraper(object):
         return self
 
     def move_up(self):
-        """ Move up one level in the hierarchy, unless already on top"""
+        """Move up one level in the hierarchy, unless already on top."""
         try:
             self._collection_path.pop()
             self.current_item = self._collection_path[-1]
@@ -369,7 +369,7 @@ class BaseScraper(object):
         return self
 
     def _fetch_itemslist(self, item):
-        """Overriden by scraper authors, to yield items.
+        """Must be overriden by scraper authors, to yield items.
 
         Should yield items (Collections or Datasets) at the
         current cursor position. E.g something like this:
@@ -384,16 +384,16 @@ class BaseScraper(object):
         raise Exception("This scraper has no method for fetching list items!")
 
     def _fetch_dimensions(self, dataset):
-        """Should yield dimensions used in a dataset."""
+        """Should be overriden by scraper authors, to yield dimensions."""
         raise Exception("This scraper has no method for fetching dimensions!")
 
     def _fetch_allowed_values(self, dimension):
-        """ Can be used the fetch allowed values for a dimension, if those
-            were not known when the dimension was created
-        """
-        return None
+        """Can be overriden by scraper authors, to yield allowed values."""
+        if self.allowed_values is None:
+            yield None
+        for allowed_value in self.allowed_values:
+            yield allowed_value
 
     def _fetch_data(self, dataset, query=None):
-        """ Should yield dataset rows
-        """
+        """Must be overriden by scraper authors, to yield dataset rows."""
         raise Exception("This scraper has no method for fetching data!")
