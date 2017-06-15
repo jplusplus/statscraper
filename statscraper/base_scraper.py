@@ -10,8 +10,8 @@ u"""
        ┗━ Collection  ┣━ Dataset     ┗━ Dataset
                       ┗━ Dataset
 
- ╰─────────────────────────┬───────────────────────╯
-                      items
+ ╰───────────────────────┬─────────────────────╯
+                       items
 
  A scraper can override three methods:
   * _fetch_itemslist(item) yields items at the current position
@@ -98,21 +98,25 @@ class Itemslist(list):
             raise NoSuchItem("No such item in Itemslist")
 
     def get(self, key):
+        """For compatibility with statscraper 0.0.1."""
+        from warnings import warn
+        warn("Use Itemslist['item-id'] instead.", DeprecationWarning)
         return self.__getitem__(key)
 
     def empty(self):
-        """ Empty this list (delete all contents) """
+        """Empty this list (delete all contents)."""
         del self[:]
         return self
 
     def append(self, val):
-        """ Connect any new items to the scraper """
+        """Connect any new items to the scraper."""
         val.scraper = self.scraper
         super(Itemslist, self).append(val)
 
 
 class AllowedValue(object):
-    """ An allowed value for a dimension """
+    """An allowed value for a dimension."""
+
     def __init__(self, value, label):
         self.value = value
         self.label = label or unicode(value)
@@ -362,22 +366,22 @@ class BaseScraper(object):
         return self
 
     def _fetch_itemslist(self, item):
-        """
-         Should yield items (Collections or Datasets) at the
-         current cursor position. E.g something like this:
+        """Overriden by scraper authors, to yield items.
 
-         list = get_items(self.current_item)
-         for item in list:
-             if item.type == "Collection":
-                 yield Collection(item.id)
-             else:
-                 yield Dataset(item.id)
+        Should yield items (Collections or Datasets) at the
+        current cursor position. E.g something like this:
+
+        list = get_items(self.current_item)
+        for item in list:
+            if item.type == "Collection":
+                yield Collection(item.id)
+            else:
+                yield Dataset(item.id)
         """
         raise Exception("This scraper has no method for fetching list items!")
 
     def _fetch_dimensions(self, dataset):
-        """ Should yield dimensions used in a dataset.
-        """
+        """Should yield dimensions used in a dataset."""
         raise Exception("This scraper has no method for fetching dimensions!")
 
     def _fetch_allowed_values(self, dimension):
