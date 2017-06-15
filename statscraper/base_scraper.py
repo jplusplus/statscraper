@@ -108,7 +108,7 @@ class Itemslist(list):
         if isinstance(item, basestring):
             return bool(len(filter(lambda x: x.id == item, self)))
         else:
-            return item in self
+            return super(Itemslist, self).__contains__(item)
 
     def get(self, key):
         """For compatibility with statscraper 0.0.1."""
