@@ -292,7 +292,7 @@ class BaseScraper(object):
         if len(self._collection_path) > 1:
             return self._collection_path[-2]
         elif len(self._collection_path) == 1:
-            return ROOT
+            return Collection(ROOT)
         else:
             return None
 
