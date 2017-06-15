@@ -78,7 +78,7 @@ class TestBaseScraper(TestCase):
         """Trying to move up from the root should do nothing."""
         scraper = Scraper()
         scraper.move_up().move_up().move_up().move_up()
-        self.assertTrue(scraper.current_item.id == ROOT)
+        self.assertTrue(scraper.current_item.is_root)
 
     def test_select_missing_item(self):
         """Select an Item by ID that doesn't exist."""
