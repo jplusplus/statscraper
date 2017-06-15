@@ -195,6 +195,10 @@ class Dataset(Item):
     def fetch(self, query=None):
         """ Ask the scraper to return data for the current dataset
         """
+        # First of all: Select this dataset
+        if self.scraper.current_item is not self:
+            self.scraper.select(self)
+        # Fetch can be called multiple times with different queries
         hash_ = self._hash
         if hash_ not in self._data:
             self._data[hash_] = ResultSet()
@@ -292,10 +296,16 @@ class BaseScraper(object):
         return self
 
     def select(self, id_):
-        """ Select an item by its id """
+        """ Select an item by id (str), or dataset """
         try:
             # Move cursor to new item, and reset the cached list of subitems
-            self.current_item = filter(lambda x: x.id == id_, self.items).pop()
+            if isinstance(id_, basestring):
+                def f(x): return (x.id == id_)
+            elif isinstance(id_, Item):
+                def f(x): return (x is id_)
+            else:
+                raise StopIteration
+            self.current_item = filter(f, self.items).pop()
             self._collection_path.append(self.current_item)
             self._items.empty()
         except StopIteration:
