@@ -140,6 +140,9 @@ class Dimension(object):
 
 class Item(object):
     """ Common base class for collections and datasets """
+
+    parent_ = None  # Populated when added to an itemlist
+
     def __init__(self, id_, blob=None):
         self.id = id_
         self.blob = blob
@@ -149,6 +152,13 @@ class Item(object):
             return self.id.encode("utf-8")
         except UnicodeEncodeError:
             return self.id
+
+    @property
+    def parent(self):
+        """ Return the parent item """
+        if self.parent_ is None:
+            raise Exception("You tried to access an uninitiated item. This should not be possible.")
+        return self.parent_
 
     @property
     def type(self):
@@ -272,6 +282,7 @@ class BaseScraper(object):
 
         if len(self._items) == 0:
             for i in self._fetch_itemslist(self.current_item):
+                i.parent_ = self.current_item
                 self._items.append(i)
         return self._items
 
@@ -280,6 +291,8 @@ class BaseScraper(object):
         """ Return the item above the current, if any """
         if len(self._collection_path) > 1:
             return self._collection_path[-2]
+        elif len(self._collection_path) == 1:
+            return ROOT
         else:
             return None
 
