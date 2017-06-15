@@ -116,11 +116,12 @@ Changelog
 - 0.0.2
     
   - Added some demo scrapers
-  - The cursor is now always updated when accessing datasets
+  - The cursor is now moved when accessing datasets
   - New names for methods moving cursor:
    + move_up()
-   + move_to_child()
-  - Added move_to_top method and corresponding top hook
+   + move_to()
+  - Added move_to_top() method and corresponding top hook
+  - path method gives a list all items down to current
   - Added tests
 
 - 0.0.1
