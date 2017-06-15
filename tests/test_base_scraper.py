@@ -68,6 +68,12 @@ class TestBaseScraper(TestCase):
         self.assertTrue(isinstance(scraper.current_item, Dataset))
         self.assertTrue(scraper.current_item.id == "Dataset_3")
 
+    def test_chained_move_to(self):
+        """Use chaining to move."""
+        scraper = Scraper()
+        scraper.move_to("Dataset_1").move_up().move_to("Dataset_2")
+        self.assertTrue(scraper.current_item.id == "Dataset_2")
+
     def test_stop_at_root(self):
         """Trying to move up from the root should do nothing."""
         scraper = Scraper()
