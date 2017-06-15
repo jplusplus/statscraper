@@ -117,9 +117,12 @@ class Itemslist(list):
 class AllowedValue(object):
     """An allowed value for a dimension."""
 
-    def __init__(self, value, label):
+    def __init__(self, value, label=None):
         self.value = value
-        self.label = label or unicode(value)
+        if label is None:
+            self.label = unicode(value)
+        else:
+            self.label = label
 
     def __str__(self):
         try:
