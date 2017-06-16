@@ -123,6 +123,7 @@ Changelog
   - Added move_to_top() method and corresponding top hook
   - path method gives a list all items down to current
   - Added tests
+  - Added datatypes subtree
 
 - 0.0.1
     
