@@ -30,6 +30,7 @@ from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
+from datatypes import Datatype
 
 TYPE_DATASET = "Dataset"
 TYPE_COLLECTION = "Collection"
@@ -174,14 +175,24 @@ class AllowedValue(object):
 
 
 class Dimension(object):
-    """ A dimension in a dataset """
-    def __init__(self, id_, label=None, allowed_values=None, type=None):
+    """A dimension in a dataset."""
+
+    def __init__(self, id_, label=None, allowed_values=None, datatype=None):
+        """A single dimension.
+
+        If allowed_values are specified, they will override any
+        allowed values for the datatype
+        """
         self.id = id_
-        self.allowed_values = allowed_values
         if label is None:
             self.label = id_
         else:
             self.label = label
+        if datatype:
+            self.datatype = Datatype(datatype)
+            self.allowed_values = self.datatype.allowed_values
+        if allowed_values:
+            self.allowed_values = allowed_values
 
     def __str__(self):
         try:
@@ -194,7 +205,7 @@ class Dimension(object):
 
     @property
     def values(self):
-        """ Return a list of allowed values """
+        """Return a list of allowed values."""
         if self.allowed_values is None:
             self.allowed_values = self.scraper._fetch_allowed_values(self)
         return self.allowed_values
