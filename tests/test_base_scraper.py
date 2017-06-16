@@ -132,10 +132,11 @@ class TestBaseScraper(TestCase):
         self.assertTrue(isinstance(dim, Dimension))
 
     def test_select_allowed_value(self):
+        """List allowed values from dimension"""
         scraper = Scraper()
         dataset = scraper.items[0]
 
-        dim = dataset.dimension("municipality")
+        dim = dataset.dimensions["municipality"]
         municipality = dim.get("Robertsfors")
 
         self.assertTrue(isinstance(municipality, AllowedValue))
