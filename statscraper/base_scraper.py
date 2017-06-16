@@ -394,6 +394,10 @@ class BaseScraper(object):
         """
         return self.current_item.items
 
+    def fetch(self, query=None):
+        """Let the current item fetch it's data."""
+        return self.current_item.fetch(query)
+
     @property
     def parent(self):
         """Return the item above the current, if any."""
