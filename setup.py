@@ -2,14 +2,18 @@
 from setuptools import setup
 
 
+version = "0.0.2"
+
+
 def readme():
+    """Import README for use as long_description."""
     with open('README.rst') as f:
         return f.read()
 
 
 setup(
     name="statscraper",
-    version="0.0.1",
+    version=version,
     description="""\
 A base class for building web scrapers for statistical data.\
 """,
@@ -26,5 +30,6 @@ A base class for building web scrapers for statistical data.\
     test_suite='nose.collector',
     tests_require=['nose'],
     include_package_data=True,
-    download_url="https://github.com/jplusplus/skrejperpark/archive/0.0.1.tar.gz",
+    download_url="https://github.com/jplusplus/skrejperpark/archive/%s.tar.gz"
+                 % version,
 )
