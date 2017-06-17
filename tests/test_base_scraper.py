@@ -1,7 +1,7 @@
 # encoding:utf-8
 from unittest import TestCase
 
-from statscraper import (BaseScraper, Dataset, Dimension, AllowedValue,
+from statscraper import (BaseScraper, Dataset, Dimension, Result,
                          ROOT, NoSuchItem)
 
 
@@ -20,22 +20,19 @@ class Scraper(BaseScraper):
 
     def _fetch_data(self, dataset, query=None):
         if dataset.id == "Dataset_1":
-            yield {
+            yield Result(127, {
                 "date": "2017-08-10",
                 "municipality": "Robertsfors",
-                "value": 127
-            }
+            })
         elif dataset.id == "Dataset_2":
-            yield {
+            yield Result(12, {
                 "date": "2017-02-06",
                 "municipality": "Umeå",
-                "value": 12
-            }
-            yield {
+            })
+            yield Result(130, {
                 "date": "2017-02-07",
                 "municipality": "Robertsfors",
-                "value": 130
-            }
+            })
 
 
 class TestBaseScraper(TestCase):
