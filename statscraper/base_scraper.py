@@ -57,7 +57,10 @@ class InvalidData(Exception):
 
 
 class ResultSet(list):
-    """The result of a dataset query."""
+    """The result of a dataset query.
+
+    This is essentially a list of Result objects.
+    """
 
     _pandas = None
 
@@ -67,6 +70,26 @@ class ResultSet(list):
         if self._pandas is None:
             self._pandas = pd.DataFrame().from_records(self)
         return self._pandas
+
+
+class Result(list):
+    u"""A “row” in a result.
+
+    A result contains a numerical value,
+    and optinlly a set of dimensions with values.
+    """
+
+    def __init__(self, value, dimensions={}):
+        """Value is supposed to be numerical."""
+        self.value = value
+        self.dimensions = dimensions
+
+    def __getitem__(self, key):
+        """Make it possible to get dimensions by name."""
+        if isinstance(key, basestring):
+            return self.dimensions[key]
+        else:
+            return list.__getitem__(self, key)
 
 
 class Dimensionslist(list):
@@ -255,6 +278,8 @@ class Collection(Item):
             self._items.scraper = self.scraper
             for i in self.scraper._fetch_itemslist(self):
                 i.parent_ = self
+                if i.type == TYPE_DATASET and i.dialect is None:
+                    i.dialect = self.scraper.dialect
                 self._items.append(i)
         return self._items
 
@@ -264,6 +289,7 @@ class Dataset(Item):
 
     _data = {}  # We store one ResultSet for each unique query
     _dimensions = None
+    dialect = None
     query = None
 
     @property
@@ -291,7 +317,9 @@ class Dataset(Item):
             self._move_here()
 
         self._data[hash_] = ResultSet()
+        self._data[hash_].dialect = self.dialect
         for row in self.scraper._fetch_data(self, query=query):
+            row.resultset = self._data[hash_]
             self._data[hash_].append(row)
         return self._data[hash_]
 
@@ -346,6 +374,8 @@ class BaseScraper(object):
         'top': [],  # Called when moving to top level
         'select': [],  # Called when trying to move to a Collection or Dataset
     }
+
+    dialect = None
 
     @classmethod
     def on(cls, hook):
