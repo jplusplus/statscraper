@@ -86,7 +86,7 @@ class Result(list):
     """
 
     def __init__(self, value, dimensions={}):
-        """Value is supposed to be numerical."""
+        """Value is supposed, but not strictly required to be numerical."""
         self.value = value
         self.dimensions = dimensions
 
@@ -96,6 +96,15 @@ class Result(list):
             return self.dimensions[key]
         else:
             return list.__getitem__(self, key)
+
+    def __str__(self):
+        try:
+            return self.value.encode("utf-8")
+        except UnicodeEncodeError:
+            return self.value
+
+    def __repr__(self):
+        return '<Result: %s>' % str(self)
 
 
 class Dimensionslist(list):
@@ -327,9 +336,9 @@ class Dataset(Item):
 
         self._data[hash_] = ResultSet()
         self._data[hash_].dialect = self.dialect
-        for row in self.scraper._fetch_data(self, query=query):
-            row.resultset = self._data[hash_]
-            self._data[hash_].append(row)
+        for result in self.scraper._fetch_data(self, query=query):
+            result.resultset = self._data[hash_]
+            self._data[hash_].append(result)
         return self._data[hash_]
 
     def _move_here(self):
