@@ -453,7 +453,7 @@ class BaseScraper(object):
             self._collection_path.append(self.current_item)
         except (StopIteration, IndexError, NoSuchItem):
             raise NoSuchItem
-        print self._hooks
+        print(self._hooks)
         for f in self._hooks["select"]:
             f(self)
         return self
