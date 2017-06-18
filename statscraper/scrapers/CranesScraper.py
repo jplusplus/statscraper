@@ -6,7 +6,7 @@
 """
 import requests
 from bs4 import BeautifulSoup
-from statscraper import BaseScraper, Dataset, Dimension
+from statscraper import BaseScraper, Dataset, Dimension, Result
 
 
 class Cranes(BaseScraper):
@@ -19,9 +19,9 @@ class Cranes(BaseScraper):
         """ Declaring available dimensions like this is not mandatory,
          but nice, especially if they differ from dataset to dataset.
         """
-        yield Dimension(u"date")
-        yield Dimension(u"month")
-        yield Dimension(u"year")
+        yield Dimension(u"date", type="date")
+        yield Dimension(u"month", type="month")
+        yield Dimension(u"year", type="year")
 
     def _fetch_data(self, dataset, query=None):
         html = requests.get("http://web05.lansstyrelsen.se/transtat_O/transtat.asp").text
@@ -36,10 +36,9 @@ class Cranes(BaseScraper):
             month = cells.pop(0).text
             i = 0
             for value in cells:
-                yield {
+                yield Result(value.text, {
                     "date": date,
                     "month": month,
                     "year": years[i],
-                    "value": value.text,
-                }
+                })
                 i += 1
