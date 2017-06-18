@@ -1,0 +1,37 @@
+id,description,value_type,allowed_values
+int,This datatype holds integer values,int,
+float,This datatype holds floating point values,float,
+bool,This datatype holds boolean values,bool,
+str,This datatype holds string values. Empty strings are considered null.,str,
+date,An ISO 8601 date/time stamp,date,
+gender,"A subjects gender, in most data by legal definition",str,genders
+marital_status,A subjects marital status,str,marital_statuses
+,,,
+crime_code,A crime code (brottskod) used by the Swedish police,str,misc/crime_codes
+crime_type,A crime type (brottstyp) used by the Swedish police. Higher level than brottskod.,str,misc/crime_types
+foreignborn,Is the subject born outside Sweden?,str,misc/foreignborn
+,,,
+measure,Count or rate for example,str,misc/measures
+periodicity,How long is the period covered by this datapoint,str,misc/periodicities
+period,A period of time,str,periods/*
+month,A gregorian month,str,periods/months
+quarter,A quarter of a gregorian calendar year,str,periods/quarters
+region,A Swedish administrative region,str,regions/*
+city_district,An administrative subdivision of a municipality,str,regions/city_districts
+county,"A Swedish county (län), past or present",str,regions/counties
+municipality,"A Swedish municipality, past or present",str,regions/municipalities
+country,"A country, past or present",str,regions/nations
+place_of_birth,Subjects country (or continent) of birth,str,regions/nations
+,,,
+source_id,A key or identifyer used by the data source. Possibly useful for debugging.,str,
+value,Value,"int,float",
+year,A gregorian year,int,
+week,"A ISO 8601 week number, week starting on Monday, first week of the year has at least four days",int,
+migration_category,"Incoming, outgoing and other migration cateogries as defined by SCB",str,misc/population_changes 
+population,"Changes in population (births, deaths etc",str,misc/population_changes
+currency,"Currencies, following ISO 4217 where possible",str,misc/currencies
+income,Different kinds of incomes such as earned income before and after tax,str,misc/incomes
+vehicle_type,Different types of vehicles,str,misc/vehicle_types
+,,,
+swedish_meteorological_station,"A Swedish meteorological station, as defined by SMHI",,misc/swedish_meteorological_stations
+meteorological_parameter,Meteorological parameters such as air temperature and rainfall,,misc/meteorological_parmeters

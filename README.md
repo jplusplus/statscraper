@@ -23,10 +23,10 @@ Each data type can have one of the following value types:
 
 Some data types, and some metadata fields, have a predefined set of allowed values (such as “regions”). In some domains, allowed values may be organized in categories (such as “Swedish municipalities”, “Swedish counties”).
 
-Allowed values are specified in csv files, structured in folders by domain, e.g.`/values/regions/sweden/municipalities.csv`. They are referenced like this: `regions/sweden/municipalities`, and `regions/*`. Value types with no categorization is collected in `misc/`, such as gender, with four possible values (`male`, `female`, `other`, `unknown`) in `misc/genders.csv`
+Allowed values are specified in csv files under the `values` directory, optionlly structured in subfolders by domain, e.g.`regions/sweden/municipalities.csv`. They are referenced like this: `regions/sweden/municipalities`, and `regions`. If there is a `regions/` folder, there can not be a `regions.csv` in the same directory.
 
 The allowed values csv's contain:
 
 * `id`: A unique id. We use human readable id's, e.g. "Stockholms kommun", not "0180"
 * `label`: An optional label
-* `dialect:`~: Columns prefixed dialect contain corresponding id's, e.g. names useed by major statistical providers, WikiData id's, etc
+* `dialect:`~: Columns prefixed with `dialect:` contain corresponding id's, e.g. names useed by major statistical providers, WikiData id's, etc

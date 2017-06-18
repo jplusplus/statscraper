@@ -1,0 +1,5 @@
+id,label,description,dialect:wikidata,dialect:scb,dialect:vcard,dialect:foaf
+male,male,sex or gender is male,Q6581097,1,Male,male
+female,female,sex or gender is female,Q6581072,2,Female,female
+other,other,"sex or gender is not male or female, e.g. intersex, or in some jurisdictions, a third legal gender",Q1097630,,Other,
+unknown,unknown,"there is a sex or gender (i.e. not null or none), but we do not know it",Q19798648,,Unknown,
