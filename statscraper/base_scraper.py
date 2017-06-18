@@ -154,26 +154,6 @@ class Itemslist(list):
         super(Itemslist, self).append(val)
 
 
-class AllowedValue(object):
-    """An allowed value for a dimension."""
-
-    def __init__(self, value, label=None):
-        self.value = value
-        if label is None:
-            self.label = unicode(value)
-        else:
-            self.label = label
-
-    def __str__(self):
-        try:
-            return self.value.encode("utf-8")
-        except UnicodeEncodeError:
-            return self.value
-
-    def __repr__(self):
-        return '<Value: %s (%s)>' % (str(self), self.label.encode("utf-8"))
-
-
 class Dimension(object):
     """A dimension in a dataset."""
 
