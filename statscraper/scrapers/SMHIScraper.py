@@ -1,6 +1,10 @@
 # encoding: utf-8
+try:
+    import StringIO
+except ImportError:
+    import io as StringIO
+
 import requests
-import StringIO
 import csvkit as csv
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -85,7 +89,7 @@ class SMHIScraper(BaseScraper):
 
         # Step 3: Get data
         n_queries = len(stations) * len(query["period"])
-        print "Fetching data with {} queries.".format(n_queries)
+        print("Fetching data with {} queries.".format(n_queries))
         for station_key, station_name in stations:
             for period in query["period"]:
 
@@ -93,7 +97,7 @@ class SMHIScraper(BaseScraper):
                     .replace(".json", "/station/{}/period/{}/data.csv"\
                         .format(station_key, period))
 
-                print "/GET {}".format(url)
+                print("/GET {}".format(url))
                 r = requests.get(url)
 
                 if r.status_code == 200:
@@ -169,7 +173,7 @@ class SMHIDataset(Dataset):
     @property
     def json_data(self):
         if not hasattr(self, "_json_data"):
-            print self.url
+            print(self.url)
             self._json_data = requests.get(self.url).json()
         return self._json_data
 

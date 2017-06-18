@@ -26,11 +26,17 @@ u"""
     # Do something when the user moves up one level
 
 """
+import six
 from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
-from datatypes import Datatype
+from .datatypes import Datatype
+
+try:
+    from itertools import ifilter as filter
+except ImportError:
+    pass
 
 TYPE_DATASET = "Dataset"
 TYPE_COLLECTION = "Collection"
@@ -86,7 +92,7 @@ class Result(list):
 
     def __getitem__(self, key):
         """Make it possible to get dimensions by name."""
-        if isinstance(key, basestring):
+        if isinstance(key, six.string_types):
             return self.dimensions[key]
         else:
             return list.__getitem__(self, key)
@@ -97,14 +103,14 @@ class Dimensionslist(list):
 
     def __getitem__(self, key):
         """Make it possible to get dimension by id or identity."""
-        if isinstance(key, basestring):
+        if isinstance(key, six.string_types):
             def f(x): return (x.id == key)
         elif isinstance(key, Item):
             def f(x): return (x is key)
         else:
             return list.__getitem__(self, key)
         try:
-            val = filter(f, self).pop()
+            val = next(filter(f, self))
             return val
         except IndexError:
             # No such id
@@ -112,8 +118,8 @@ class Dimensionslist(list):
 
     def __contains__(self, item):
         """Make it possible to use 'in' keyword with id."""
-        if isinstance(item, basestring):
-            return bool(len(filter(lambda x: x.id == item, self)))
+        if isinstance(item, six.string_types):
+            return bool(len(list(filter(lambda x: x.id == item, self))))
         else:
             return super(Itemslist, self).__contains__(item)
 
@@ -140,14 +146,14 @@ class Itemslist(list):
          scraper.items["dataset_1"]
          scraper.items[dataset]
         """
-        if isinstance(key, basestring):
+        if isinstance(key, six.string_types):
             def f(x): return (x.id == key)
         elif isinstance(key, Item):
             def f(x): return (x is key)
         else:
             return list.__getitem__(self, key)
         try:
-            val = filter(f, self).pop()
+            val = next(filter(f, self))
             return val
         except IndexError:
             # No such id
@@ -155,8 +161,8 @@ class Itemslist(list):
 
     def __contains__(self, item):
         """Make it possible to use 'in' keyword with id."""
-        if isinstance(item, basestring):
-            return bool(len(filter(lambda x: x.id == item, self)))
+        if isinstance(item, six.string_types):
+            return bool(len(list(filter(lambda x: x.id == item, self))))
         else:
             return super(Itemslist, self).__contains__(item)
 
@@ -303,7 +309,10 @@ class Dataset(Item):
 
         This hash is _not_ a unique representation of the dataset!
         """
-        return md5(dumps(self.query, sort_keys=True)).hexdigest()
+        dump = dumps(self.query, sort_keys=True)
+        if isinstance(dump, str):
+            dump = dump.encode('utf-8')
+        return md5(dump).hexdigest()
 
     def fetch(self, query=None):
         """Ask scraper to return data for the current dataset."""
