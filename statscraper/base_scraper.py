@@ -71,10 +71,18 @@ class ResultSet(list):
     _pandas = None
 
     @property
+    def list_of_dicts(self):
+        def merge_two_dicts(x, y):
+            z = x.copy()
+            z.update(y)
+            return z
+        return [merge_two_dicts(x.dimensions, {"value": x.value}) for x in self]
+
+    @property
     def pandas(self):
         """Return a Pandas dataframe."""
         if self._pandas is None:
-            self._pandas = pd.DataFrame().from_records(self)
+            self._pandas = pd.DataFrame().from_records(self.list_of_dicts)
         return self._pandas
 
 
