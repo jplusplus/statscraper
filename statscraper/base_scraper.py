@@ -210,15 +210,16 @@ class Dimension(object):
         allowed values for the datatype
         """
         self.id = id_
+        self._allowed_values = None
         if label is None:
             self.label = id_
         else:
             self.label = label
         if datatype:
             self.datatype = Datatype(datatype)
-            self.allowed_values = self.datatype.allowed_values
+            self._allowed_values = self.datatype.allowed_values
         if allowed_values:
-            self.allowed_values = allowed_values
+            self._allowed_values = allowed_values
 
     def __str__(self):
         try:
@@ -230,11 +231,11 @@ class Dimension(object):
         return '<Dimension: %s (%s)>' % (str(self), self.label.encode("utf-8"))
 
     @property
-    def values(self):
+    def allowed_values(self):
         """Return a list of allowed values."""
-        if self.allowed_values is None:
-            self.allowed_values = self.scraper._fetch_allowed_values(self)
-        return self.allowed_values
+        if self._allowed_values is None:
+            self._allowed_values = self.scraper._fetch_allowed_values(self)
+        return self._allowed_values
 
 
 class Item(object):
