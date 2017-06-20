@@ -128,10 +128,21 @@ class TestBaseScraper(TestCase):
         dim = dataset.dimensions["municipality"]
         self.assertTrue(isinstance(dim, Dimension))
 
-    def test_select_allowed_value(self):
+    def test_select_allowed_values(self):
         """List allowed values from dimension."""
         scraper = Scraper()
         dataset = scraper.items[0]
 
         dim = dataset.dimensions["municipality"]
         self.assertTrue("Robertsfors" in dim.allowed_values)
+
+    def test_select_specific_allow_value(self):
+        """Get allowed value by label or id"""
+        scraper = Scraper()
+        dataset = scraper.items[0]
+
+        dim = dataset.dimensions["municipality"]
+        # Comment: Personally fond of the verb ".get" (jens)
+        municipality = dim.get("Robertsfors")
+
+        self.assertEqual(municipality, "Robertsfors")
