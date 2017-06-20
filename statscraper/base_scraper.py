@@ -86,7 +86,7 @@ class ResultSet(list):
         return self._pandas
 
 
-class Result(list):
+class Result(object):
     u"""A “row” in a result.
 
     A result contains a numerical value,
@@ -104,6 +104,10 @@ class Result(list):
             return self.dimensions[key]
         else:
             return list.__getitem__(self, key)
+
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
 
     def __str__(self):
         try:
@@ -132,6 +136,10 @@ class Dimensionslist(list):
         except IndexError:
             # No such id
             raise NoSuchItem("No such dimension")
+
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
 
     def __contains__(self, item):
         """Make it possible to use 'in' keyword with id."""
@@ -184,10 +192,8 @@ class Itemslist(list):
             return super(Itemslist, self).__contains__(item)
 
     def get(self, key):
-        """For compatibility with statscraper 0.0.1."""
-        from warnings import warn
-        warn("Use Itemslist['item-id'] instead.", DeprecationWarning)
-        return self.__getitem__(key)
+        """Provide alias for bracket notation."""
+        return self[key]
 
     def empty(self):
         """Empty this list (delete all contents)."""
@@ -306,6 +312,21 @@ class Collection(Item):
                     i.dialect = self.scraper.dialect
                 self._items.append(i)
         return self._items
+
+    def __getitem___(self, key):
+        """Provide  bracket notation.
+
+        collection["abc"] till return the item with id abc
+        """
+        try:
+            return next(filter(lambda x: x.id == key, self.items))
+        except IndexError:
+            # No such id
+            raise NoSuchItem("No such item in Collection")
+
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
 
 
 class Dataset(Item):
