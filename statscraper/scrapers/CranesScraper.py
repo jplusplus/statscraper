@@ -36,9 +36,10 @@ class Cranes(BaseScraper):
             month = cells.pop(0).text
             i = 0
             for value in cells:
-                yield Result(value.text, {
-                    "date": date,
-                    "month": month,
-                    "year": years[i],
-                })
+                if value.text:
+                    yield Result(value.text, {
+                        "date": date,
+                        "month": month,
+                        "year": years[i],
+                    })
                 i += 1
