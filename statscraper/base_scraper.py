@@ -31,6 +31,7 @@ from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
+from copy import deepcopy
 from .datatypes import Datatype
 
 try:
@@ -72,11 +73,13 @@ class ResultSet(list):
 
     @property
     def list_of_dicts(self):
+        """Return a list of dictionaries, with the key "value" for values."""
         def merge_two_dicts(x, y):
             z = x.copy()
             z.update(y)
             return z
-        return [merge_two_dicts(x.dimensions, {"value": x.value}) for x in self]
+        return [merge_two_dicts(x.dimensions, {"value": x.value})
+                for x in self]
 
     @property
     def pandas(self):
@@ -84,6 +87,13 @@ class ResultSet(list):
         if self._pandas is None:
             self._pandas = pd.DataFrame().from_records(self.list_of_dicts)
         return self._pandas
+
+    @property
+    def translation(self, dialect):
+        """Return a copy of this ResultSet in a different dialect."""
+        new_resultset = deepcopy(self)
+        new_resultset.dialect = dialect
+        return new_resultset
 
 
 class Result(object):
