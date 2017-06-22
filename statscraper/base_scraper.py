@@ -70,6 +70,7 @@ class ResultSet(list):
     """
 
     _pandas = None
+    dataset = None
 
     @property
     def list_of_dicts(self):
@@ -78,7 +79,7 @@ class ResultSet(list):
             z = x.copy()
             z.update(y)
             return z
-        return [merge_two_dicts(x.dimensions, {"value": x.value})
+        return [merge_two_dicts(x.raw_dimensions, {"value": x.value})
                 for x in self]
 
     @property
@@ -88,12 +89,46 @@ class ResultSet(list):
             self._pandas = pd.DataFrame().from_records(self.list_of_dicts)
         return self._pandas
 
-    @property
-    def translation(self, dialect):
+    def translate(self, dialect):
         """Return a copy of this ResultSet in a different dialect."""
         new_resultset = deepcopy(self)
         new_resultset.dialect = dialect
+
+        for result in new_resultset:
+            for dimensionvalue in result.dimensions:
+                if dimensionvalue.datatype is not None:
+                    print "dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype)
         return new_resultset
+
+    def append(self, val):
+        """Connect any new results to the resultset.
+
+        We will also add a datatype here, so that each result can handle
+        validation etc independently. This is so that scraper authors
+        don't need to worry about creating and passing around datatype objects.
+
+        As the scraper author yields result objects, we append them to
+        a resultset.
+        """
+        val.resultset = self
+        val.dataset = self.dataset
+
+        # Check result dimensions against available dimensions for this dataset
+        # for validation and translation
+        if val.dataset:
+            val.dimensionvalues = Dimensionslist()
+            dataset_dimensions = self.dataset.dimensions
+            for k, v in val.raw_dimensions.items():
+                if isinstance(v, DimensionValue):
+                    self.dimensionvalues.append(v)
+                else:
+                    if k in self.dataset.dimensions:
+                        dim = DimensionValue(v, dataset_dimensions[k])
+                    else:
+                        dim = DimensionValue(v, Dimension())
+                self.dimensionvalues.append(dim)
+
+        super(ResultSet, self).append(val)
 
 
 class Result(object):
@@ -106,7 +141,7 @@ class Result(object):
     def __init__(self, value, dimensions={}):
         """Value is supposed, but not strictly required to be numerical."""
         self.value = value
-        self.dimensions = dimensions
+        self.raw_dimensions = dimensions
 
     def __getitem__(self, key):
         """Make it possible to get dimensions by name."""
@@ -157,6 +192,67 @@ class Dimensionslist(list):
             return bool(len(list(filter(lambda x: x.id == item, self))))
         else:
             return super(Itemslist, self).__contains__(item)
+
+
+class Dimension(object):
+    """A dimension in a dataset."""
+
+    def __init__(self, id_, label=None, allowed_values=None, datatype=None):
+        """A single dimension.
+
+        If allowed_values are specified, they will override any
+        allowed values for the datatype
+        """
+        self.id = id_
+        self._allowed_values = None
+        self.datatype = None
+        if label is None:
+            self.label = id_
+        else:
+            self.label = label
+        if datatype:
+            self.datatype = Datatype(datatype)
+            self._allowed_values = self.datatype.allowed_values
+        if allowed_values:
+            self._allowed_values = allowed_values
+
+    def __str__(self):
+        try:
+            return self.id.encode("utf-8")
+        except UnicodeEncodeError:
+            return self.id
+
+    def __repr__(self):
+        return '<Dimension: %s (%s)>' % (str(self), self.label.encode("utf-8"))
+
+    @property
+    def allowed_values(self):
+        """Return a list of allowed values."""
+        if self._allowed_values is None:
+            self._allowed_values = self.scraper._fetch_allowed_values(self)
+        return self._allowed_values
+
+
+class DimensionValue(object):
+    """The value for a dimension inside a Resultset."""
+
+    def __init__(self, value, dimension):
+        """Value can be any type. dimension is a Dimension() object."""
+        self.value = value
+        self.id = dimension.id
+        self.label = dimension.label
+        self.datatype = dimension.datatype
+        self.dimension = dimension
+
+    def __str__(self):
+        try:
+            return self.value.encode("utf-8")
+        except UnicodeEncodeError:
+            return self.value
+
+    def __repr__(self):
+        return u'<DimensionValue: %s (%s): %s>' %\
+            (self.id.encode("utf-8"), self.label.encode("utf-8"), str(self))
 
 
 class Itemslist(list):
@@ -214,44 +310,6 @@ class Itemslist(list):
         """Connect any new items to the scraper."""
         val.scraper = self.scraper
         super(Itemslist, self).append(val)
-
-
-class Dimension(object):
-    """A dimension in a dataset."""
-
-    def __init__(self, id_, label=None, allowed_values=None, datatype=None):
-        """A single dimension.
-
-        If allowed_values are specified, they will override any
-        allowed values for the datatype
-        """
-        self.id = id_
-        self._allowed_values = None
-        if label is None:
-            self.label = id_
-        else:
-            self.label = label
-        if datatype:
-            self.datatype = Datatype(datatype)
-            self._allowed_values = self.datatype.allowed_values
-        if allowed_values:
-            self._allowed_values = allowed_values
-
-    def __str__(self):
-        try:
-            return self.id.encode("utf-8")
-        except UnicodeEncodeError:
-            return self.id
-
-    def __repr__(self):
-        return '<Dimension: %s (%s)>' % (str(self), self.label.encode("utf-8"))
-
-    @property
-    def allowed_values(self):
-        """Return a list of allowed values."""
-        if self._allowed_values is None:
-            self._allowed_values = self.scraper._fetch_allowed_values(self)
-        return self._allowed_values
 
 
 class Item(object):
@@ -365,7 +423,8 @@ class Dataset(Item):
 
     def fetch(self, query=None):
         """Ask scraper to return data for the current dataset."""
-        self.query = query
+        if query:
+            self.query = query
 
         hash_ = self._hash
         if hash_ in self._data:
@@ -374,11 +433,12 @@ class Dataset(Item):
         if self.scraper.current_item is not self:
             self._move_here()
 
-        self._data[hash_] = ResultSet()
-        self._data[hash_].dialect = self.dialect
-        for result in self.scraper._fetch_data(self, query=query):
-            result.resultset = self._data[hash_]
-            self._data[hash_].append(result)
+        rs = ResultSet()
+        rs.dialect = self.dialect
+        rs.dataset = self
+        for result in self.scraper._fetch_data(self, query=self.query):
+            rs.append(result)
+        self._data[hash_] = rs
         return self._data[hash_]
 
     def _move_here(self):
