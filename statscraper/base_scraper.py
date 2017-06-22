@@ -185,10 +185,7 @@ class Result(object):
         return self[key]
 
     def __str__(self):
-        try:
-            return self.value.encode("utf-8")
-        except UnicodeEncodeError:
-            return self.value
+        return self.value
 
     def __repr__(self):
         return '<Result: %s>' % str(self)
@@ -239,9 +236,11 @@ class DimensionValue(object):
     def __init__(self, value, dimension):
         """Value can be any type. dimension is a Dimension() object."""
         self.value = value
+        # FIXME make these getter methods
         self.id = dimension.id
         self.label = dimension.label
         self.datatype = dimension.datatype
+        self.allowed_values = dimension.allowed_values
         self.dimension = dimension
 
     def __str__(self):
