@@ -19,9 +19,9 @@ class Cranes(BaseScraper):
         """ Declaring available dimensions like this is not mandatory,
          but nice, especially if they differ from dataset to dataset.
         """
-        yield Dimension(u"date", type="date")
-        yield Dimension(u"month", type="month")
-        yield Dimension(u"year", type="year")
+        yield Dimension(u"date", datatype="date")
+        yield Dimension(u"month", datatype="month")
+        yield Dimension(u"year", datatype="year")
 
     def _fetch_data(self, dataset, query=None):
         html = requests.get("http://web05.lansstyrelsen.se/transtat_O/transtat.asp").text
