@@ -37,7 +37,7 @@ class Cranes(BaseScraper):
             i = 0
             for value in cells:
                 if value.text:
-                    yield Result(value.text, {
+                    yield Result(value.text.encode("utf-8"), {
                         "date": date,
                         "month": month,
                         "year": years[i],
