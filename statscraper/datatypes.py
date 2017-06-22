@@ -6,4 +6,13 @@
 class Datatype(object):
     """Represent a datatype, initiated by id."""
 
-    pass
+    allowed_values = []
+
+    def __init__(self, id):
+        self.id = id
+
+    def __str__(self):
+        return str(self.id)
+
+    def __repr__(self):
+        return '<Datatype: %s>' % str(self)
