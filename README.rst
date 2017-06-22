@@ -120,10 +120,10 @@ Changelog
   - New names for methods moving cursor:
    + move_up()
    + move_to()
-  - Added move_to_top() method and corresponding top hook
-  - path method gives a list all items down to current
+  - Added many more methods
   - Added tests
   - Added datatypes subtree
+  - It should now be possible to write a basic scraper
 
 - 0.0.1
     
