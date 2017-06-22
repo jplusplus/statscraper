@@ -116,52 +116,18 @@ class ResultSet(list):
         # Check result dimensions against available dimensions for this dataset
         # for validation and translation
         if val.dataset:
-            val.dimensionvalues = Dimensionslist()
             dataset_dimensions = self.dataset.dimensions
             for k, v in val.raw_dimensions.items():
                 if isinstance(v, DimensionValue):
-                    self.dimensionvalues.append(v)
+                    val.dimensionvalues.append(v)
                 else:
                     if k in self.dataset.dimensions:
                         dim = DimensionValue(v, dataset_dimensions[k])
                     else:
                         dim = DimensionValue(v, Dimension())
-                self.dimensionvalues.append(dim)
+                val.dimensionvalues.append(dim)
 
         super(ResultSet, self).append(val)
-
-
-class Result(object):
-    u"""A “row” in a result.
-
-    A result contains a numerical value,
-    and optinlly a set of dimensions with values.
-    """
-
-    def __init__(self, value, dimensions={}):
-        """Value is supposed, but not strictly required to be numerical."""
-        self.value = value
-        self.raw_dimensions = dimensions
-
-    def __getitem__(self, key):
-        """Make it possible to get dimensions by name."""
-        if isinstance(key, six.string_types):
-            return self.dimensions[key]
-        else:
-            return list.__getitem__(self, key)
-
-    def get(self, key):
-        """Provide alias for bracket notation."""
-        return self[key]
-
-    def __str__(self):
-        try:
-            return self.value.encode("utf-8")
-        except UnicodeEncodeError:
-            return self.value
-
-    def __repr__(self):
-        return '<Result: %s>' % str(self)
 
 
 class Dimensionslist(list):
@@ -192,6 +158,40 @@ class Dimensionslist(list):
             return bool(len(list(filter(lambda x: x.id == item, self))))
         else:
             return super(Itemslist, self).__contains__(item)
+
+
+class Result(object):
+    u"""A “row” in a result.
+
+    A result contains a numerical value,
+    and optinlly a set of dimensions with values.
+    """
+    dimensionvalues = Dimensionslist()
+
+    def __init__(self, value, dimensions={}):
+        """Value is supposed, but not strictly required to be numerical."""
+        self.value = value
+        self.raw_dimensions = dimensions
+
+    def __getitem__(self, key):
+        """Make it possible to get dimensions by name."""
+        if isinstance(key, six.string_types):
+            return self.dimensionvalues[key]
+        else:
+            return list.__getitem__(self, key)
+
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
+
+    def __str__(self):
+        try:
+            return self.value.encode("utf-8")
+        except UnicodeEncodeError:
+            return self.value
+
+    def __repr__(self):
+        return '<Result: %s>' % str(self)
 
 
 class Dimension(object):
