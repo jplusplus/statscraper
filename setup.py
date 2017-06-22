@@ -2,7 +2,7 @@
 from setuptools import setup
 
 
-version = "0.0.2"
+version = "1.0.0.dev1"
 
 
 def readme():

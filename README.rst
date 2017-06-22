@@ -113,13 +113,14 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
+- 1.0.0.dev1
+  - 
+
 - 0.0.2
     
   - Added some demo scrapers
   - The cursor is now moved when accessing datasets
-  - New names for methods moving cursor:
-   + move_up()
-   + move_to()
+  - Renamed methods for moving cursor: move_up(), move_to()
   - Added many more methods
   - Added tests
   - Added datatypes subtree
