@@ -95,7 +95,7 @@ class ResultSet(list):
         new_resultset.dialect = dialect
 
         for result in new_resultset:
-            for dimensionvalue in result.dimensions:
+            for dimensionvalue in result.dimensionvalues:
                 if dimensionvalue.datatype is not None:
                     print "dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype)
         return new_resultset
