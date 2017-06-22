@@ -2,6 +2,10 @@
 Using dialects
 ==============
 
+.. NOTE::
+
+   This documentation refers to version 0.0.1. As of 0.0.2, the interface has changed considerably.
+
 `statscraper.dialect` is a library for harmonizing namings of regions and common dimensions across different statistical datasources.
 
 Basic usage

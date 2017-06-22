@@ -2,6 +2,11 @@
 Using scrapers
 ==============
 
+.. NOTE::
+
+   This documentation refers to version 0.0.1. As of 0.0.2, the interface has changed considerably.
+
+
 Exploring sites
 ---------------
 The primary methods of navigating a site is `list` and `get`. The former lists all available topics or data sets at the current level, whereas the latter selects a level or a dataset.
