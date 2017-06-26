@@ -245,10 +245,9 @@ class DimensionValue(object):
         self.dimension = dimension
 
     def __str__(self):
-        try:
-            return self.value.encode("utf-8")
-        except UnicodeEncodeError:
+        if isinstance(self.value, str):
             return self.value
+        return self.value.encode("utf-8")
 
     def __repr__(self):
         return u'<DimensionValue: %s (%s): %s>' %\
