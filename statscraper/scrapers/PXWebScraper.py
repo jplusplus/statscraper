@@ -50,8 +50,11 @@ class PXWeb(BaseScraper):
 
     def _fetch_dimensions(self, dataset):
         data = requests.get(self._api_path).json()
-        for d in data["variables"]:
-            yield Dimension(d["code"], label=d["text"])
+        try:
+            for d in data["variables"]:
+                yield Dimension(d["code"], label=d["text"])
+        except KeyError:
+            yield None
 
     def _fetch_data(self, dataset, query):
         if query is None:
