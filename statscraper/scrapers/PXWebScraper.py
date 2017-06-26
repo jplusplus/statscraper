@@ -70,10 +70,10 @@ class PXWeb(BaseScraper):
             }
         }
         try:
-            print self._api_path
-            print body
+            print(self._api_path)
+            print(body)
             raw = requests.post(self._api_path, json=body)
-            print raw
+            print(raw)
             data = raw.json()
         except JSONDecodeError:
             raise InvalidData("No valid response from PX Web. Check your query for spelling errors.")

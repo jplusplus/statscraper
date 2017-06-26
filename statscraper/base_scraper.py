@@ -97,7 +97,7 @@ class ResultSet(list):
         for result in new_resultset:
             for dimensionvalue in result.dimensionvalues:
                 if dimensionvalue.datatype is not None:
-                    print "dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype)
+                    print("dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype))
         return new_resultset
 
     def append(self, val):
