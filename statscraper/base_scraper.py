@@ -379,6 +379,16 @@ class Collection(Item):
                 self._items.append(i)
         return self._items
 
+    @property
+    def children(self):
+        """Recuriveky get all descendent datasets."""
+        for item in self.items:
+            if item.type == TYPE_COLLECTION:
+                for child in item.children:
+                    yield child
+            else:
+                yield item
+
     def __getitem___(self, key):
         """Provide  bracket notation.
 
@@ -531,6 +541,11 @@ class BaseScraper(object):
             return self._collection_path[-2]
         else:
             return None
+
+    @property
+    def children(self):
+        """Recursively return every dataset below current item."""
+        return((self.current_item.children))
 
     @property
     def path(self):
