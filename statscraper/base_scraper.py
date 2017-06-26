@@ -97,6 +97,7 @@ class ResultSet(list):
         for result in new_resultset:
             for dimensionvalue in result.dimensionvalues:
                 if dimensionvalue.datatype is not None:
+                    # TODO
                     print("dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype))
         return new_resultset
 
@@ -380,16 +381,6 @@ class Collection(Item):
                 self._items.append(i)
         return self._items
 
-    @property
-    def children(self):
-        """Recuriveky get all descendent datasets."""
-        for item in self.items:
-            if item.type == TYPE_COLLECTION:
-                for child in item.children:
-                    yield child
-            else:
-                yield item
-
     def __getitem___(self, key):
         """Provide  bracket notation.
 
@@ -544,11 +535,6 @@ class BaseScraper(object):
             return None
 
     @property
-    def children(self):
-        """Recursively return every dataset below current item."""
-        return((self.current_item.children))
-
-    @property
     def path(self):
         """All named collections above, including the current, but not root."""
         steps = list(self._collection_path)
@@ -618,3 +604,16 @@ class BaseScraper(object):
     def _fetch_data(self, dataset, query=None):
         """Must be overriden by scraper authors, to yield dataset rows."""
         raise Exception("This scraper has no method for fetching data!")
+
+    @property
+    def children(self):
+        """Recursively return every dataset below current item."""
+        for i in self.current_item.items:
+            self.move_to(i)
+            if i.type == TYPE_COLLECTION:
+                for c in self.children:
+                    yield c
+            else:
+                yield i
+            self.move_up()
+
