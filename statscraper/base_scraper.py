@@ -325,10 +325,9 @@ class Item(object):
             self.label = label
 
     def __str__(self):
-        try:
-            return self.id.encode("utf-8")
-        except UnicodeEncodeError:
+        if isinstance(self.id, str):
             return self.id
+        return self.id.encode("utf-8")
 
     @property
     def parent(self):
