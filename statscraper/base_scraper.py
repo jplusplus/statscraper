@@ -345,6 +345,13 @@ https://github.com/jplusplus/statscraper/issues""")
         return self.parent_
 
     @property
+    def path(self):
+        """All named collections above, including the current, but not root."""
+        steps = list(self._collection_path)
+        steps.pop(0)
+        return steps
+
+    @property
     def type(self):
         """Check if this is a Collection or Dataset."""
         try:
