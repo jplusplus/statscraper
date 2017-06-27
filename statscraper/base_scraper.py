@@ -318,7 +318,7 @@ class Item(object):
     """Common base class for collections and datasets."""
 
     # These are populated when added to an itemlist
-    parent_ = None  # Parent item
+    parent = None  # Parent item
     _items = None  # Itemslist with children
     _collection_path = None  # All ancestors
 
@@ -336,14 +336,6 @@ class Item(object):
         if isinstance(self.id, str):
             return self.id
         return self.id.encode("utf-8")
-
-    @property
-    def parent(self):
-        """Return the parent item.
-
-        This will be None for the root item.
-        """
-        return self.parent_
 
     @property
     def path(self):
@@ -386,7 +378,7 @@ class Collection(Item):
             self._items.scraper = self.scraper
             self._items.collection = self
             for i in self.scraper._fetch_itemslist(self):
-                i.parent_ = self
+                i.parent = self
                 if i.type == TYPE_DATASET and i.dialect is None:
                     i.dialect = self.scraper.dialect
                 self._items.append(i)
