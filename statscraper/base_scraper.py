@@ -167,6 +167,7 @@ class Result(object):
     A result contains a numerical value,
     and optinlly a set of dimensions with values.
     """
+
     dimensionvalues = Dimensionslist()
 
     def __init__(self, value, dimensions={}):
@@ -322,12 +323,14 @@ class Item(object):
     _collection_path = None  # All ancestors
 
     def __init__(self, id_, label=None, blob=None):
+        """Use blob to store any custom data."""
         self.id = id_
         self.blob = blob
         if label is None:
             self.label = id_
         else:
             self.label = label
+        self._collection_path = deque([self])  # Will be overwritten when attached to an Itemslist
 
     def __str__(self):
         if isinstance(self.id, str):
@@ -336,12 +339,10 @@ class Item(object):
 
     @property
     def parent(self):
-        """ Return the parent item """
-        if self.parent_ is None:
-            raise Exception("""\
-You tried to access an uninitiated item. \
-This should not be possible. Please file a bug report at \
-https://github.com/jplusplus/statscraper/issues""")
+        """Return the parent item.
+
+        This will be None for the root item.
+        """
         return self.parent_
 
     @property
@@ -520,9 +521,8 @@ class BaseScraper(object):
         """Initiate with a ROOT collection on top."""
         self.current_item = Collection(ROOT)
         self.current_item.scraper = self
-        self.current_item._collection_path = deque([self.current_item])
+        self.root = self.current_item
 
-        self._collection_path = deque([self.current_item])
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
 
@@ -541,36 +541,28 @@ class BaseScraper(object):
     @property
     def parent(self):
         """Return the item above the current, if any."""
-        if len(self._collection_path) > 1:
-            return self._collection_path[-2]
-        else:
-            return None
+        return self.current_item.parent
 
     @property
     def path(self):
         """All named collections above, including the current, but not root."""
-        steps = list(self._collection_path)
-        steps.pop(0)
-        return steps
+        return self.current_item.path
 
     def move_to_top(self):
         """Move to root item."""
-        self.current_item = self._collection_path.popleft()
-        self._collection_path.clear()
-        self._collection_path.append(self.current_item)
+        self.current_item = self.root
         for f in self._hooks["top"]:
             f(self)
         return self
 
     def move_up(self):
         """Move up one level in the hierarchy, unless already on top."""
-        if len(self._collection_path) > 1:
-            self._collection_path.pop()
-            self.current_item = self._collection_path[-1]
+        if self.current_item.parent is not None:
+            self.current_item = self.current_item.parent
 
         for f in self._hooks["up"]:
             f(self)
-        if len(self._collection_path) == 1:
+        if self.current_item is self.root:
             for f in self._hooks["top"]:
                 f(self)
         return self
@@ -580,7 +572,6 @@ class BaseScraper(object):
         try:
             # Move cursor to new item, and reset the cached list of subitems
             self.current_item = self.items[id_]
-            self._collection_path.append(self.current_item)
         except (StopIteration, IndexError, NoSuchItem):
             raise NoSuchItem
         for f in self._hooks["select"]:
@@ -628,4 +619,3 @@ class BaseScraper(object):
             else:
                 yield i
             self.move_up()
-
