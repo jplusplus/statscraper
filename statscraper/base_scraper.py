@@ -31,7 +31,7 @@ from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
-from copy import deepcopy
+from copy import deepcopy, copy
 from .datatypes import Datatype
 
 try:
@@ -308,14 +308,18 @@ class Itemslist(list):
     def append(self, val):
         """Connect any new items to the scraper."""
         val.scraper = self.scraper
+        val._collection_path = copy(self.collection._collection_path)
+        val._collection_path.append(val)
         super(Itemslist, self).append(val)
 
 
 class Item(object):
     """Common base class for collections and datasets."""
 
-    parent_ = None  # Populated when added to an itemlist
+    # These are populated when added to an itemlist
+    parent_ = None  # Parent item
     _items = None  # Itemslist with children
+    _collection_path = None  # All ancestors
 
     def __init__(self, id_, label=None, blob=None):
         self.id = id_
@@ -372,6 +376,7 @@ class Collection(Item):
         if self._items is None:
             self._items = Itemslist()
             self._items.scraper = self.scraper
+            self._items.collection = self
             for i in self.scraper._fetch_itemslist(self):
                 i.parent_ = self
                 if i.type == TYPE_DATASET and i.dialect is None:
@@ -508,6 +513,8 @@ class BaseScraper(object):
         """Initiate with a ROOT collection on top."""
         self.current_item = Collection(ROOT)
         self.current_item.scraper = self
+        self.current_item._collection_path = deque([self.current_item])
+
         self._collection_path = deque([self.current_item])
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
