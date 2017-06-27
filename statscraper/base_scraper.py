@@ -23,7 +23,7 @@ u"""
 
   @on("up")
   def my_method(self):
-    # Do something when the user moves up one level
+    # Do something when the cusor moves up one level
 
 """
 import six
@@ -52,7 +52,11 @@ class NoSuchItem(IndexError):
 
 
 class DatasetNotInView(IndexError):
-    """Tried to operate on a dataset that is no longer visible."""
+    """Tried to operate on a dataset that is not visible.
+
+    This can be raised by a scraper if the cursor needs to
+    move before inspecting an item.
+    """
 
     pass
 
@@ -337,6 +341,16 @@ class Item(object):
             return self.id
         return self.id.encode("utf-8")
 
+    def _move_here(self):
+        """Try to move the cursor here, if this item i visible."""
+        if self in self.parent.items:
+            self.scraper.move_up()
+
+        try:
+            self.scraper.move_to(self.id)
+        except NoSuchItem:
+            raise DatasetNotInView()
+
     @property
     def path(self):
         """All named collections above, including the current, but not root."""
@@ -373,6 +387,9 @@ class Collection(Item):
     @property
     def items(self):
         """Itemslist of children."""
+        if self.scraper.current_item is not self:
+            self._move_here()
+
         if self._items is None:
             self._items = Itemslist()
             self._items.scraper = self.scraper
@@ -443,16 +460,6 @@ class Dataset(Item):
             rs.append(result)
         self._data[hash_] = rs
         return self._data[hash_]
-
-    def _move_here(self):
-        """Try to move the cursor here, if this item i visible."""
-        if self in self.parent.items:
-            self.scraper.move_up()
-
-        try:
-            self.scraper.move_to(self.id)
-        except NoSuchItem:
-            raise DatasetNotInView()
 
     @property
     def data(self):
