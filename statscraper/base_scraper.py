@@ -608,7 +608,7 @@ class BaseScraper(object):
         raise Exception("This scraper has no method for fetching data!")
 
     @property
-    def children(self):
+    def descendants(self):
         """Recursively return every dataset below current item."""
         for i in self.current_item.items:
             self.move_to(i)
@@ -618,3 +618,11 @@ class BaseScraper(object):
             else:
                 yield i
             self.move_up()
+
+    @property
+    def children(self):
+        """Former, misleading name for descendants."""
+        from warnings import warn
+        warn("Deprecated. Use Scraper.descendants.", DeprecationWarning)
+        for descendant in self.descendants:
+            yield descendant
