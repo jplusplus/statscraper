@@ -19,7 +19,7 @@ class Cranes(BaseScraper):
         """ Declaring available dimensions like this is not mandatory,
          but nice, especially if they differ from dataset to dataset.
         """
-        yield Dimension(u"date", datatype="date")
+        yield Dimension(u"date")
         yield Dimension(u"month", datatype="month")
         yield Dimension(u"year", datatype="year")
 
