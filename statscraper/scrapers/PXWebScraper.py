@@ -52,7 +52,9 @@ class PXWeb(BaseScraper):
         data = requests.get(self._api_path).json()
         try:
             for d in data["variables"]:
-                yield Dimension(d["code"], label=d["text"])
+                yield Dimension(d["code"],
+                                label=d["text"],
+                                allowed_values=d["values"])
         except KeyError:
             yield None
 
