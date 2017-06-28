@@ -1,0 +1,13 @@
+id,label,description,dialect:wikidata,dialect:swedish,dialect:numeric,dialect:gnd
+january,January,First month of the gregorian year. Assume local timezone.,Q108,januari,1,4334971-7
+february,February,Second month of the gregorian year. Assume local timezone.,Q109,februari,2,4405048-3
+march,March,Third month of the gregorian year. Assume local timezone.,Q110,mars,3,4334968-7
+april,April,Fourth month of the gregorian year. Assume local timezone.,Q118,april,4,4334965-1
+may,May,Fifth month of the gregorian year. Assume local timezone.,Q119,maj,5,4168620-2
+june,June,Sixth month of the gregorian year. Assume local timezone.,Q120,juni,6,4405052-5
+july,July,Seventh month of the gregorian year. Assume local timezone.,Q121,juli,7,4389806-3
+august,August,Eighth month of the gregorian year. Assume local timezone.,Q122,augusti,8,4389837-3
+september,September,Nineth month of the gregorian year. Assume local timezone.,Q123,september,9,4389807-5
+october,October,Tenth month of the gregorian year. Assume local timezone.,Q124,oktober,10,4389801-4
+november,November,Eleventh month of the gregorian year. Assume local timezone.,Q125,november,11,4389811-7
+december,December,Twelfth month of the gregorian year. Assume local timezone.,Q126,december,12,4299252-7
