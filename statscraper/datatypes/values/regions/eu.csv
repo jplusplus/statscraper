@@ -1,0 +1,8 @@
+id,label,description,dialect:wikidata
+eu,EU,"The EU. This refers to the union as a whole. For the set of member states, use one of the below",Q458
+eu-12,EU 12,"EU members after the establishment of the union in 1993: Belgium (BE), Denmark (DK), France (FR), Germany (DE), Greece (EL), Ireland (IE), Italy (IT), Luxembourg (LU), Netherlands (NL), Portugal (PT), Spain (ES) and United Kingdom (UK)",Q17627986
+eu-15,EU 15,"EU members after the 1995 enlargement: EU 12, plus Austria (AT), Finland (FI) and Sweden (SE) ",Q4590816
+eu-21,EU 21,"EU 15, plus Czech Republic, Hungary, Poland, Slovak Republic, before they where EU members.",
+eu-25,EU-25,"EU members after the 2004 enlargement: EU 15 + Cypern (CY), Tjeckien (CZ), Estland (EE), Ungern (HU), Lettland (LV), Litauen (LT), Malta (MT), Polen (PL), Slovakien (SK) och Slovenien (SI",Q19933476
+eu-27,EU-27,"EU members after the 2007 enlargement: EU 25, plus Bulgaria and Romania.",Q29440613
+eu-28,EU 28,"EU members after the 2013 enlargement: EU 27, plus Croatia",Q16681601

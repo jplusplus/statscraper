@@ -8,3 +8,4 @@ gender,"A subjects gender, in most data by legal definition",str,genders
 marital_status,A subjects marital status,str,marital_statuses
 year,A (proleptic) gregorian year,int,
 month,A month in a (proleptic) gregorian year,str,periods/months
+region,An administrative territorial region.,str,regions
