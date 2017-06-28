@@ -95,7 +95,7 @@ class ResultSet(list):
 
     def translate(self, dialect):
         """Return a copy of this ResultSet in a different dialect."""
-        new_resultset = deepcopy(self)
+        new_resultset = copy(self)
         new_resultset.dialect = dialect
 
         for result in new_resultset:
