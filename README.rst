@@ -114,7 +114,7 @@ Changelog
 ---------
 
 - 1.0.0.dev1
-  - 
+  - Semantic versioning starts here
 
 - 0.0.2
     
