@@ -1,3 +1,3 @@
-id,label,label__sv,label__en
-married,gift,gift,married
-divorced,skild,skild,divorced
+id,label,description,dialect:scb
+unmarried,unmarried,"Currently unmarried, including those widowed or divorced","OG,SK,ÄNKL"
+married,married,Currently married,G
