@@ -25,3 +25,8 @@ class TestDatatype(TestCase):
 
         self.assertEqual(str(dt.allowed_values["eu"]), "eu")
 
+    def test_dialect(self):
+        dt = Datatype("region")
+        val = dt.allowed_values[u"Växjö kommun"]
+        self.assertTrue("wikidata" in val.dialects)
+        self.assertEqual(val.dialects["wikidata"][0], u"Q500217")
