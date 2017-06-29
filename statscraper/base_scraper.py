@@ -235,6 +235,8 @@ class Dimension(object):
         If allowed_values are specified, they will override any
         allowed values for the datatype
         """
+        if id_ is None:
+            id_ = "default"
         self.id = id_
         self._allowed_values = None
         self.datatype = None
@@ -252,8 +254,8 @@ class Dimension(object):
             for val in allowed_values:
                 if isinstance(val, DimensionValue):
                     self._allowed_values.append(val)
-            else:
-                self._allowed_values.append(DimensionValue(val, Dimension()))
+                else:
+                    self._allowed_values.append(DimensionValue(val, Dimension()))
 
     def __str__(self):
         try:
@@ -304,7 +306,7 @@ class DimensionValue(object):
 
     def __repr__(self):
         return '<DimensionValue: %s (%s)>' %\
-            (self.value, str(self.dimension))
+            (self.id, str(self.dimension))
 
 
 class Itemslist(list):
