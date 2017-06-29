@@ -139,5 +139,5 @@ class TestBaseScraper(TestCase):
         municipality = dataset.dimensions["municipality"]
         self.assertTrue("Robertsfors" in municipality.allowed_values)
 
-        # allowed_value = municipality.allowed_values["Robertsfors"]
-        # self.assertEqual(str(allowed_value), "Robertsfors")
+        allowed_value = municipality.allowed_values["Robertsfors"]
+        self.assertEqual(str(allowed_value), "Robertsfors")
