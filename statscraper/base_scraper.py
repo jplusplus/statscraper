@@ -142,9 +142,9 @@ class Valuelist(list):
     """
 
     def __getitem__(self, key):
-        """Make it possible to get value by *dimension id* or or value identity."""
+        """Make it possible to get value by id or value identity."""
         if isinstance(key, six.string_types):
-            def f(x): return (x.dimension.id == key)
+            def f(x): return (x.value == key)
         elif isinstance(key, DimensionValue):
             def f(x): return (x is key)
         else:
@@ -159,7 +159,7 @@ class Valuelist(list):
     def __contains__(self, item):
         """Make it possible to use 'in' keyword with id."""
         if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.id == item, self))))
+            return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
             return super(Itemslist, self).__contains__(item)
 
@@ -201,7 +201,7 @@ class Result(object):
     and optinlly a set of dimensions with values.
     """
 
-    dimensionvalues = Valuelist()
+    dimensionvalues = Dimensionslist()
 
     def __init__(self, value, dimensions={}):
         """Value is supposed, but not strictly required to be numerical."""
@@ -285,19 +285,11 @@ class DimensionValue(object):
 
     def __init__(self, value, dimension, label=None):
         """Value can be any type. dimension is a Dimension() object."""
-        self.id = value
+        self.value = value
         # FIXME make these getter methods
         self.dimension = dimension
         self.label = label
-        self.datatype = dimension.id
-
-    @property
-    def value(self):
-        """Expose 'id' as 'value'.
-
-        While 'id' is in line with the overall architeture,
-        value is a more natural name for a, well, value."""
-        return self.id
+        self.id = dimension.id
 
     def __str__(self):
         if isinstance(self.value, str):
@@ -306,7 +298,7 @@ class DimensionValue(object):
 
     def __repr__(self):
         return '<DimensionValue: %s (%s)>' %\
-            (self.id, str(self.dimension))
+            (self.value, str(self.dimension))
 
 
 class Itemslist(list):
