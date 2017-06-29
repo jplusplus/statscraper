@@ -21,11 +21,11 @@ class NoSuchDatatype(Exception):
 class Datatype(object):
     """Represent a datatype, initiated by id."""
 
-    allowed_values = []
-
     def __init__(self, id):
         """Id is a datatype from datatypes.csv."""
         self.id = id
+        self.allowed_values = base_scraper.Valuelist()
+
         data = None
         with open(DATATYPES_FILE, 'rb') as csvfile:
             reader = DictReader(csvfile)
