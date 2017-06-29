@@ -142,9 +142,9 @@ class Valuelist(list):
     """
 
     def __getitem__(self, key):
-        """Make it possible to get dimension by id or identity."""
+        """Make it possible to get value by *dimension id* or or value identity."""
         if isinstance(key, six.string_types):
-            def f(x): return (x.id == key)
+            def f(x): return (x.dimension.id == key)
         elif isinstance(key, DimensionValue):
             def f(x): return (x is key)
         else:
