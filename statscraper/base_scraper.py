@@ -135,6 +135,35 @@ class ResultSet(list):
         super(ResultSet, self).append(val)
 
 
+class Valuelist(list):
+    """A list of dimension values.
+
+    allowed_values uses this class, to allow checking membership.
+    """
+
+    def __getitem__(self, key):
+        """Make it possible to get dimension by id or identity."""
+        if isinstance(key, six.string_types):
+            def f(x): return (x.id == key)
+        elif isinstance(key, DimensionValue):
+            def f(x): return (x is key)
+        else:
+            return list.__getitem__(self, key)
+        try:
+            val = next(filter(f, self))
+            return val
+        except IndexError:
+            # No such id
+            raise NoSuchItem("No such value")
+
+    def __contains__(self, item):
+        """Make it possible to use 'in' keyword with id."""
+        if isinstance(item, six.string_types):
+            return bool(len(list(filter(lambda x: x.id == item, self))))
+        else:
+            return super(Itemslist, self).__contains__(item)
+
+
 class Dimensionslist(list):
     """A one dimensional list of dimensions."""
 
@@ -200,7 +229,7 @@ class Result(object):
 class Dimension(object):
     """A dimension in a dataset."""
 
-    def __init__(self, id_, label=None, allowed_values=None, datatype=None):
+    def __init__(self, id_=None, label=None, allowed_values=None, datatype=None):
         """A single dimension.
 
         If allowed_values are specified, they will override any
@@ -217,7 +246,13 @@ class Dimension(object):
             self.datatype = Datatype(datatype)
             self._allowed_values = self.datatype.allowed_values
         if allowed_values:
-            self._allowed_values = allowed_values
+            # If allowed values is given as a list of values, create
+            # value objects using an empty dimension.
+            for val in allowed_values:
+                if isinstance(val, DimensionValue):
+                    self._allowed_values.append(val)
+            else:
+                self._allowed_values.append(DimensionValue(val, Dimension()))
 
     def __str__(self):
         try:
@@ -232,22 +267,34 @@ class Dimension(object):
     def allowed_values(self):
         """Return a list of allowed values."""
         if self._allowed_values is None:
-            self._allowed_values = self.scraper._fetch_allowed_values(self)
+            self._allowed_values = Valuelist()
+            for val in self.scraper._fetch_allowed_values(self):
+                if isinstance(val, DimensionValue):
+                    self._allowed_values.append(val)
+                else:
+                    self._allowed_values.append(DimensionValue(val,
+                                                               Dimension()))
         return self._allowed_values
 
 
 class DimensionValue(object):
     """The value for a dimension inside a Resultset."""
 
-    def __init__(self, value, dimension):
+    def __init__(self, value, dimension, label=None):
         """Value can be any type. dimension is a Dimension() object."""
-        self.value = value
+        self.id = value
         # FIXME make these getter methods
-        self.id = dimension.id
-        self.label = dimension.label
-        self.datatype = dimension.datatype
-        self.allowed_values = dimension.allowed_values
         self.dimension = dimension
+        self.label = label
+        self.datatype = dimension.id
+
+    @property
+    def value(self):
+        """Expose 'id' as 'value'.
+
+        While 'id' is in line with the overall architeture,
+        value is a more natural name for a, well, value."""
+        return self.id
 
     def __str__(self):
         if isinstance(self.value, str):
@@ -255,8 +302,8 @@ class DimensionValue(object):
         return self.value.encode("utf-8")
 
     def __repr__(self):
-        return u'<DimensionValue: %s (%s): %s>' %\
-            (self.id.encode("utf-8"), self.label.encode("utf-8"), str(self))
+        return '<DimensionValue: %s (%s)>' %\
+            (self.value, str(self.dimension))
 
 
 class Itemslist(list):
