@@ -248,6 +248,7 @@ class Dimension(object):
         if allowed_values:
             # If allowed values is given as a list of values, create
             # value objects using an empty dimension.
+            self._allowed_values = Valuelist()
             for val in allowed_values:
                 if isinstance(val, DimensionValue):
                     self._allowed_values.append(val)
