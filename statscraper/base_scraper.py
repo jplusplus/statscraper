@@ -171,7 +171,7 @@ class Dimensionslist(list):
         """Make it possible to get dimension by id or identity."""
         if isinstance(key, six.string_types):
             def f(x): return (x.id == key)
-        elif isinstance(key, Item):
+        elif isinstance(key, Dimension):
             def f(x): return (x is key)
         else:
             return list.__getitem__(self, key)
@@ -201,7 +201,7 @@ class Result(object):
     and optinlly a set of dimensions with values.
     """
 
-    dimensionvalues = Dimensionslist()
+    dimensionvalues = Valuelist()
 
     def __init__(self, value, dimensions={}):
         """Value is supposed, but not strictly required to be numerical."""
