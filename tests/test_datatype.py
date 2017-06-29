@@ -29,4 +29,7 @@ class TestDatatype(TestCase):
         dt = Datatype("region")
         val = dt.allowed_values[u"Växjö kommun"]
         self.assertTrue("wikidata" in val.dialects)
-        self.assertEqual(val.dialects["wikidata"][0], u"Q500217")
+        self.assertEqual(u"Q500217", val.dialects["wikidata"].pop())
+
+        self.assertTrue("scb" in val.dialects)
+        self.assertEqual(u"0780 Växjö kommun", val.dialects["scb"].pop())
