@@ -390,7 +390,7 @@ class Item(object):
 
     def _move_here(self):
         """Try to move the cursor here, if this item i visible."""
-        if self in self.parent.items:
+        if self.parent and self in self.parent.items:
             self.scraper.move_up()
 
         try:
@@ -615,13 +615,14 @@ class BaseScraper(object):
 
     def move_to(self, id_):
         """Select a child item by id (str), reference or index."""
-        try:
-            # Move cursor to new item, and reset the cached list of subitems
-            self.current_item = self.items[id_]
-        except (StopIteration, IndexError, NoSuchItem):
-            raise NoSuchItem
-        for f in self._hooks["select"]:
-            f(self)
+        if self.items:
+            try:
+                # Move cursor to new item, and reset the cached list of subitems
+                self.current_item = self.items[id_]
+            except (StopIteration, IndexError, NoSuchItem):
+                raise NoSuchItem
+            for f in self._hooks["select"]:
+                f(self)
         return self
 
     def _fetch_itemslist(self, item):
