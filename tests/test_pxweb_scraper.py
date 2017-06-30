@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from statscraper.scrapers.PXWebScraper import PXWeb
+from statscraper.scrapers import PXWeb
 
 
 class TestPXWeb(TestCase):
