@@ -443,7 +443,6 @@ class Collection(Item):
     def items(self):
         """Itemslist of children."""
         if self.scraper.current_item is not self:
-            print "Flyttar till", self
             self._move_here()
 
         if self._items is None:
@@ -462,6 +461,8 @@ class Collection(Item):
 
         collection["abc"] till return the item with id abc
         """
+        if self.scraper.current_item is not self:
+            self._move_here()
         try:
             return next(filter(lambda x: x.id == key, self.items))
         except IndexError:
