@@ -183,11 +183,15 @@ class TestBaseScraper(TestCase):
         """Use the NestedScraper to move more than one step,
         and make sure the cursor follows along as needed."""
         scraper = NestedScraper()
+
+        collection_2 = scraper.items["Collection_2"]
+        self.assertTrue(len(collection_2.items))
+
+        scraper.move_to_top()
         dataset_1 = scraper.items["Collection_1"].items["Dataset_1"]
         self.assertTrue(len(dataset_1.data))
 
-        scraper.move_to_top()
-        dataset_2 = scraper.items["Collection_2"].items["Dataset_2"]
+        dataset_2 = collection_2.items["Dataset_2"]
         self.assertTrue(len(dataset_2.data))
 
         self.assertTrue(len(dataset_1.data))
