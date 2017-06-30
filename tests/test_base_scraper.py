@@ -195,4 +195,3 @@ class TestBaseScraper(TestCase):
         self.assertTrue(len(dataset_2.data))
 
         self.assertTrue(len(dataset_1.data))
-
