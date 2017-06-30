@@ -145,9 +145,15 @@ class Valuelist(list):
     def __getitem__(self, key):
         """Make it possible to get value by id or value identity."""
         if isinstance(key, six.string_types):
-            def f(x): return (x.value == key)
+            if isinstance(key, unicode):
+                def f(x):
+                    return (x.value == key)
+            else:
+                def f(x):
+                    return (x.value == unicode(key, encoding="utf-8"))
         elif isinstance(key, DimensionValue):
-            def f(x): return (x is key)
+            def f(x):
+                return (x is key)
         else:
             return list.__getitem__(self, key)
         try:
