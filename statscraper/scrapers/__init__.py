@@ -5,3 +5,4 @@
 from SCBScraper import SCB
 from PXWebScraper import PXWeb
 from CranesScraper import Cranes
+from SCBScraper import SCB
