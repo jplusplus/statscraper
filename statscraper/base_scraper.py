@@ -384,14 +384,27 @@ class Item(object):
         return self.id.encode("utf-8")
 
     def _move_here(self):
-        """Try to move the cursor here, if this item i visible."""
+        """Move the cursor to this item."""
+        cu = self.scraper.current_item
+        # Already here?
+        if self is cu:
+            return
+        # A child?
+        if self in cu.items:
+            self.scraper.move_to(self)
+            return
+        # A parent?
+        if self is cu.parent:
+            self.scraper.move_up()
+        # A sibling?
         if self.parent and self in self.parent.items:
             self.scraper.move_up()
-
-        try:
-            self.scraper.move_to(self.id)
-        except NoSuchItem:
-            raise DatasetNotInView()
+            self.scraper.move_to(self)
+            return
+        # Last resort: Move to top and all the way down again
+        self.scraper.move_to_top()
+        for step in self.path:
+            self.scraper.move_to(step)
 
     @property
     def path(self):
@@ -430,6 +443,7 @@ class Collection(Item):
     def items(self):
         """Itemslist of children."""
         if self.scraper.current_item is not self:
+            print "Flyttar till", self
             self._move_here()
 
         if self._items is None:
