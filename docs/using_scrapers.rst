@@ -4,184 +4,106 @@ Using scrapers
 
 .. NOTE::
 
-   This documentation refers to version 0.0.1. As of 0.0.2, the interface has changed considerably.
+   This documentation refers to version 1.0.0.dev1, a development version.
+   There might be changes to the scraper interface before 1.0.0 is released.
+
+Every scraper built on Statscraper shares the same interface towards the user. Here's sample code using one of the included scrapers, to fetch the number of cranes spotted at Hornborgarsjön each day:
+
+.. code:: python
+
+  >>> from statscraper.scrapers import Cranes
+
+  >>> scraper = Cranes()
+  >>> scraper.items  # List available datasets
+  [<Dataset: Number of cranes>]
+
+  >>> dataset = scraper.items["Number of cranes"]
+  >>> dataset.dimensions
+  [<Dimension: date (date)>]
+
+  >>> dataset.data[0]  # first row in this dataset
+  {'date': '2010-07-23', 'value': '15'}
+
+  >>> df = dataset.data.pandas  # get this dataset as a Pandas dataframe
 
 
 Exploring sites
 ---------------
-The primary methods of navigating a site is `list` and `get`. The former lists all available topics or data sets at the current level, whereas the latter selects a level or a dataset.
+Scrapers act like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
 
-Some sites are simple, consisting of a basic list of datasets.
+:: 
 
-.. code::
+        ┏━ Collection ━━━ Collection ━┳━ Dataset
+  ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
+        ┗━ Collection  ┣━ Dataset     ┗━ Dataset
+                       ┗━ Dataset
 
-    >>> import AMS
+  ╰─────────────────────────┬───────────────────────╯
+                       items
 
-    >>> scraper = AMS()
-    >>> scraper.list()
-    [<Dataset: 'unemployment'>, <Dataset: 'youth-unemployment'>]
+The cursor is moved around the item tree as needed when you access properties or data, but you can also move manually around the items, if you want to be in full control. Some scrapers, e.g. those that need to fill out and post forms, or handle session data, might require that you move the cursor around manually. For most simple scrapers, e.g. those accessing an API, this should not be necessary.
 
-Others have a more complex hierarchical layout. The scraper provides a cursor-like functionality for navigating the site.
-
-.. code::
-
-    >>> import SCB
-
-    >>> scraper = SCB()
-    >>> scraper.list()
-    [<Topic: 'Labor market'>, <Topic: 'Population'>]
-
-    >>> topic = scraper.get('Labor market')
-    >>> topic.list()
-    [<Topic: 'AKU'>, <Topic: 'Labour cost index'> ...]
-
-Alternatively, chain the method calls:
-
-    >>> scraper.get('Labor market').get('AKU')
-
-
-Exploring data sets
--------------------
-
-Once a data set is selected, the actual data is downloaded using the `fetch` method. This returns a `resultset`.
-
-    >>> unemployment = scraper.get('unemployment')
-    >>> unemployment.fetch()
-    <Resultset: 'unemployment'>
-
-Some data sets represents search interfaces, whereas others are simply tables without configuration settings. Queryable data sets take parameters:
+Moving the cursor manually:
 
 .. code:: python
 
-    >>> resultset = unemployment.fetch({
-    ...     'municipality': 'Huddinge kommun',
-    ...     'period': '2016-12', 
-    ... })
+    >>> from statscraper.scrapers import PXWeb
 
-    >>> resultset = unemployment.fetch({
-    ...    'municipality': ['Stockholms kommun', 'Solna kommun' ],
-    ...    'period': ['2016-01', '2016-02', '2016-03'], 
-    ... })
+    >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
+    >>> scraper.move_to("Befolkning")\
+    ...        .move_to(u"Födda")\
+    ...        .move_to(u"Befolkningsförändringar efter område 1980 - 2016")
+    >>> scraper.current_item
+    <Dataset: Befolkningsförändringar efter område 1980 - 2016>
+    >>> data_1 = scraper.fetch()
 
-When querying a data set you should not have to worry about the naming convention of the given site. You can use a standarized one defined in our ontology, or one that you are comfortable with. 
+    >>> scraper.move_up()
+    >>> scraper.current_item
+    <Collection: Födda>
+    >>> scraper.current_item.items
+    [<Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>, ...]
 
-Make a query with the standarized ontology:
- 
-    >>> resultset = unemployment.get({
-    ...    'municipality': ['Stockholms kommun' ],
-    ... }, dialect="default")
+    >>> scraper.move_to(0)  # Moving by index works too
+    >>> scraper.current_item
+    <Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>
+    >>> scraper.current_item.items
+    None
+    >>> scraper.current_item.parent
+    <Collection: Födda>
+    >>> data_2 = scraper.fetch()
 
-Or a specific one:
-
-    >>> resultset = unemployment.get({
-    ...     'municipality': ['Stockholm' ],
-    ... }, dialect="Kolada")
-
-TODO: Describe these snippets.
-
-Get by id
-
-    >>> unemployment = scraper.get('unemployment')
-    >>> unemployment.label
-    u'Arbetslöshet'
-
-Get by label
-
-    >>> unemployment = scraper.get(u'Arbetslöshet')
-    >>> unemployment.label
-    u'Arbetslöshet'
-
-    >>> unemployment.dimensions
-    [<Dimension: 'gender'>, <Dimension: 'municipality'>, <Dimension: 'period'>]
-
-    >>> gender = unemployment.dimension('gender')
-    >>> gender.allowed_values
-    ['all', 'male', 'female']
-    
-    >>> gender.default
-    'all'
-    
-    >>> gender.label
-    'Kön'
-
-    >>> men = gender.category('male')
-    >>> men.label
-    u'Män'
-
-    >>> unemployment.id
-    u'male'
+    >>> scraper.move_to_top()
+    >>> scraper.current_item
+    <Collection: <root>>
 
 
-Exploring the actual data
--------------------------
-
-Resultsets have a `describe` method which provides some basic information about the data. These properties are also available as attributes of the resultset.
+The above example could also be written like this:
 
 .. code:: python
 
-    >>> resultset.describe()
-    {
-        'shape': (8350, 14),
-        'dimensions': ['gender', 'municipality', 'period', 'measure']
-    }
+    >>> from statscraper.scrapers import PXWeb
 
-    >>> resultset.shape
-    (8350, 14)
+    >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
 
+    >>> collection = scraper.items["Befolkning"].items[u"Födda"]
+    >>> collection
+    <Collection: Födda>
+    >>> collection.items
+    [<Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>, ...]
 
-You can explore a resultset with the same methods that you explore a dataset (eg `.dimensions`, `.dimension("region")` etc.) 
-
-.. code:: python
-
-    >>> resultset.dimensions
-    ['gender', 'municipality', 'period']
-
-    >>> regions = resultset.dimension("municipality")
-    >>> regions.categories
-    ['Huddinge kommun']
-
-    >>> regions.note
-    u'Hebys gränser förändrades 2007'
-
-    >>> huddinge = regions.category("Huddinge kommun")
-    >>> huddinge.id
-    'Huddinge kommun'
-    
-    >>> huddinge.label
-    'Huddinge kommun'
+    >>> data_1 = collection.items[u"Befolkningsförändringar efter område 1980 - 2016"].data
+    >>> data_2 = collection.items[0].data  # Selecting the first dataset in this collection
 
 
-Exporting data
---------------
+Exploring datasets
+------------------
 
-A resultset can be exported to a number of formats.
 
-.. code:: python
+Querying datasets (fething data)
+--------------------------------
 
-    resultset.to_dataframe()
-    resultset.to_dictlist()
 
-    resultset.to_csv('my_data.csv')
-    resultset.to_xlsx('my_data.xlsx')
-    resultset.to_jsonstat('my_jsonstat.json')
-
-The resultset can be converted to either id's or labels.
-
-.. code:: python
-    
-    # Export with id's as content
-    resultset.to_dataframe(content='index')
-
-    # Export with labels as content
-    resultset.to_dataframe(content='label')
-
-Or translated to a specfic dialect using our ontology.
-
-.. code:: python
-
-    resultset.to_dataframe(dialect='default')    
-    resultset.to_dataframe(dialect='SCB')    
-    resultset.to_dataframe(dialect='Kolada')    
-
+Dialects
+--------
 
 
