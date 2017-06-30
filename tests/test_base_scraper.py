@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from statscraper import (BaseScraper, Dataset, Dimension, Result,
-                         ROOT, NoSuchItem)
+                         Collection, ROOT, NoSuchItem)
 
 
 class Scraper(BaseScraper):
@@ -33,6 +33,26 @@ class Scraper(BaseScraper):
                 "date": "2017-02-07",
                 "municipality": "Robertsfors",
             })
+
+
+class NestedScraper(Scraper):
+    """A scraper with hardcoded yields.
+
+    ROOT - Collection_1 - Dataset_1
+         - Collection_2 - [Dataset_2, Dataset_3]
+    """
+
+    def _fetch_itemslist(self, item):
+        if item.id == ROOT:
+            yield Collection("Collection_1")
+            yield Collection("Collection_2")
+        elif item.id == "Collection_1":
+            yield Dataset("Dataset_1")
+        elif item.id == "Collection_2":
+            yield Dataset("Dataset_2")
+            yield Dataset("Dataset_3")
+        else:
+            raise Exception("This can not possibly happen.")
 
 
 class TestBaseScraper(TestCase):
@@ -141,3 +161,34 @@ class TestBaseScraper(TestCase):
 
         allowed_value = municipality.allowed_values["Robertsfors"]
         self.assertEqual(str(allowed_value), "Robertsfors")
+
+    def test_move_deep_manually(self):
+        """Use the NestedScraper to move more than one step"""
+        scraper = NestedScraper()
+        scraper.move_to("Collection_1")
+        self.assertTrue("Dataset_1" in scraper.items)
+
+        scraper.move_to("Dataset_1")
+        self.assertEqual("Dataset_1", str(scraper.current_item))
+        self.assertTrue(len(scraper.current_item.data))
+
+        scraper.move_to_top().move_to("Collection_2")
+        self.assertTrue("Dataset_2" in scraper.items)
+        self.assertTrue("Dataset_3" in scraper.items)
+
+        scraper.move_up().move_to("Collection_1")
+        self.assertTrue("Dataset_1" in scraper.items)
+
+    def test_move_deep_automatically(self):
+        """Use the NestedScraper to move more than one step,
+        and make sure the cursor follows along as needed."""
+        scraper = NestedScraper()
+        dataset_1 = scraper.items["Collection_1"].items["Dataset_1"]
+        self.assertTrue(len(dataset_1.data))
+
+        scraper.move_to_top()
+        dataset_2 = scraper.items["Collection_2"].items["Dataset_2"]
+        self.assertTrue(len(dataset_2.data))
+
+        self.assertTrue(len(dataset_1.data))
+
