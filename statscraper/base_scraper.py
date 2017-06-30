@@ -31,7 +31,7 @@ from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
-from copy import copy
+from copy import copy, deepcopy
 from .datatypes import Datatype
 
 try:
@@ -100,10 +100,10 @@ class ResultSet(list):
 
         for result in new_resultset:
             for dimensionvalue in result.dimensionvalues:
-                print dimensionvalue
-                if dimensionvalue.datatype is not None:
-                    # TODO
-                    print("dimension %s has datatype: %s" % (dimensionvalue, dimensionvalue.datatype))
+                if dimensionvalue.dimension.datatype is not None:
+                    translations = dimensionvalue.dimension.datatype.allowed_values[dimensionvalue.value]
+                    translation = (", ").join(translations.dialects[dialect])
+                    dimensionvalue.value = translation
         return new_resultset
 
     def append(self, val):
