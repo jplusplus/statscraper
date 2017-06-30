@@ -38,7 +38,7 @@ Here's a simple example, with a scraper that returns only a single dataset:
 
   # encoding: utf-8
   """ Get the number of cranes at Hornborgarsjön """
-  from statscraper.scrapers.CranesScraper import Cranes
+  from statscraper.scrapers import Cranes
 
   scraper = Cranes()
   print scraper.items  # List available datasets
