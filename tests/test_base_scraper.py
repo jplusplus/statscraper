@@ -1,6 +1,5 @@
 # encoding:utf-8
 from unittest import TestCase
-
 from statscraper import (BaseScraper, Dataset, Dimension, Result,
                          Collection, ROOT, NoSuchItem)
 
@@ -15,7 +14,8 @@ class Scraper(BaseScraper):
 
     def _fetch_dimensions(self, dataset):
         yield Dimension(u"date")
-        yield Dimension(u"municipality", datatype="region")
+        yield Dimension(u"municipality",
+                        allowed_values=["Robertsfors kommun", "Umeå kommun"])
 
     def _fetch_data(self, dataset, query=None):
         if dataset.id == "Dataset_1":
