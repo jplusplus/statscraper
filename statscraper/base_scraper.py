@@ -97,6 +97,7 @@ class ResultSet(list):
         """Return a copy of this ResultSet in a different dialect."""
         new_resultset = copy(self)
         new_resultset.dialect = dialect
+        print "HEJ"
 
         for result in new_resultset:
             for dimensionvalue in result.dimensionvalues:
@@ -390,7 +391,7 @@ class Item(object):
         if self is cu:
             return
         # A child?
-        if self in cu.items:
+        if cu.items and self in cu.items:
             self.scraper.move_to(self)
             return
         # A parent?
