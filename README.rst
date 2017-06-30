@@ -115,6 +115,7 @@ Changelog
 
 - 1.0.0.dev1
   - Semantic versioning starts here
+  - Implement datatypes and dialects
 
 - 0.0.2
     
