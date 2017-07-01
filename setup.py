@@ -1,8 +1,6 @@
 # encoding: utf-8
 from setuptools import setup
-
-
-version = "1.0.0.dev2"
+from version import version, name, authors, email, short_desc
 
 
 def readme():
@@ -12,15 +10,13 @@ def readme():
 
 
 setup(
-    name="statscraper",
+    name=name,
     version=version,
-    description="""\
-A base class for building web scrapers for statistical data.\
-""",
+    description=short_desc,
     long_description=readme(),
     url="https://github.com/jplusplus/statscraper",
-    author="Leo Wallentin and Jens Finnäs, J++ Stockholm; Robin Lindeborg",
-    author_email="stockholm@jplusplus.org",
+    author=authors,
+    author_email=email,
     license="MIT",
     packages=["statscraper"],
     zip_safe=False,
