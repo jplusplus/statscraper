@@ -94,14 +94,68 @@ The above example could also be written like this:
     >>> data_1 = collection.items[u"Befolkningsförändringar efter område 1980 - 2016"].data
     >>> data_2 = collection.items[0].data  # Selecting the first dataset in this collection
 
+If you want to loop throuh every available dataset a scraper can offer, there is a `Scraper.descendants` property that will recursively move to every item in the tree. Here is an example, that will find all datasets in the SCB API that has monthly data:
+
+.. code:: python
+
+    >>> from statscraper.scrapers import SCB
+
+    >>> scraper = SCB()
+    >>> for dataset in scraper.descendants:
+    >>>     if dataset.dimensions["Tid"].label == u"månad":
+    >>>         print "Ahoy! Dataset %s has monthly data!" % dataset
 
 Exploring datasets
 ------------------
 
+Much like itemslists (Colleciton.items), datasets are only fetched when you are inspecting or interacting with them. 
 
-Querying datasets (fething data)
---------------------------------
+The actual data is stored in a property called data:
 
+.. code:: python
+
+    >>> from statscraper.scrapers import Cranes
+
+    >>> scraper = Cranes()
+    >>> dataset = scraper.items[0]
+    >>> for row in dataset.data:
+    >>>     print "%s cranes were spotted on %s" % (row.value, row["date"])
+
+The data property will hold a list of result objects. The list can be converted to a few other formats, e.g. a pandas dataframe:
+
+.. code:: python
+
+    >>> from statscraper.scrapers import Cranes
+
+    >>> scraper = Cranes()
+    >>> dataset = scraper.items[0]
+    >>> df = dataset.data.pandas  # convert to pandas dataframe
+
+If you want to querry a site or database for some subset of the available data, you can use the `fetch()` method on the dataset (or on the scraper, to fetch data from the current position, if any):
+
+.. code:: python
+
+    >>> dataset = scraper.items[0]
+    >>> data = dataset.fetch(query={'year': "2017"})
+
+or
+
+.. code:: python
+
+    >>> scraper.move_to(0)
+    >>> data = scraper.fetch(query={'year': "2017"})
+
+Available dimensions can be inspected though the .dimensions property:
+
+.. code:: python
+
+    >>> print dataset.dimensions
+    [<Dimension: date (date)>, <Dimension: year (year)>]
+
+
+Note however that a scraper does not necessarily need to provide (or might not have any information on) dimensions. If `Dataset.dimensions` is None, it could simply mean that the scraper does not know what to expect from the data.
+
+A dimension object contains things like description, value type, allowed values, etc. 
 
 Dialects
 --------
