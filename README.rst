@@ -113,6 +113,9 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
+- 1.0.0.dev2
+  - 
+
 - 1.0.0.dev1
   - Semantic versioning starts here
   - Implement datatypes and dialects
