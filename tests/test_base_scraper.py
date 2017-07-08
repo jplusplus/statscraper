@@ -1,7 +1,7 @@
 # encoding:utf-8
 from unittest import TestCase
 from statscraper import (BaseScraper, Dataset, Dimension, Result,
-                         Collection, ROOT, NoSuchItem)
+                         DimensionValue, Collection, ROOT, NoSuchItem)
 
 
 class Scraper(BaseScraper):
@@ -15,7 +15,15 @@ class Scraper(BaseScraper):
     def _fetch_dimensions(self, dataset):
         yield Dimension(u"date")
         yield Dimension(u"municipality",
-                        allowed_values=["Robertsfors kommun", "Umeå kommun"])
+                        allowed_values=[
+                        "Robertsfors kommun",
+                        "Umeå kommun"])
+        yield Dimension("gender")
+
+    def _fetch_allowed_values(self, dimension):
+        # TODO?: The required argument 'dimension' feels redundant here
+        yield DimensionValue("male", dimension, label="Men")
+        yield DimensionValue("female", dimension, label="Women")
 
     def _fetch_data(self, dataset, query=None):
         if dataset.id == "Dataset_1":
@@ -160,6 +168,26 @@ class TestBaseScraper(TestCase):
 
         allowed_value = municipality.allowed_values["Robertsfors kommun"]
         self.assertEqual(str(allowed_value), "Robertsfors kommun")
+
+        # We also want to be able to fetch allowed values by label
+        allowed_value_by_label = municipality.allowed_values.get_by_label("Robertsfors kommun")
+        self.assertEqual(allowed_value, allowed_value_by_label)
+
+        gender = dataset.dimensions["gender"]
+        self.assertEqual(len(gender.allowed_values), 2)
+
+        # Get an allowed value by key
+        female = gender.allowed_values["female"]
+
+        # Get an allowed value by label
+        female_by_label = gender.allowed_values.get_by_label("Women")
+
+        # The two methods above should fetch the same item
+        self.assertEqual(female, female_by_label)
+
+        # The id property should refer to the allowed value, right?
+        self.assertEqual(female.id, "female")
+        self.assertEqual(female.label, "Women")
 
     def test_move_deep_manually(self):
         """Use the NestedScraper to move more than one step"""
