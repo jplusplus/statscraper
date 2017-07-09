@@ -11,7 +11,7 @@ u"""
                       ┗━ Dataset
 
  ╰───────────────────────┬─────────────────────╯
-                       items
+                     items
 
  A scraper can override three methods:
   * _fetch_itemslist(item) yields items at the current position
@@ -65,6 +65,18 @@ class InvalidData(Exception):
     """The scraper encountered some invalid data."""
 
     pass
+
+
+class BaseScraperList(list):
+    """ Lists of dimensions, values, etc all inherit this class
+    for some common convenience methods, such as get_by_label()
+    """
+
+    def get_by_label(self, label):
+        """ Return the first item with a specific label,
+        or None.
+        """
+        return next((x for x in self if x.label == label), None)
 
 
 class ResultSet(list):
@@ -136,7 +148,7 @@ class ResultSet(list):
         super(ResultSet, self).append(val)
 
 
-class Valuelist(list):
+class Valuelist(BaseScraperList):
     """A list of dimension values.
 
     allowed_values uses this class, to allow checking membership.
@@ -171,7 +183,7 @@ class Valuelist(list):
             return super(Itemslist, self).__contains__(item)
 
 
-class Dimensionslist(list):
+class Dimensionslist(BaseScraperList):
     """A one dimensional list of dimensions."""
 
     def __getitem__(self, key):
@@ -205,7 +217,7 @@ class Result(object):
     u"""A “row” in a result.
 
     A result contains a numerical value,
-    and optinlly a set of dimensions with values.
+    and optionlly a set of dimensions with values.
     """
 
     dimensionvalues = Dimensionslist()
@@ -308,7 +320,7 @@ class DimensionValue(object):
             (self.value, str(self.dimension))
 
 
-class Itemslist(list):
+class Itemslist(BaseScraperList):
     """A one dimensional list of items.
 
     Has some conventience getters and setters for scrapers
