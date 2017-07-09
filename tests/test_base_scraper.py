@@ -17,7 +17,7 @@ class Scraper(BaseScraper):
 
         # Assign a label to one of the allowed values
         mun = Dimension(u"municipality", allowed_values=[
-            "Umeå kommun",
+            u"Umeå kommun",
             "Robertsfors kommun"])
         mun.allowed_values["Robertsfors kommun"].label = "Robertsfors kommun"
         yield mun
@@ -38,7 +38,7 @@ class Scraper(BaseScraper):
         elif dataset.id == "Dataset_2":
             yield Result(12, {
                 "date": "2017-02-06",
-                "municipality": "Umeå kommun",
+                "municipality": u"Umeå kommun",
             })
             yield Result(130, {
                 "date": "2017-02-07",
@@ -147,7 +147,7 @@ class TestBaseScraper(TestCase):
         scraper = Scraper()
         data_1 = scraper.items["Dataset_1"].data
         scraper.move_up().move_to("Dataset_2")
-        self.assertEqual(str(data_1[0]["municipality"]), "Robertsfors kommun")
+        self.assertEqual(str(data_1[0]["municipality"]), u"Robertsfors kommun")
 
     def test_get_dimension(self):
         """Get dimensions for a dataset."""
@@ -188,8 +188,7 @@ class TestBaseScraper(TestCase):
 
         # The two methods above should fetch the same item
         self.assertEqual(female, female_by_label)
-
-        # The id property should refer to the allowed value, right?
+        self.assertEqual(female.id, "gender")
         self.assertEqual(female.value, "female")
         self.assertEqual(female.label, "Women")
 
