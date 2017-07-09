@@ -72,6 +72,8 @@ class BaseScraperList(list):
     for some common convenience methods, such as get_by_label()
     """
 
+    _CONTAINS = object
+
     def get(self, key):
         """Provide alias for bracket notation."""
         return self[key]
@@ -81,6 +83,27 @@ class BaseScraperList(list):
         or None.
         """
         return next((x for x in self if x.label == label), None)
+
+    def __getitem__(self, key):
+        """ Make it possible to get item by id or value identity."""
+        if isinstance(key, six.string_types):
+            if isinstance(key, unicode):
+                def f(x):
+                    return (x.id == key)
+            else:
+                def f(x):
+                    return (x.id == unicode(key, encoding="utf-8"))
+        elif isinstance(key, self._CONTAINS):
+            def f(x):
+                return (x is key)
+        else:
+            return list.__getitem__(self, key)
+
+        try:
+            return next(filter(f, self))
+        except IndexError:
+            # No such item
+            raise NoSuchItem("No such %s" % self._CONTAINS)
 
     def __contains__(self, item):
         """ Make the 'in' keyword check for id """
@@ -159,58 +182,10 @@ class ResultSet(list):
         super(ResultSet, self).append(val)
 
 
-class Valuelist(BaseScraperList):
-    """A list of dimension values.
-
-    allowed_values uses this class, to allow checking membership.
-    """
-
-    def __getitem__(self, key):
-        """Make it possible to get value by value or value identity."""
-        if isinstance(key, six.string_types):
-            if isinstance(key, unicode):
-                def f(x):
-                    return (x.value == key)
-            else:
-                def f(x):
-                    return (x.value == unicode(key, encoding="utf-8"))
-        elif isinstance(key, DimensionValue):
-            def f(x):
-                return (x is key)
-        else:
-            return list.__getitem__(self, key)
-        try:
-            val = next(filter(f, self))
-            return val
-        except IndexError:
-            # No such id
-            raise NoSuchItem("No such value")
-
-    def __contains__(self, item):
-        """ in should look for value, not id. """
-        if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.value == item, self))))
-        else:
-            return super(Valuelist, self).__contains__(item)
-
-
 class Dimensionslist(BaseScraperList):
     """A one dimensional list of dimensions."""
 
-    def __getitem__(self, key):
-        """Make it possible to get dimension by id or identity."""
-        if isinstance(key, six.string_types):
-            def f(x): return (x.id == key)
-        elif isinstance(key, Dimension):
-            def f(x): return (x is key)
-        else:
-            return list.__getitem__(self, key)
-        try:
-            val = next(filter(f, self))
-            return val
-        except IndexError:
-            # No such id
-            raise NoSuchItem("No such dimension")
+    pass
 
 
 class Result(object):
@@ -274,7 +249,9 @@ class Dimension(object):
                 if isinstance(val, DimensionValue):
                     self._allowed_values.append(val)
                 else:
-                    self._allowed_values.append(DimensionValue(val, Dimension()))
+                    self._allowed_values.append(DimensionValue(val,
+                                                               Dimension())
+                                                )
 
     def __str__(self):
         try:
@@ -320,6 +297,41 @@ class DimensionValue(object):
             (self.value, str(self.dimension))
 
 
+class Valuelist(BaseScraperList):
+    """A list of dimension values.
+
+    allowed_values uses this class, to allow checking membership.
+    """
+
+    def __getitem__(self, key):
+        """Make it possible to get value by value or value identity."""
+        if isinstance(key, six.string_types):
+            if isinstance(key, unicode):
+                def f(x):
+                    return (x.value == key)
+            else:
+                def f(x):
+                    return (x.value == unicode(key, encoding="utf-8"))
+        elif isinstance(key, DimensionValue):
+            def f(x):
+                return (x is key)
+        else:
+            return list.__getitem__(self, key)
+        try:
+            val = next(filter(f, self))
+            return val
+        except IndexError:
+            # No such id
+            raise NoSuchItem("No such value")
+
+    def __contains__(self, item):
+        """ in should look for value, not id. """
+        if isinstance(item, six.string_types):
+            return bool(len(list(filter(lambda x: x.value == item, self))))
+        else:
+            return super(Valuelist, self).__contains__(item)
+
+
 class Itemslist(BaseScraperList):
     """A one dimensional list of items.
 
@@ -333,27 +345,6 @@ class Itemslist(BaseScraperList):
             return self[0].type
         except IndexError:
             return None
-
-    def __getitem__(self, key):
-        """Make it possible to get item by id, identity or index.
-
-        All of these will work:
-         scraper.items[0]
-         scraper.items["dataset_1"]
-         scraper.items[dataset]
-        """
-        if isinstance(key, six.string_types):
-            def f(x): return (x.id == key)
-        elif isinstance(key, Item):
-            def f(x): return (x is key)
-        else:
-            return list.__getitem__(self, key)
-        try:
-            val = next(filter(f, self))
-            return val
-        except IndexError:
-            # No such id
-            raise NoSuchItem("No such item in Itemslist")
 
     def empty(self):
         """Empty this list (delete all contents)."""
@@ -692,3 +683,10 @@ class BaseScraper(object):
         warn("Deprecated. Use Scraper.descendants.", DeprecationWarning)
         for descendant in self.descendants:
             yield descendant
+
+
+# Solve any circular dependencies here:
+
+Dimensionslist._CONTAINS = Dimension
+Valuelist._CONTAINS = DimensionValue
+Itemslist._CONTAINS = Item
