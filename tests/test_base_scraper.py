@@ -14,16 +14,20 @@ class Scraper(BaseScraper):
 
     def _fetch_dimensions(self, dataset):
         yield Dimension(u"date")
-        yield Dimension(u"municipality",
-                        allowed_values=[
-                        "Robertsfors kommun",
-                        "Umeå kommun"])
+
+        # Assign a label to one of the allowed values
+        mun = Dimension(u"municipality", allowed_values=[
+            "Umeå kommun",
+            "Robertsfors kommun"])
+        mun.allowed_values["Robertsfors kommun"].label = "Robertsfors kommun"
+        yield mun
+
         yield Dimension("gender")
 
     def _fetch_allowed_values(self, dimension):
-        # TODO?: The required argument 'dimension' feels redundant here
-        yield DimensionValue("male", dimension, label="Men")
-        yield DimensionValue("female", dimension, label="Women")
+        if dimension.id == "gender":
+            yield DimensionValue("male", dimension, label="Men")
+            yield DimensionValue("female", dimension, label="Women")
 
     def _fetch_data(self, dataset, query=None):
         if dataset.id == "Dataset_1":
