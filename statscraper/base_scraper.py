@@ -31,7 +31,7 @@ from hashlib import md5
 from json import dumps
 import pandas as pd
 from collections import deque
-from copy import copy, deepcopy
+from copy import copy
 from .datatypes import Datatype
 
 try:
