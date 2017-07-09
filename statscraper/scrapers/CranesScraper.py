@@ -20,7 +20,7 @@ class Cranes(BaseScraper):
          but nice, especially if they differ from dataset to dataset.
         """
         yield Dimension(u"date")
-        yield Dimension(u"month", datatype="month", dialect="numerical")
+        yield Dimension(u"month", datatype="month", dialect="swedish")
         yield Dimension(u"year", datatype="year")
 
     def _fetch_data(self, dataset, query=None):
