@@ -103,10 +103,13 @@ class BaseScraperObject(object):
             return super(BaseScraperObject, self) == other
 
     def __str__(self):
-        try:
-            return self.value.encode("utf-8")
-        except (UnicodeEncodeError, UnicodeDecodeError):
-            return self.value
+        if isinstance(self.value, six.string_types):
+            try:
+                return self.value.encode("utf-8")
+            except (UnicodeEncodeError, UnicodeDecodeError):
+                return self.value
+        else:
+            return str(self.value)
 
     def __repr__(self):
         return '<%s: %s>' % (type(self).__name__, str(self))
@@ -213,16 +216,17 @@ class ResultSet(list):
         # Check result dimensions against available dimensions for this dataset
         if val.dataset:
             dataset_dimensions = self.dataset.dimensions
+            print "Appending %s" % val
             for k, v in val.raw_dimensions.items():
                 if isinstance(v, DimensionValue):
+                    print "Dialekt för %s: %s" % (v.id, v.dialect)
                     val.dimensionvalues.append(v)
-                    print v.dialect
                 else:
                     if k in self.dataset.dimensions:
                         dim = DimensionValue(v, dataset_dimensions[k])
                     else:
                         dim = DimensionValue(v, Dimension())
-                val.dimensionvalues.append(dim)
+                    val.dimensionvalues.append(dim)
 
         super(ResultSet, self).append(val)
 
