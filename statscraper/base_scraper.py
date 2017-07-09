@@ -105,7 +105,7 @@ class BaseScraperObject(object):
     def __str__(self):
         try:
             return self.value.encode("utf-8")
-        except UnicodeEncodeError:
+        except (UnicodeEncodeError, UnicodeDecodeError):
             return self.value
 
     def __repr__(self):
@@ -211,12 +211,12 @@ class ResultSet(list):
         val.dataset = self.dataset
 
         # Check result dimensions against available dimensions for this dataset
-        # for validation and translation
         if val.dataset:
             dataset_dimensions = self.dataset.dimensions
             for k, v in val.raw_dimensions.items():
                 if isinstance(v, DimensionValue):
                     val.dimensionvalues.append(v)
+                    print v.dialect
                 else:
                     if k in self.dataset.dimensions:
                         dim = DimensionValue(v, dataset_dimensions[k])
@@ -262,7 +262,9 @@ class Result(BaseScraperObject):
 class Dimension(BaseScraperObject):
     """A dimension in a dataset."""
 
-    def __init__(self, id_=None, label=None, allowed_values=None, datatype=None):
+    def __init__(self, id_=None, label=None,
+                 allowed_values=None, datatype=None,
+                 dialect=None):
         """A single dimension.
 
         If allowed_values are specified, they will override any
@@ -280,7 +282,10 @@ class Dimension(BaseScraperObject):
         if datatype:
             self.datatype = Datatype(datatype)
             self._allowed_values = self.datatype.allowed_values
+        self.dialect = dialect
         if allowed_values:
+            # Override allowed values from datatype, if any
+            #
             # If allowed values is given as a list of values, create
             # value objects using an empty dimension.
             self._allowed_values = Valuelist()
