@@ -133,21 +133,21 @@ class TestBaseScraper(TestCase):
         """Query a dataset for some data."""
         scraper = Scraper()
         dataset = scraper.items[0]
-        self.assertEqual(str(dataset.data[0]["municipality"]), "Robertsfors kommun")
+        self.assertEqual(dataset.data[0]["municipality"], "Robertsfors kommun")
 
     def test_unselected_visible_dataset(self):
         """Query a dataset not selected, but visible."""
         scraper = Scraper()
         dataset = scraper.items["Dataset_1"]
         scraper.move_to("Dataset_2")
-        self.assertEqual(str(dataset.data[0]["municipality"]), "Robertsfors kommun")
+        self.assertEqual(dataset.data[0]["municipality"], "Robertsfors kommun")
 
     def test_cached_data(self):
         """Query a dataset not selected but cached."""
         scraper = Scraper()
         data_1 = scraper.items["Dataset_1"].data
         scraper.move_up().move_to("Dataset_2")
-        self.assertEqual(str(data_1[0]["municipality"]), u"Robertsfors kommun")
+        self.assertEqual(data_1[0]["municipality"], u"Robertsfors kommun")
 
     def test_get_dimension(self):
         """Get dimensions for a dataset."""
@@ -171,7 +171,7 @@ class TestBaseScraper(TestCase):
         self.assertTrue("Robertsfors kommun" in municipality.allowed_values)
 
         allowed_value = municipality.allowed_values["Robertsfors kommun"]
-        self.assertEqual(str(allowed_value), "Robertsfors kommun")
+        self.assertEqual(allowed_value, "Robertsfors kommun")
 
         # We also want to be able to fetch allowed values by label
         allowed_value_by_label = municipality.allowed_values.get_by_label("Robertsfors kommun")
@@ -199,7 +199,7 @@ class TestBaseScraper(TestCase):
         self.assertTrue("Dataset_1" in scraper.items)
 
         scraper.move_to("Dataset_1")
-        self.assertEqual("Dataset_1", str(scraper.current_item))
+        self.assertEqual("Dataset_1", scraper.current_item)
         self.assertTrue(len(scraper.current_item.data))
 
         scraper.move_to_top().move_to("Collection_2")
