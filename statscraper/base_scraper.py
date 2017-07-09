@@ -209,24 +209,40 @@ class ResultSet(list):
 
         As the scraper author yields result objects, we append them to
         a resultset.
+
+        This is also where we normalize dialects.
         """
         val.resultset = self
         val.dataset = self.dataset
 
+        # TODO: Clean up this mess
         # Check result dimensions against available dimensions for this dataset
         if val.dataset:
             dataset_dimensions = self.dataset.dimensions
-            print "Appending %s" % val
             for k, v in val.raw_dimensions.items():
+                d = dataset_dimensions[k]
+
+                # Normalize if we have a datatype and a foreign dialect
+                if d.dialect and d.datatype:
+                    if d.dialect in d.datatype.dialects:
+                        for av in d.allowed_values:
+                            if v in av.dialects[d.dialect]:
+                                v = av.value
+                                # Use first match
+                                # We do not support multiple values
+                                # This is by design.
+                                break
+
+                # Create DimensionValue object
                 if isinstance(v, DimensionValue):
-                    print "Dialekt för %s: %s" % (v.id, v.dialect)
-                    val.dimensionvalues.append(v)
+                    dim = v
                 else:
-                    if k in self.dataset.dimensions:
-                        dim = DimensionValue(v, dataset_dimensions[k])
+                    if k in dataset_dimensions:
+                        dim = DimensionValue(v, d)
                     else:
                         dim = DimensionValue(v, Dimension())
-                    val.dimensionvalues.append(dim)
+
+                val.dimensionvalues.append(dim)
 
         super(ResultSet, self).append(val)
 

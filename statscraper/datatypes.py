@@ -45,6 +45,7 @@ class Datatype(object):
                     dialect_names = [x
                                      for x in reader.fieldnames
                                      if x.startswith("dialect:")]
+                    self.dialects = [d[8:] for d in dialect_names]
                     for row in reader:
                         value = base_scraper.DimensionValue(row["id"],
                                                             self,
