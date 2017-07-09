@@ -12,14 +12,19 @@ from statscraper import BaseScraper, Dataset, Dimension, Result
 class Cranes(BaseScraper):
 
     def _fetch_itemslist(self, item):
-        """There is only one dataset"""
+        """ There is only one dataset. """
         yield Dataset("Number of cranes")
 
     def _fetch_dimensions(self, dataset):
         """ Declaring available dimensions like this is not mandatory,
          but nice, especially if they differ from dataset to dataset.
+
+         If you are using a built in datatype, you can specify the dialect
+         you are expecting, to have values normalized. This scraper will
+         look for Swedish month names (e.g. 'Januari'), but return them
+         according to the Statscraper standard ('january').
         """
-        yield Dimension(u"date")
+        yield Dimension(u"date", label="Day of the month")
         yield Dimension(u"month", datatype="month", dialect="swedish")
         yield Dimension(u"year", datatype="year")
 
@@ -36,6 +41,7 @@ class Cranes(BaseScraper):
             month = cells.pop(0).text
             i = 0
             for value in cells:
+                # Each column from here is a year.
                 if value.text:
                     yield Result(value.text.encode("utf-8"), {
                         "date": date,
