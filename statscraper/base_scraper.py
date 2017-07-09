@@ -139,8 +139,6 @@ class BaseScraperList(list):
         else:
             return super(BaseScraperList, self).__contains__(item)
 
-        return self.id
-
 
 class ResultSet(list):
     """The result of a dataset query.
