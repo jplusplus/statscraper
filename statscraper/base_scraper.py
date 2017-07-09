@@ -98,7 +98,7 @@ class BaseScraperObject(object):
         if self is other:
             return True
         elif isinstance(other, six.string_types):
-            return (self.value == other.value)
+            return (self.value == other)
         else:
             return super(BaseScraperObject, self) == other
 
