@@ -222,12 +222,13 @@ class ResultSet(list):
             for k, v in val.raw_dimensions.items():
                 d = dataset_dimensions[k]
 
+                normalized_value = str(v)
                 # Normalize if we have a datatype and a foreign dialect
                 if d.dialect and d.datatype:
                     if d.dialect in d.datatype.dialects:
                         for av in d.allowed_values:
-                            if v in av.dialects[d.dialect]:
-                                v = av.value
+                            if str(v) in av.dialects[d.dialect]:
+                                normalized_value = av.value
                                 # Use first match
                                 # We do not support multiple values
                                 # This is by design.
@@ -236,14 +237,16 @@ class ResultSet(list):
                 # Create DimensionValue object
                 if isinstance(v, DimensionValue):
                     dim = v
+                    v.value = normalized_value
                 else:
                     if k in dataset_dimensions:
-                        dim = DimensionValue(v, d)
+                        dim = DimensionValue(normalized_value, d)
                     else:
-                        dim = DimensionValue(v, Dimension())
+                        dim = DimensionValue(normalized_value, Dimension())
 
                 val.dimensionvalues.append(dim)
 
+        print val.dimensionvalues
         super(ResultSet, self).append(val)
 
 
