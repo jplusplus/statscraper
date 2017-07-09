@@ -93,6 +93,15 @@ class BaseScraperObject(object):
         """
         self._value = value
 
+    def __eq__(self, other):
+        """ Enable equality check by string """
+        if self is other:
+            return True
+        elif isinstance(other, six.string_types):
+            return (self.value == other.value)
+        else:
+            return super(BaseScraperObject, self) == other
+
 
 class BaseScraperList(list):
     """ Lists of dimensions, values, etc all inherit this class
@@ -133,7 +142,7 @@ class BaseScraperList(list):
             raise NoSuchItem("No such %s: %s" % (self._CONTAINS.__name__, key))
 
     def __contains__(self, item):
-        """ Make the 'in' keyword check for id """
+        """ Make the 'in' keyword check for value/id """
         if isinstance(item, six.string_types):
             return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
