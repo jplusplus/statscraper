@@ -67,6 +67,33 @@ class InvalidData(Exception):
     pass
 
 
+class BaseScraperObject(object):
+    """ Objects like items, dimensions, values etc all inherit
+    this class. BaseScraperObjects are typicalliy stored in a
+    BaseScraperList.
+    """
+    @property
+    def value(self):
+        """ This is the value used for testing membership,
+        comparison, etc. Overloaded for classes that store
+        a value separate from the id, e.g. DimensionValue,
+        that might have something like {id: 'year', value: 2017}
+        """
+        if hasattr(self, '_value'):
+            return self._value
+        else:
+            return self.id
+
+    @value.setter
+    def value(self, value):
+        """ This is the value used for testing membership,
+        comparison, etc. Overloaded for classes that store
+        a value separate from the id, e.g. DimensionValue,
+        that might have something like {id: 'year', value: 2017}
+        """
+        self._value = value
+
+
 class BaseScraperList(list):
     """ Lists of dimensions, values, etc all inherit this class
     for some common convenience methods, such as get_by_label()
@@ -101,16 +128,18 @@ class BaseScraperList(list):
 
         try:
             return next(filter(f, self))
-        except IndexError:
+        except StopIteration:
             # No such item
-            raise NoSuchItem("No such %s" % self._CONTAINS)
+            raise NoSuchItem("No such %s: %s" % (self._CONTAINS.__name__, key))
 
     def __contains__(self, item):
         """ Make the 'in' keyword check for id """
         if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.id == item, self))))
+            return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
             return super(BaseScraperList, self).__contains__(item)
+
+        return self.id
 
 
 class ResultSet(list):
@@ -188,7 +217,7 @@ class Dimensionslist(BaseScraperList):
     pass
 
 
-class Result(object):
+class Result(BaseScraperObject):
     u"""A “row” in a result.
 
     A result contains a numerical value,
@@ -220,7 +249,7 @@ class Result(object):
         return '<Result: %s>' % str(self)
 
 
-class Dimension(object):
+class Dimension(BaseScraperObject):
     """A dimension in a dataset."""
 
     def __init__(self, id_=None, label=None, allowed_values=None, datatype=None):
@@ -276,7 +305,7 @@ class Dimension(object):
         return self._allowed_values
 
 
-class DimensionValue(object):
+class DimensionValue(BaseScraperObject):
     """The value for a dimension inside a Resultset."""
 
     def __init__(self, value, dimension, label=None):
@@ -359,7 +388,7 @@ class Itemslist(BaseScraperList):
         super(Itemslist, self).append(val)
 
 
-class Item(object):
+class Item(BaseScraperObject):
     """Common base class for collections and datasets."""
 
     # These are populated when added to an itemlist
