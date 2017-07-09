@@ -222,8 +222,8 @@ class ResultSet(list):
             for k, v in val.raw_dimensions.items():
                 d = dataset_dimensions[k]
 
-                normalized_value = str(v)
                 # Normalize if we have a datatype and a foreign dialect
+                normalized_value = str(v)
                 if d.dialect and d.datatype:
                     if d.dialect in d.datatype.dialects:
                         for av in d.allowed_values:
@@ -246,7 +246,6 @@ class ResultSet(list):
 
                 val.dimensionvalues.append(dim)
 
-        print val.dimensionvalues
         super(ResultSet, self).append(val)
 
 
@@ -263,12 +262,11 @@ class Result(BaseScraperObject):
     and optionlly a set of dimensions with values.
     """
 
-    dimensionvalues = Dimensionslist()
-
     def __init__(self, value, dimensions={}):
         """Value is supposed, but not strictly required to be numerical."""
         self.value = value
         self.raw_dimensions = dimensions
+        self.dimensionvalues = Dimensionslist()
 
     def __getitem__(self, key):
         """Make it possible to get dimensions by name."""
