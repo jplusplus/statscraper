@@ -102,6 +102,15 @@ class BaseScraperObject(object):
         else:
             return super(BaseScraperObject, self) == other
 
+    def __str__(self):
+        try:
+            return self.value.encode("utf-8")
+        except UnicodeEncodeError:
+            return self.value
+
+    def __repr__(self):
+        return '<%s: %s>' % (type(self).__name__, str(self))
+
 
 class BaseScraperList(list):
     """ Lists of dimensions, values, etc all inherit this class
@@ -249,12 +258,6 @@ class Result(BaseScraperObject):
         """Provide alias for bracket notation."""
         return self[key]
 
-    def __str__(self):
-        return str(self.value)
-
-    def __repr__(self):
-        return '<Result: %s>' % str(self)
-
 
 class Dimension(BaseScraperObject):
     """A dimension in a dataset."""
@@ -289,15 +292,6 @@ class Dimension(BaseScraperObject):
                                                                Dimension())
                                                 )
 
-    def __str__(self):
-        try:
-            return self.id.encode("utf-8")
-        except UnicodeEncodeError:
-            return self.id
-
-    def __repr__(self):
-        return '<Dimension: %s (%s)>' % (str(self), self.label.encode("utf-8"))
-
     @property
     def allowed_values(self):
         """Return a list of allowed values."""
@@ -322,15 +316,6 @@ class DimensionValue(BaseScraperObject):
         self.dimension = dimension
         self.label = label
         self.id = dimension.id
-
-    def __str__(self):
-        if isinstance(self.value, str):
-            return self.value
-        return self.value.encode("utf-8")
-
-    def __repr__(self):
-        return '<DimensionValue: %s (%s)>' %\
-            (self.value, str(self.dimension))
 
 
 class Valuelist(BaseScraperList):
@@ -412,11 +397,6 @@ class Item(BaseScraperObject):
         else:
             self.label = label
         self._collection_path = deque([self])  # Will be overwritten when attached to an Itemslist
-
-    def __str__(self):
-        if isinstance(self.id, str):
-            return self.id
-        return self.id.encode("utf-8")
 
     def _move_here(self):
         """Move the cursor to this item."""
