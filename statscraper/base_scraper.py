@@ -215,11 +215,12 @@ class ResultSet(list):
         val.resultset = self
         val.dataset = self.dataset
 
-        # TODO: Clean up this mess
         # Check result dimensions against available dimensions for this dataset
         if val.dataset:
             dataset_dimensions = self.dataset.dimensions
             for k, v in val.raw_dimensions.items():
+                if k not in dataset_dimensions:
+                    continue
                 d = dataset_dimensions[k]
 
                 # Normalize if we have a datatype and a foreign dialect
@@ -693,7 +694,12 @@ class BaseScraper(object):
 
     def _fetch_dimensions(self, dataset):
         """Should be overriden by scraper authors, to yield dimensions."""
-        raise Exception("This scraper has no method for fetching dimensions!")
+        from warnings import warn
+        warn("This scraper has no method for fetching dimensions.",
+             RuntimeWarning)
+        return
+        yield
+        # raise Exception("This scraper has no method for fetching dimensions!")
 
     def _fetch_allowed_values(self, dimension):
         """Can be overriden by scraper authors, to yield allowed values."""
