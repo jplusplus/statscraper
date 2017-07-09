@@ -220,8 +220,9 @@ class ResultSet(list):
             dataset_dimensions = self.dataset.dimensions
             for k, v in val.raw_dimensions.items():
                 if k not in dataset_dimensions:
-                    continue
-                d = dataset_dimensions[k]
+                    d = Dimension(k)
+                else:
+                    d = dataset_dimensions[k]
 
                 # Normalize if we have a datatype and a foreign dialect
                 normalized_value = str(v)
