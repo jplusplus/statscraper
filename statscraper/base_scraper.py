@@ -72,11 +72,22 @@ class BaseScraperList(list):
     for some common convenience methods, such as get_by_label()
     """
 
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
+
     def get_by_label(self, label):
         """ Return the first item with a specific label,
         or None.
         """
         return next((x for x in self if x.label == label), None)
+
+    def __contains__(self, item):
+        """ Make the 'in' keyword check for id """
+        if isinstance(item, six.string_types):
+            return bool(len(list(filter(lambda x: x.id == item, self))))
+        else:
+            return super(BaseScraperList, self).__contains__(item)
 
 
 class ResultSet(list):
@@ -155,7 +166,7 @@ class Valuelist(BaseScraperList):
     """
 
     def __getitem__(self, key):
-        """Make it possible to get value by id or value identity."""
+        """Make it possible to get value by value or value identity."""
         if isinstance(key, six.string_types):
             if isinstance(key, unicode):
                 def f(x):
@@ -176,11 +187,11 @@ class Valuelist(BaseScraperList):
             raise NoSuchItem("No such value")
 
     def __contains__(self, item):
-        """Make it possible to use 'in' keyword with id."""
+        """ in should look for value, not id. """
         if isinstance(item, six.string_types):
             return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
-            return super(Itemslist, self).__contains__(item)
+            return super(Valuelist, self).__contains__(item)
 
 
 class Dimensionslist(BaseScraperList):
@@ -200,17 +211,6 @@ class Dimensionslist(BaseScraperList):
         except IndexError:
             # No such id
             raise NoSuchItem("No such dimension")
-
-    def get(self, key):
-        """Provide alias for bracket notation."""
-        return self[key]
-
-    def __contains__(self, item):
-        """Make it possible to use 'in' keyword with id."""
-        if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.id == item, self))))
-        else:
-            return super(Itemslist, self).__contains__(item)
 
 
 class Result(object):
@@ -354,17 +354,6 @@ class Itemslist(BaseScraperList):
         except IndexError:
             # No such id
             raise NoSuchItem("No such item in Itemslist")
-
-    def __contains__(self, item):
-        """Make it possible to use 'in' keyword with id."""
-        if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.id == item, self))))
-        else:
-            return super(Itemslist, self).__contains__(item)
-
-    def get(self, key):
-        """Provide alias for bracket notation."""
-        return self[key]
 
     def empty(self):
         """Empty this list (delete all contents)."""
