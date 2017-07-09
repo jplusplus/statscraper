@@ -190,7 +190,7 @@ class TestBaseScraper(TestCase):
         self.assertEqual(female, female_by_label)
 
         # The id property should refer to the allowed value, right?
-        self.assertEqual(female.id, "female")
+        self.assertEqual(female.value, "female")
         self.assertEqual(female.label, "Women")
 
     def test_move_deep_manually(self):
