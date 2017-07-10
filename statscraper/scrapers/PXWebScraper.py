@@ -15,7 +15,7 @@ except ImportError:
     from json.decoder import JSONDecodeError
 
 import requests
-from statscraper import (BaseScraper, Collection,
+from statscraper import (BaseScraper, Collection, Result,
                          Dataset, Dimension, InvalidData)
 
 
@@ -79,4 +79,7 @@ class PXWeb(BaseScraper):
             data = raw.json()
         except JSONDecodeError:
             raise InvalidData("No valid response from PX Web. Check your query for spelling errors.")
-        return data["data"]
+
+        for row in data["data"]:
+            for value in row["values"]:
+                yield Result(value)
