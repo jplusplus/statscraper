@@ -114,7 +114,7 @@ Changelog
 ---------
 
 - 1.0.0.dev2
-  - 
+  - Implement translation
 
 - 1.0.0.dev1
   - Semantic versioning starts here
@@ -125,10 +125,8 @@ Changelog
   - Added some demo scrapers
   - The cursor is now moved when accessing datasets
   - Renamed methods for moving cursor: move_up(), move_to()
-  - Added many more methods
   - Added tests
   - Added datatypes subtree
-  - It should now be possible to write a basic scraper
 
 - 0.0.1
     
