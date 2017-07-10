@@ -42,7 +42,14 @@ except ImportError:
 TYPE_DATASET = "Dataset"
 TYPE_COLLECTION = "Collection"
 ROOT = "<root>"  # Special id for root position
+VALUE_KEY = "value"  # key/column holding the value of a result or dimension
 """ Constants for item types and id's """
+
+
+class InvalidID(StandardError):
+    """This string is not allowed as an id at this point."""
+
+    pass
 
 
 class NoSuchItem(IndexError):
@@ -290,7 +297,7 @@ class Result(BaseScraperObject):
         """ dict representation is like:
          {value: 123, dimension_1: "foo", dimension_2: "bar"}
         """
-        yield ("value", self.value)
+        yield (VALUE_KEY, self.value)
         for dv in self.dimensionvalues:
             yield (dv.id,
                    dv.value)
@@ -320,6 +327,8 @@ class Dimension(BaseScraperObject):
         """
         if id_ is None:
             id_ = "default"
+        if id_ == VALUE_KEY:
+            raise InvalidID("'%s' is not a valid Dimension id." % VALUE_KEY)
         self.id = id_
         self._allowed_values = None
         self.datatype = None
