@@ -542,7 +542,7 @@ class Collection(Item):
                 self._items.append(i)
         return self._items
 
-    def __getitem___(self, key):
+    def __getitem__(self, key):
         """Provide  bracket notation.
 
         collection["abc"] till return the item with id abc
@@ -667,6 +667,11 @@ class BaseScraper(Collection):
 
         for f in self._hooks["init"]:
             f(self, *args, **kwargs)
+
+    def __getitem__(self, key):
+        """ Make scraper[a] shorthand for scraper.items[a]
+        """
+        return self.items[key]
 
     @property
     def items(self):

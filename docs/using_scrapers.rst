@@ -17,7 +17,7 @@ Every scraper built on Statscraper shares the same interface towards the user. H
   >>> scraper.items  # List available datasets
   [<Dataset: Number of cranes>]
 
-  >>> dataset = scraper.items["Number of cranes"]
+  >>> dataset = scraper["Number of cranes"]
   >>> dataset.dimensions
   [<Dimension: date (date)>]
 
@@ -92,14 +92,16 @@ The above example could also be written like this:
 
     >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
 
-    >>> collection = scraper.items["Befolkning"].items[u"Födda"]
+    >>> collection = scraper["Befolkning"][u"Födda"]
     >>> collection
     <Collection: Födda>
     >>> collection.items
     [<Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>, ...]
 
-    >>> data_1 = collection.items[u"Befolkningsförändringar efter område 1980 - 2016"].data
-    >>> data_2 = collection.items[0].data  # Selecting the first dataset in this collection
+    >>> data_1 = collection[u"Befolkningsförändringar efter område 1980 - 2016"].data
+    >>> data_2 = collection[0].data  # Selecting the first dataset in this collection
+
+scraper["Befolkning"] is shorthand for scraper.items["Befolkning"].
 
 If you want to loop throuh every available dataset a scraper can offer, there is a `Scraper.descendants` property that will recursively move to every item in the tree. Here is an example, that will find all datasets in the SCB API that has monthly data:
 
