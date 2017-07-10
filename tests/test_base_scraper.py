@@ -124,7 +124,7 @@ class TestBaseScraper(TestCase):
         """Make sure an item knows who its parent is."""
         scraper = Scraper()
         parent = scraper.current_item
-        dataset = scraper.items["Dataset_1"]
+        dataset = scraper["Dataset_1"]
         scraper.move_to("Dataset_1")
         self.assertTrue(scraper.parent.id == dataset.parent.id ==
                         scraper.current_item.parent.id == parent.id)
@@ -132,27 +132,27 @@ class TestBaseScraper(TestCase):
     def test_fetch_dataset(self):
         """Query a dataset for some data."""
         scraper = Scraper()
-        dataset = scraper.items[0]
+        dataset = scraper[0]
         self.assertEqual(dataset.data[0]["municipality"], "Robertsfors kommun")
 
     def test_unselected_visible_dataset(self):
         """Query a dataset not selected, but visible."""
         scraper = Scraper()
-        dataset = scraper.items["Dataset_1"]
+        dataset = scraper["Dataset_1"]
         scraper.move_to("Dataset_2")
         self.assertEqual(dataset.data[0]["municipality"], "Robertsfors kommun")
 
     def test_cached_data(self):
         """Query a dataset not selected but cached."""
         scraper = Scraper()
-        data_1 = scraper.items["Dataset_1"].data
+        data_1 = scraper["Dataset_1"].data
         scraper.move_up().move_to("Dataset_2")
         self.assertEqual(data_1[0]["municipality"], u"Robertsfors kommun")
 
     def test_get_dimension(self):
         """Get dimensions for a dataset."""
         scraper = Scraper()
-        dataset = scraper.items[0]
+        dataset = scraper[0]
         self.assertTrue(len(dataset.dimensions))
         self.assertTrue(isinstance(dataset.dimensions[0], Dimension))
 
@@ -165,7 +165,7 @@ class TestBaseScraper(TestCase):
     def test_select_allowed_values(self):
         """List allowed values from dimension."""
         scraper = Scraper()
-        dataset = scraper.items[0]
+        dataset = scraper[0]
 
         municipality = dataset.dimensions["municipality"]
         self.assertTrue("Robertsfors kommun" in municipality.allowed_values)
@@ -218,10 +218,10 @@ class TestBaseScraper(TestCase):
         self.assertTrue(len(collection_2.items))
 
         scraper.move_to_top()
-        dataset_1 = scraper.items["Collection_1"].items["Dataset_1"]
+        dataset_1 = scraper["Collection_1"]["Dataset_1"]
         self.assertTrue(len(dataset_1.data))
 
-        dataset_2 = collection_2.items["Dataset_2"]
+        dataset_2 = collection_2["Dataset_2"]
         self.assertTrue(len(dataset_2.data))
 
         self.assertTrue(len(dataset_1.data))
