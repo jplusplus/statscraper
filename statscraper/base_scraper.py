@@ -72,6 +72,11 @@ class BaseScraperObject(object):
     this class. BaseScraperObjects are typicalliy stored in a
     BaseScraperList.
     """
+
+    def get(self, key):
+        """Provide alias for bracket notation."""
+        return self[key]
+
     @property
     def value(self):
         """ This is the value used for testing membership,
@@ -201,10 +206,7 @@ class ResultSet(list):
 
         for result in new_resultset:
             for dimensionvalue in result.dimensionvalues:
-                if dimensionvalue.dimension.datatype is not None:
-                    translations = dimensionvalue.dimension.datatype.allowed_values[dimensionvalue.value]
-                    translation = (", ").join(translations.dialects[dialect])
-                    dimensionvalue.value = translation
+                dimensionvalue.value = dimensionvalue.translate(dialect)
         return new_resultset
 
     def append(self, val):
@@ -304,10 +306,6 @@ class Result(BaseScraperObject):
         """
         return (self.value, {dv.id: dv.value for dv in self.dimensionvalues})
 
-    def get(self, key):
-        """Provide alias for bracket notation."""
-        return self[key]
-
 
 class Dimension(BaseScraperObject):
     """A dimension in a dataset."""
@@ -371,6 +369,15 @@ class DimensionValue(BaseScraperObject):
         self.dimension = dimension
         self.label = label
         self.id = dimension.id
+
+    def translate(self, dialect):
+        translation = self.value
+        if self.dimension.datatype is not None:
+            dt = self.dimension.datatype
+            if self.value in dt.allowed_values:
+                translations = dt.allowed_values[self.value]
+                translation = (", ").join(translations.dialects[dialect])
+        return translation
 
 
 class Valuelist(BaseScraperList):
