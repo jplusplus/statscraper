@@ -109,7 +109,7 @@ class TestBaseScraper(TestCase):
         self.assertTrue(scraper.current_item.is_root)
 
     def test_itemslist_contains(self):
-        """Make sure 'in' keyword works with Itemslist."""
+        """Make sure 'in' keyword works with ItemList."""
         scraper = Scraper()
         self.assertTrue("Dataset_1" in scraper.items)
         self.assertTrue(scraper.items[0] in scraper.items)

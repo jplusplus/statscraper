@@ -24,7 +24,7 @@ class Datatype(object):
     def __init__(self, id):
         """Id is a datatype from datatypes.csv."""
         self.id = id
-        self.allowed_values = base_scraper.Valuelist()
+        self.allowed_values = base_scraper.ValueList()
 
         data = None
         with open(DATATYPES_FILE, 'rb') as csvfile:

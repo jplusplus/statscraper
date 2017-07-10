@@ -267,7 +267,7 @@ class ResultSet(list):
         super(ResultSet, self).append(val)
 
 
-class Dimensionslist(BaseScraperList):
+class DimensionList(BaseScraperList):
     """A one dimensional list of dimensions."""
 
     pass
@@ -284,7 +284,7 @@ class Result(BaseScraperObject):
         """Value is supposed, but not strictly required to be numerical."""
         self.value = value
         self.raw_dimensions = dimensions
-        self.dimensionvalues = Dimensionslist()
+        self.dimensionvalues = DimensionList()
 
     def __getitem__(self, key):
         """ Make it possible to get dimensions by name. """
@@ -345,7 +345,7 @@ class Dimension(BaseScraperObject):
             #
             # If allowed values is given as a list of values, create
             # value objects using an empty dimension.
-            self._allowed_values = Valuelist()
+            self._allowed_values = ValueList()
             for val in allowed_values:
                 if isinstance(val, DimensionValue):
                     self._allowed_values.append(val)
@@ -358,7 +358,7 @@ class Dimension(BaseScraperObject):
     def allowed_values(self):
         """Return a list of allowed values."""
         if self._allowed_values is None:
-            self._allowed_values = Valuelist()
+            self._allowed_values = ValueList()
             for val in self.scraper._fetch_allowed_values(self):
                 if isinstance(val, DimensionValue):
                     self._allowed_values.append(val)
@@ -389,7 +389,7 @@ class DimensionValue(BaseScraperObject):
         return translation
 
 
-class Valuelist(BaseScraperList):
+class ValueList(BaseScraperList):
     """A list of dimension values.
 
     allowed_values uses this class, to allow checking membership.
@@ -421,10 +421,10 @@ class Valuelist(BaseScraperList):
         if isinstance(item, six.string_types):
             return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
-            return super(Valuelist, self).__contains__(item)
+            return super(ValueList, self).__contains__(item)
 
 
-class Itemslist(BaseScraperList):
+class ItemList(BaseScraperList):
     """A one dimensional list of items.
 
     Has some conventience getters and setters for scrapers
@@ -448,7 +448,7 @@ class Itemslist(BaseScraperList):
         val.scraper = self.scraper
         val._collection_path = copy(self.collection._collection_path)
         val._collection_path.append(val)
-        super(Itemslist, self).append(val)
+        super(ItemList, self).append(val)
 
 
 class Item(BaseScraperObject):
@@ -456,7 +456,7 @@ class Item(BaseScraperObject):
 
     # These are populated when added to an itemlist
     parent = None  # Parent item
-    _items = None  # Itemslist with children
+    _items = None  # ItemList with children
     _collection_path = None  # All ancestors
 
     def __init__(self, id_, label=None, blob=None):
@@ -467,7 +467,7 @@ class Item(BaseScraperObject):
             self.label = id_
         else:
             self.label = label
-        self._collection_path = deque([self])  # Will be overwritten when attached to an Itemslist
+        self._collection_path = deque([self])  # Will be overwritten when attached to an ItemList
 
     def _move_here(self):
         """Move the cursor to this item."""
@@ -527,12 +527,12 @@ class Collection(Item):
 
     @property
     def items(self):
-        """Itemslist of children."""
+        """ItemList of children."""
         if self.scraper.current_item is not self:
             self._move_here()
 
         if self._items is None:
-            self._items = Itemslist()
+            self._items = ItemList()
             self._items.scraper = self.scraper
             self._items.collection = self
             for i in self.scraper._fetch_itemslist(self):
@@ -617,7 +617,7 @@ class Dataset(Item):
             self._move_here()
 
         if self._dimensions is None:
-            self._dimensions = Dimensionslist()
+            self._dimensions = DimensionList()
             for d in self.scraper._fetch_dimensions(self):
                 d.dataset = self
                 d.scraper = self.scraper
@@ -670,7 +670,7 @@ class BaseScraper(object):
 
     @property
     def items(self):
-        """Itemslist of collections or datasets at the current position.
+        """ItemList of collections or datasets at the current position.
 
         None will be returned in case of no further levels
         """
@@ -779,6 +779,6 @@ class BaseScraper(object):
 
 # Solve any circular dependencies here:
 
-Dimensionslist._CONTAINS = Dimension
-Valuelist._CONTAINS = DimensionValue
-Itemslist._CONTAINS = Item
+DimensionList._CONTAINS = Dimension
+ValueList._CONTAINS = DimensionValue
+ItemList._CONTAINS = Item
