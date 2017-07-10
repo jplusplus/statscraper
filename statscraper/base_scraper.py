@@ -136,7 +136,9 @@ class BaseScraperObject(object):
             return str(self.value)
 
     def __repr__(self):
-        return '<%s: %s>' % (type(self).__name__, str(self))
+        return '<%s: %s (%s)>' % (type(self).__name__,
+                                  str(self),
+                                  self.label.encode("utf-8"))
 
 
 class BaseScraperList(list):
@@ -283,6 +285,7 @@ class Result(BaseScraperObject):
     def __init__(self, value, dimensions={}):
         """Value is supposed, but not strictly required to be numerical."""
         self.value = value
+        self.label = VALUE_KEY
         self.raw_dimensions = dimensions
         self.dimensionvalues = DimensionList()
 
