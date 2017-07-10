@@ -102,6 +102,18 @@ class BaseScraperObject(object):
         else:
             return super(BaseScraperObject, self) == other
 
+    def __nonzero__(self):
+        """ Make nonezero check value """
+        return bool(self.value)
+
+    def __len__(self):
+        """ Make len check value """
+        return len(self.value)
+
+    def __int__(self):
+        """ Make int return value """
+        return int(self.value)
+
     def __str__(self):
         if isinstance(self.value, six.string_types):
             try:
@@ -276,6 +288,15 @@ class Result(BaseScraperObject):
             return self.dimensionvalues[key]
         else:
             return list.__getitem__(self, key)
+
+    def __iter__(self):
+        """ dict representation is like:
+         {value: 123, dimension_1: "foo", dimension_2: "bar"}
+        """
+        yield ("value", self.value)
+        for dv in self.dimensionvalues:
+            yield (dv.id,
+                   dv.value)
 
     def get(self, key):
         """Provide alias for bracket notation."""

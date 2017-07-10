@@ -21,8 +21,13 @@ Every scraper built on Statscraper shares the same interface towards the user. H
   >>> dataset.dimensions
   [<Dimension: date (date)>]
 
-  >>> dataset.data[0]  # first row in this dataset
+  >>> row = dataset.data[0]  # first row in this dataset
+  >>> row
+  '15'
+  >>> dict(row)
   {'date': '2010-07-23', 'value': '15'}
+  >>> int(row)
+  15
 
   >>> df = dataset.data.pandas  # get this dataset as a Pandas dataframe
 
@@ -151,7 +156,6 @@ Available dimensions can be inspected though the .dimensions property:
 
     >>> print dataset.dimensions
     [<Dimension: date (date)>, <Dimension: year (year)>]
-
 
 Note however that a scraper does not necessarily need to provide (or might not have any information on) dimensions. If `Dataset.dimensions` is None, it could simply mean that the scraper does not know what to expect from the data.
 
