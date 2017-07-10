@@ -43,9 +43,9 @@ class PXWeb(BaseScraper):
 
         for d in data:
             if d["type"] == "l":
-                yield Collection(d["text"], blob=d)
+                yield Collection(d["id"], label=d["text"], blob=d)
             else:
-                yield Dataset(d["text"], blob=d)
+                yield Dataset(d["id"], label=d["text"], blob=d)
 
     def _fetch_dimensions(self, dataset):
         data = requests.get(self._api_path(dataset)).json()
@@ -54,6 +54,7 @@ class PXWeb(BaseScraper):
                 yield Dimension(d["code"],
                                 label=d["text"],
                                 allowed_values=d["values"])
+
         except KeyError:
             yield None
 
