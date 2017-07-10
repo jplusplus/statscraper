@@ -185,12 +185,7 @@ class ResultSet(list):
     @property
     def list_of_dicts(self):
         """Return a list of dictionaries, with the key "value" for values."""
-        def merge_two_dicts(x, y):
-            z = x.copy()
-            z.update(y)
-            return z
-        return [merge_two_dicts(x.raw_dimensions, {"value": x.value})
-                for x in self]
+        return [dict(x) for x in self]
 
     @property
     def pandas(self):
@@ -283,7 +278,7 @@ class Result(BaseScraperObject):
         self.dimensionvalues = Dimensionslist()
 
     def __getitem__(self, key):
-        """Make it possible to get dimensions by name."""
+        """ Make it possible to get dimensions by name. """
         if isinstance(key, six.string_types):
             return self.dimensionvalues[key]
         else:
@@ -297,6 +292,17 @@ class Result(BaseScraperObject):
         for dv in self.dimensionvalues:
             yield (dv.id,
                    dv.value)
+
+    @property
+    def dict(self):
+        return dict(self)
+
+    @property
+    def tuple(self):
+        """ Tuple conversion to (value, dimensions), e.g.:
+         (123, {dimension_1: "foo", dimension_2: "bar"})
+        """
+        return (self.value, {dv.id: dv.value for dv in self.dimensionvalues})
 
     def get(self, key):
         """Provide alias for bracket notation."""

@@ -28,6 +28,8 @@ Every scraper built on Statscraper shares the same interface towards the user. H
   {'date': '2010-07-23', 'value': '15'}
   >>> int(row)
   15
+  >>> row.tuple
+  (15, {'date': '2010-07-23'})
 
   >>> df = dataset.data.pandas  # get this dataset as a Pandas dataframe
 
