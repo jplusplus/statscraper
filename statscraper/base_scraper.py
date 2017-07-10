@@ -510,12 +510,14 @@ class Item(BaseScraperObject):
         except IndexError:
             return None
 
+    def __repr__(self):
+        return '<%s: %s (%s)>' % (type(self).__name__,
+                                  str(self),
+                                  self.label.encode("utf-8"))
+
 
 class Collection(Item):
     """A collection can contain collection of datasets."""
-
-    def __repr__(self):
-        return '<Collection: %s>' % str(self)
 
     @property
     def is_root(self):
@@ -630,9 +632,6 @@ class Dataset(Item):
         if not self.data:
             return (0, 0)
         return (len(self.data), len(self.dimensions))
-
-    def __repr__(self):
-        return '<Dataset: %s>' % str(self)
 
 
 class BaseScraper(Collection):
