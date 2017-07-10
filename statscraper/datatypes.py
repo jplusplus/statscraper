@@ -5,6 +5,7 @@
 from glob import iglob
 from itertools import chain
 from csvkit import DictReader
+from csvkit import reader as CsvReader
 import base_scraper  # FIXME move DimensionValue to avoid this import loop
 import os
 
@@ -50,10 +51,18 @@ class Datatype(object):
                         value = base_scraper.DimensionValue(row["id"],
                                                             self,
                                                             label=row["label"])
-                        dialects = {
-                            d[8:]: row[d].split(",")
-                            for d in dialect_names
-                        }
+                        dialects = {x: None for x in self.dialects}
+                        from StringIO import StringIO
+                        for d in dialect_names:
+                            f = StringIO(row[d])
+                            csvreader = CsvReader(f, delimiter=',',
+                                                  skipinitialspace=True,
+                                                  strict=True)
+                            try:
+                                values = csvreader.next()
+                            except Exception:
+                                continue
+                            dialects[d[8:]] = values
                         value.dialects = dialects
                         self.allowed_values.append(value)
 
