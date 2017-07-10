@@ -635,7 +635,7 @@ class Dataset(Item):
         return '<Dataset: %s>' % str(self)
 
 
-class BaseScraper(object):
+class BaseScraper(Collection):
     """The base class for scapers."""
 
     # Hooks
