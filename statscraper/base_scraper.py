@@ -248,7 +248,7 @@ class ResultSet(list):
                             if str(v) in av.dialects[d.dialect]:
                                 normalized_value = av.value
                                 # Use first match
-                                # We do not support multiple values
+                                # We do not support multiple matches
                                 # This is by design.
                                 break
 
@@ -714,6 +714,8 @@ class BaseScraper(object):
         if self.items:
             try:
                 # Move cursor to new item, and reset the cached list of subitems
+                print self.current_item
+                print self.items
                 self.current_item = self.items[id_]
             except (StopIteration, IndexError, NoSuchItem):
                 raise NoSuchItem
