@@ -11,6 +11,7 @@ import os
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 DATATYPES_FILE = os.path.join(DIR_PATH, "datatypes", "datatypes.csv")
+VALUE_DELIMITOR = ','
 
 
 class NoSuchDatatype(Exception):
@@ -55,7 +56,7 @@ class Datatype(object):
                         from StringIO import StringIO
                         for d in dialect_names:
                             f = StringIO(row[d])
-                            csvreader = CsvReader(f, delimiter=',',
+                            csvreader = CsvReader(f, delimiter=VALUE_DELIMITOR,
                                                   skipinitialspace=True,
                                                   strict=True)
                             try:
