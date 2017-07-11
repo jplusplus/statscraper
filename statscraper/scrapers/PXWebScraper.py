@@ -78,7 +78,9 @@ class PXWeb(BaseScraper):
             raw = requests.post(self._api_path(dataset), json=body)
             data = raw.json()
         except JSONDecodeError:
-            raise InvalidData("No valid response from PX Web. Check your query for spelling errors.")
+            raise InvalidData("""No valid response from PX Web.
+Check your query for spelling errors, or try reducing the size.
+This error is frequently due to a too large result being requested.""")
 
         # All available dimensions are not always returned.
         # What is returned depends on the query
