@@ -136,9 +136,13 @@ class BaseScraperObject(object):
             return str(self.value)
 
     def __repr__(self):
-        return '<%s: %s (%s)>' % (type(self).__name__,
-                                  str(self),
-                                  self.label.encode("utf-8"))
+        if self.label is None:
+            label = self.id
+        else:
+            label = self.label.encode("utf-8")
+        return u'<%s: %s (%s)>' % (type(self).__name__,
+                                   str(self),
+                                   label)
 
 
 class BaseScraperList(list):
