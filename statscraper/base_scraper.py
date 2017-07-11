@@ -140,9 +140,9 @@ class BaseScraperObject(object):
             label = self.id
         else:
             label = self.label.encode("utf-8")
-        return u'<%s: %s (%s)>' % (type(self).__name__,
-                                   str(self),
-                                   label)
+        return '<%s: %s (%s)>' % (type(self).__name__,
+                                  str(self),
+                                  label)
 
 
 class BaseScraperList(list):
@@ -269,6 +269,10 @@ class ResultSet(list):
                         dim = DimensionValue(normalized_value, Dimension())
 
                 val.dimensionvalues.append(dim)
+
+            # Add last list of dimension values to the ResultSet
+            # They will usually be the same for each result
+            self.dimensionvalues = val.dimensionvalues
 
         super(ResultSet, self).append(val)
 
@@ -588,7 +592,7 @@ class Dataset(Item):
             dump = dump.encode('utf-8')
         return md5(dump).hexdigest()
 
-    def fetch(self, query=None):
+    def fetch(self, query=None, **kwargs):
         """Ask scraper to return data for the current dataset."""
         if query:
             self.query = query
@@ -603,7 +607,7 @@ class Dataset(Item):
         rs = ResultSet()
         rs.dialect = self.dialect
         rs.dataset = self
-        for result in self.scraper._fetch_data(self, query=self.query):
+        for result in self.scraper._fetch_data(self, query=self.query, **kwargs):
             rs.append(result)
         self._data[hash_] = rs
         return self._data[hash_]
@@ -682,9 +686,9 @@ class BaseScraper(Collection):
         """
         return self.current_item.items
 
-    def fetch(self, query=None):
+    def fetch(self, query=None, **kwargs):
         """Let the current item fetch it's data."""
-        return self.current_item.fetch(query)
+        return self.current_item.fetch(query, **kwargs)
 
     @property
     def parent(self):
