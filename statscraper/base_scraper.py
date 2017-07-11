@@ -513,11 +513,6 @@ class Item(BaseScraperObject):
         except IndexError:
             return None
 
-    def __repr__(self):
-        return '<%s: %s (%s)>' % (type(self).__name__,
-                                  str(self),
-                                  self.label.encode("utf-8"))
-
 
 class Collection(Item):
     """A collection can contain collection of datasets."""
