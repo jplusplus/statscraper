@@ -58,14 +58,14 @@ class PXWeb(BaseScraper):
         except KeyError:
             yield None
 
-    def _fetch_data(self, dataset, query):
+    def _fetch_data(self, dataset, query, filtertype="item"):
         if query is None:
             query = {}
         body = {
             'query': [{
                 'code': key,
                 'selection': {
-                    'filter': "item",
+                    'filter': filtertype,
                     # value can be a list or a value
                     'values': value if isinstance(value, list) else [value]
                 }
@@ -80,6 +80,18 @@ class PXWeb(BaseScraper):
         except JSONDecodeError:
             raise InvalidData("No valid response from PX Web. Check your query for spelling errors.")
 
-        for row in data["data"]:
-            for value in row["values"]:
-                yield Result(value)
+        # All available dimensions are not always returned.
+        # What is returned depends on the query
+        raw_return_dimension = data["columns"]
+        # Filter out dimensions only
+        raw_return_dimension = [x for x in raw_return_dimension if x["type"] != "c"]
+
+        for row in data[u"data"]:
+            for value in row[u"values"]:
+                dimensions = {}
+                # 'key' contains one value for each dimension,
+                # always preserving order.
+                for d, v in zip(raw_return_dimension, row[u"key"]):
+                    dimensions[d["code"]] = v
+
+                yield Result(value, dimensions=dimensions)
