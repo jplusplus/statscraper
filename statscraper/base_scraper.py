@@ -34,6 +34,9 @@ from collections import deque
 from copy import copy
 from .datatypes import Datatype
 
+if six.PY3:
+    unicode = str
+
 try:
     from itertools import ifilter as filter
 except ImportError:
