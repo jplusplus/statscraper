@@ -531,7 +531,16 @@ class Item(BaseScraperObject):
 
 
 class Collection(Item):
-    """A collection can contain collection of datasets."""
+    """A collection can contain collection of datasets.
+
+    Lorem ipsum lorem lorem ipsum lorem. Dummy text.
+
+    Basic Usage::
+
+      >>> from statscraper import Collection
+      >>> c = Collection()
+      <class 'statscraper.base_scraper.Collection'>
+    """
 
     @property
     def is_root(self):
@@ -649,7 +658,7 @@ class Dataset(Item):
 
 
 class BaseScraper(Collection):
-    """The base class for scapers."""
+    """The base class for scrapers."""
 
     # Hooks
     _hooks = {

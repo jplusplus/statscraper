@@ -16,3 +16,4 @@ Statscraper: Standardizing Swedish scrapers
    about
    using_scrapers
    developing_scrapers
+   api
