@@ -46,8 +46,10 @@ VALUE_KEY = "value"  # key/column holding the value of a result or dimension
 """ Constants for item types and id's """
 
 
-class InvalidID(StandardError):
-    """This string is not allowed as an id at this point."""
+class InvalidID(Exception):
+    """This string is not allowed as an id at this point.
+    Note: Inherits from Exception instead of StandardError
+    for Python3.x compatibility reasons."""
 
     pass
 

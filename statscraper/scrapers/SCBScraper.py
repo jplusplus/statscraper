@@ -2,7 +2,7 @@
 """ A wrapper around the SCB API, demonstrating how to extend
     a scraper in the scraper park.
 """
-from PXWebScraper import PXWeb
+from .PXWebScraper import PXWeb
 
 
 class SCB(PXWeb):

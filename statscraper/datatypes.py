@@ -6,7 +6,7 @@ from glob import iglob
 from itertools import chain
 from csvkit import DictReader
 from csvkit import reader as CsvReader
-import base_scraper  # FIXME move DimensionValue to avoid this import loop
+from . import base_scraper  # FIXME move DimensionValue to avoid this import loop
 import os
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))

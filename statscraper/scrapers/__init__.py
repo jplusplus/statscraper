@@ -2,7 +2,6 @@
 """ Expose scraper classes here.
 """
 
-from SCBScraper import SCB
-from PXWebScraper import PXWeb
-from CranesScraper import Cranes
-from SCBScraper import SCB
+from .SCBScraper import SCB
+from .PXWebScraper import PXWeb
+from .CranesScraper import Cranes
