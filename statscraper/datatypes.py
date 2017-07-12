@@ -53,7 +53,13 @@ class Datatype(object):
                                                             self,
                                                             label=row["label"])
                         dialects = {x: None for x in self.dialects}
-                        from StringIO import StringIO
+
+                        # TODO: Shouldn't this be moved to the top?
+                        try:
+                            from StringIO import StringIO
+                        except ImportError:
+                            from io import StringIO
+
                         for d in dialect_names:
                             f = StringIO(row[d])
                             csvreader = CsvReader(f, delimiter=VALUE_DELIMITOR,
