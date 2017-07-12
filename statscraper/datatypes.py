@@ -29,7 +29,7 @@ class Datatype(object):
         self.allowed_values = base_scraper.ValueList()
 
         data = None
-        with open(DATATYPES_FILE, 'rb') as csvfile:
+        with open(DATATYPES_FILE, 'r') as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
                 if row["id"] == id:
@@ -42,7 +42,7 @@ class Datatype(object):
         domain = data["allowed_values"]
         if domain:
             for file_ in self._get_csv_files(domain):
-                with open(file_, 'rb') as csvfile:
+                with open(file_, 'r') as csvfile:
                     reader = DictReader(csvfile)
                     dialect_names = [x
                                      for x in reader.fieldnames

@@ -134,7 +134,10 @@ class BaseScraperObject(object):
     def __str__(self):
         if isinstance(self.value, six.string_types):
             try:
-                return self.value.encode("utf-8")
+                if six.PY2:
+                    return self.value.encode("utf-8")
+                else:
+                    return self.value
             except (UnicodeEncodeError, UnicodeDecodeError):
                 return self.value
         else:
