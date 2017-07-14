@@ -9,10 +9,14 @@
         scraper = PXWeb()
         scraper.base_url = "http://api.example.com/"
 """
+
 try:
-    from simplejson.scanner import JSONDecodeError
+    # Python 3.x
+    from json import JSONDecodeError
 except ImportError:
-    from json.decoder import JSONDecodeError
+    # Python 2.x raises ValueError when
+    # string cannot be decoded as JSON
+    JSONDecodeError = ValueError
 
 import requests
 from statscraper import (BaseScraper, Collection, Result,
