@@ -39,16 +39,16 @@ Here's a simple example, with a scraper that returns only a single dataset:
   >>> from statscraper.scrapers import Cranes
 
   >>> scraper = Cranes()
-  >>> print scraper.items  # List available datasets
+  >>> scraper.items  # List available datasets
   [<Dataset: Number of cranes>]
 
   >>> dataset = scraper.items[0]
-  >>> print dataset.dimensions
+  >>> dataset.dimensions
   [<Dimension: date (date)>, <Dimension: month (month)>, <Dimension: year (year)>]
 
-  >>> print dataset.data[0]  # Print first row of data
+  >>> dataset.data[0]  # Print first row of data
   7
-  >>> print dict(dataset.data[0])
+  >>> dict(dataset.data[0])
   {'date': '1', 'year': '2010', 'value': '7', 'month': 'januari'}
 
 Building a scraper
