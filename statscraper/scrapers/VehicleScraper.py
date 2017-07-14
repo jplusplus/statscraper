@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import pandas as pd
 from statscraper import BaseScraper, Dataset, Dimension, Result
 
@@ -41,8 +43,8 @@ class Vehicles(BaseScraper):
             frames.append(pd.read_excel(url))
         raw_data = pd.concat(frames)
         for i, row in raw_data.iterrows():
-            yield Result(row['Unnamed: 1'], {
-                            "avregistrerad": row['AVREGISTRERAD'],
-                            "avställd": row['AVSTÄLLD'],
-                            "itrafik": row['ITRAFIK']
+            yield Result(row[u'Unnamed: 1'], {
+                            u'avregistrerad': row[u'AVREGISTRERAD'],
+                            u'avställd': row[u'AVSTÄLLD'],
+                            u'itrafik': row[u'ITRAFIK']
                         })
