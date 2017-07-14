@@ -1,7 +1,7 @@
 import six
 
 if six.PY3:
-    from io import StringIO
+    from io import BytesIO as StringIO
     from json import JSONDecodeError
     unicode = str
 elif six.PY2:
