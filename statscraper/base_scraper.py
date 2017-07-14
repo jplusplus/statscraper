@@ -225,7 +225,7 @@ class Result(BaseScraperObject):
     u"""A “row” in a result.
 
     A result contains a numerical value,
-    and optionlly a set of dimensions with values.
+    and optionally a set of dimensions with values.
     """
 
     def __init__(self, value, dimensions={}):

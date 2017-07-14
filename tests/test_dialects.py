@@ -23,6 +23,7 @@ class TestDialects(TestCase):
 
     def test_dialects(self):
         """Covert a resultset to a different dialect."""
+
         scraper = Scraper()
         data1 = scraper.items[0].data
         self.assertEqual(str(data1[0]["municipality"]), "Robertsfors kommun")

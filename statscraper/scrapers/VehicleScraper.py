@@ -1,5 +1,8 @@
 import pandas as pd
-from statscraper import BaseScraper
+from statscraper import BaseScraper, Dataset, Dimension, Result
+
+MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni'
+          'juli', 'augusti', 'september', 'oktober', 'november', 'december']
 
 
 class Vehicles(BaseScraper):
@@ -16,12 +19,9 @@ class Vehicles(BaseScraper):
       # [<Dataset: Vehicles>]
     """
 
-    BASE_URL = ('https://www.transportstyrelsen.se/sv/vagtrafik/'
-                'statistik-och-strada/Vag/Fordonsstatistik/{year}/'
-                'fordonsstatistik-{month}-{year}/')
-
-    def __init__(self):
-        pass
+    BASE_URL = ('https://www.transportstyrelsen.se/globalassets/'
+                'global/press/statistik/fordonsstatistik/{year}/'
+                'fordonsstatistik-{month}-{year}.xlsx')
 
     def _fetch_itemslist(self, item):
         """There's one dataset spread out in many files."""
@@ -37,9 +37,12 @@ class Vehicles(BaseScraper):
         files = [(y, m) for y in query['years'] for m in query['months']]
         frames = []
         for file in files:
-            url = self.BASE_URL.format(year=file[0], month=file[1])
+            url = self.BASE_URL.format(year=file[0], month=MONTHS[file[1]])
             frames.append(pd.read_excel(url))
         raw_data = pd.concat(frames)
-
-        # TODO: Wrangle data to long format
-        # TODO: Convert months to strings
+        for i, row in raw_data.iterrows():
+            yield Result(row['Unnamed: 1'], {
+                            "avregistrerad": row['AVREGISTRERAD'],
+                            "avställd": row['AVSTÄLLD'],
+                            "itrafik": row['ITRAFIK']
+                        })
