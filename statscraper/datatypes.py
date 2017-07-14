@@ -51,8 +51,9 @@ class Datatype(object):
                         dialects = {x: None for x in self.dialects}
 
                         for d in dialect_names:
-                            f = StringIO(row[d])
-                            csvreader = CsvReader(f, delimiter=VALUE_DELIMITOR,
+                            f = StringIO(row[d].encode("utf-8"))
+                            csvreader = CsvReader(f,
+                                                  delimiter=VALUE_DELIMITOR,
                                                   skipinitialspace=True,
                                                   strict=True)
                             try:
