@@ -1,23 +1,18 @@
 # encoding: utf-8
 """ Contains code for parsing datatypes from the statscraper-datatypes repo
 """
-
 from glob import iglob
 from itertools import chain
 from csvkit import DictReader
 from csvkit import reader as CsvReader
-from . import base_scraper  # FIXME move DimensionValue to avoid this import loop
+from .exceptions import NoSuchDatatype
+from .DimensionValue import DimensionValue
+from .ValueList import ValueList
 import os
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 DATATYPES_FILE = os.path.join(DIR_PATH, "datatypes", "datatypes.csv")
 VALUE_DELIMITOR = ','
-
-
-class NoSuchDatatype(Exception):
-    """No datatype with that id."""
-
-    pass
 
 
 class Datatype(object):
@@ -26,7 +21,7 @@ class Datatype(object):
     def __init__(self, id):
         """Id is a datatype from datatypes.csv."""
         self.id = id
-        self.allowed_values = base_scraper.ValueList()
+        self.allowed_values = ValueList()
 
         data = None
         with open(DATATYPES_FILE, 'r') as csvfile:
@@ -49,9 +44,9 @@ class Datatype(object):
                                      if x.startswith("dialect:")]
                     self.dialects = [d[8:] for d in dialect_names]
                     for row in reader:
-                        value = base_scraper.DimensionValue(row["id"],
-                                                            self,
-                                                            label=row["label"])
+                        value = DimensionValue(row["id"],
+                                               self,
+                                               label=row["label"])
                         dialects = {x: None for x in self.dialects}
 
                         # TODO: Shouldn't this be moved to the top?

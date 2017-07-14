@@ -10,17 +10,10 @@
         scraper.base_url = "http://api.example.com/"
 """
 
-try:
-    # Python 3.x
-    from json import JSONDecodeError
-except ImportError:
-    # Python 2.x raises ValueError when
-    # string cannot be decoded as JSON
-    JSONDecodeError = ValueError
-
 import requests
 from statscraper import (BaseScraper, Collection, Result,
                          Dataset, Dimension, InvalidData)
+from statscraper.compat import JSONDecodeError
 
 
 class PXWeb(BaseScraper):

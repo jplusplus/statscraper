@@ -32,7 +32,12 @@ from json import dumps
 import pandas as pd
 from collections import deque
 from copy import copy
+from .exceptions import NoSuchItem
 from .datatypes import Datatype
+from .BaseScraperObject import BaseScraperObject
+from .BaseScraperList import BaseScraperList
+from .DimensionValue import DimensionValue
+from .ValueList import ValueList
 
 if six.PY3:
     unicode = str
@@ -48,35 +53,6 @@ ROOT = "<root>"  # Special id for root position
 VALUE_KEY = "value"  # key/column holding the value of a result or dimension
 """ Constants for item types and id's """
 
-
-class InvalidID(Exception):
-    """This string is not allowed as an id at this point.
-    Note: Inherits from Exception instead of StandardError
-    for Python3.x compatibility reasons."""
-
-    pass
-
-
-class NoSuchItem(IndexError):
-    """No such Collection or Dataset."""
-
-    pass
-
-
-class DatasetNotInView(IndexError):
-    """Tried to operate on a dataset that is not visible.
-
-    This can be raised by a scraper if the cursor needs to
-    move before inspecting an item.
-    """
-
-    pass
-
-
-class InvalidData(Exception):
-    """The scraper encountered some invalid data."""
-
-    pass
 
 
 class BaseScraperObject(object):
@@ -151,52 +127,6 @@ class BaseScraperObject(object):
         return '<%s: %s (%s)>' % (type(self).__name__,
                                   str(self),
                                   label)
-
-
-class BaseScraperList(list):
-    """ Lists of dimensions, values, etc all inherit this class
-    for some common convenience methods, such as get_by_label()
-    """
-
-    _CONTAINS = object
-
-    def get(self, key):
-        """Provide alias for bracket notation."""
-        return self[key]
-
-    def get_by_label(self, label):
-        """ Return the first item with a specific label,
-        or None.
-        """
-        return next((x for x in self if x.label == label), None)
-
-    def __getitem__(self, key):
-        """ Make it possible to get item by id or value identity."""
-        if isinstance(key, six.string_types):
-            if isinstance(key, unicode):
-                def f(x):
-                    return (x.id == key)
-            else:
-                def f(x):
-                    return (x.id == unicode(key, encoding="utf-8"))
-        elif isinstance(key, self._CONTAINS):
-            def f(x):
-                return (x is key)
-        else:
-            return list.__getitem__(self, key)
-
-        try:
-            return next(filter(f, self))
-        except StopIteration:
-            # No such item
-            raise NoSuchItem("No such %s: %s" % (self._CONTAINS.__name__, key))
-
-    def __contains__(self, item):
-        """ Make the 'in' keyword check for value/id """
-        if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.value == item, self))))
-        else:
-            return super(BaseScraperList, self).__contains__(item)
 
 
 class ResultSet(list):
@@ -385,62 +315,6 @@ class Dimension(BaseScraperObject):
                     self._allowed_values.append(DimensionValue(val,
                                                                Dimension()))
         return self._allowed_values
-
-
-class DimensionValue(BaseScraperObject):
-    """The value for a dimension inside a Resultset."""
-
-    def __init__(self, value, dimension, label=None):
-        """Value can be any type. dimension is a Dimension() object."""
-        self.value = value
-        # FIXME make these getter methods
-        self.dimension = dimension
-        self.label = label
-        self.id = dimension.id
-
-    def translate(self, dialect):
-        translation = self.value
-        if self.dimension.datatype is not None:
-            dt = self.dimension.datatype
-            if self.value in dt.allowed_values:
-                translations = dt.allowed_values[self.value]
-                translation = (",").join(translations.dialects[dialect].replace(",", "\,"))
-        return translation
-
-
-class ValueList(BaseScraperList):
-    """A list of dimension values.
-
-    allowed_values uses this class, to allow checking membership.
-    """
-
-    def __getitem__(self, key):
-        """Make it possible to get value by value or value identity."""
-        if isinstance(key, six.string_types):
-            if isinstance(key, unicode):
-                def f(x):
-                    return (x.value == key)
-            else:
-                def f(x):
-                    return (x.value == unicode(key, encoding="utf-8"))
-        elif isinstance(key, DimensionValue):
-            def f(x):
-                return (x is key)
-        else:
-            return list.__getitem__(self, key)
-        try:
-            val = next(filter(f, self))
-            return val
-        except IndexError:
-            # No such id
-            raise NoSuchItem("No such value")
-
-    def __contains__(self, item):
-        """ in should look for value, not id. """
-        if isinstance(item, six.string_types):
-            return bool(len(list(filter(lambda x: x.value == item, self))))
-        else:
-            return super(ValueList, self).__contains__(item)
 
 
 class ItemList(BaseScraperList):
