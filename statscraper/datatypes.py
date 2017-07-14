@@ -8,6 +8,7 @@ from csvkit import reader as CsvReader
 from .exceptions import NoSuchDatatype
 from .DimensionValue import DimensionValue
 from .ValueList import ValueList
+from .compat import StringIO
 import os
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -48,12 +49,6 @@ class Datatype(object):
                                                self,
                                                label=row["label"])
                         dialects = {x: None for x in self.dialects}
-
-                        # TODO: Shouldn't this be moved to the top?
-                        try:
-                            from StringIO import StringIO
-                        except ImportError:
-                            from io import StringIO
 
                         for d in dialect_names:
                             f = StringIO(row[d])
