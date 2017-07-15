@@ -21,7 +21,7 @@ u"""
  A number of hooks are avaiable for more advanced scrapers. These are called
  by adding the on decorator on a method:
 
-  @on("up")
+  @BaseScraper.on("up")
   def my_method(self):
     # Do something when the cusor moves up one level
 
@@ -32,7 +32,7 @@ from json import dumps
 import pandas as pd
 from collections import deque
 from copy import copy
-from .exceptions import NoSuchItem
+from .exceptions import NoSuchItem, InvalidID
 from .datatypes import Datatype
 from .BaseScraperObject import BaseScraperObject
 from .BaseScraperList import BaseScraperList
@@ -88,14 +88,13 @@ class ResultSet(list):
     def append(self, val):
         """Connect any new results to the resultset.
 
-        We will also add a datatype here, so that each result can handle
+        This is where all the heavy lifting is done for creating results:
+         - We add a datatype here, so that each result can handle
         validation etc independently. This is so that scraper authors
         don't need to worry about creating and passing around datatype objects.
-
-        As the scraper author yields result objects, we append them to
+         - As the scraper author yields result objects, we append them to
         a resultset.
-
-        This is also where we normalize dialects.
+         - This is also where we normalize dialects.
         """
         val.resultset = self
         val.dataset = self.dataset

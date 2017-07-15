@@ -76,7 +76,7 @@ A number of hooks are avaiable for more advanced scrapers. These are called by a
 
 .. code:: python
 
-  @on("up")
+  @BaseScraper.on("up")
   def my_method(self):
     # Do something when the user moves up one level
 
