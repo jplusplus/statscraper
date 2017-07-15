@@ -66,6 +66,19 @@ class NestedScraper(Scraper):
             raise Exception("This can not possibly happen.")
 
 
+class CallbackScraper(Scraper):
+    """A scraper with callbacks
+    """
+
+    @BaseScraper.on("init")
+    def initiation_code(self):
+        self.initiated = True
+
+    def _fetch_itemslist(self, item):
+        yield Dataset("Dataset_1")
+        yield Dataset("Dataset_2")
+
+
 class TestBaseScraper(TestCase):
     """Testing base functionality."""
 
@@ -225,3 +238,8 @@ class TestBaseScraper(TestCase):
         self.assertTrue(len(dataset_2.data))
 
         self.assertTrue(len(dataset_1.data))
+
+    def test_callbacks(self):
+        """Extending the basescraper."""
+        scraper = CallbackScraper()
+        self.assertTrue(scraper.initiated)
