@@ -538,12 +538,11 @@ class BaseScraper(Collection):
         """Select a child item by id (str), reference or index."""
         if self.items:
             try:
-                # Move cursor to new item, and reset the cached list of subitems
                 self.current_item = self.items[id_]
             except (StopIteration, IndexError, NoSuchItem):
                 raise NoSuchItem
             for f in self._hooks["select"]:
-                f(self)
+                f(self, id_)
         return self
 
     def _fetch_itemslist(self, item):
