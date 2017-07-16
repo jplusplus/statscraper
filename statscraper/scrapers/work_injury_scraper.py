@@ -20,18 +20,37 @@ class WorkInjuries(BaseScraper):
 
     @BaseScraper.on("select")
     def switch_dataset(self, id_):
-        xpath = "//div[@title='%s']" % id_
-        # `id_` can be either "Arbetsolycka" or "Arbetssjukdom"
+        (c, r, p) = self.current_item.blob
+
+        # Select collection
+        xpath = "//div[@title='%s']" % c
+        # `c` can be either "Arbetsolycka" or "Arbetssjukdom"
         button = self.browser.find_element_by_xpath(xpath)
         button.click()
 
+        # Select region
+        # Select period
+
     def _fetch_itemslist(self, item):
-        """ We define two datasets:
+        """ We define two collection:
         - Number of work injuries ("Arbetsolycka")
         - Number of workrelated diseases ("Arbetssjukdom")
+        Each contains four datasets:
+        - Per municipality and year
+        - Per county and year
+        - Per municipality and month
+        - Per municipality and year
         """
-        yield Dataset("Arbetsolycka")
-        yield Dataset("Arbetssjukdom")
+        if item.is_root:
+            for c in ["Arbetsolycka", "Arbetssjukdom"]:
+                yield Dataset(c, blob=(c, None, None))
+        else:
+            c = item.id
+            for r in ["kommun", "län"]:
+                for p in ["år", "månad"]:
+                    yield Dataset("%s-%s-%s" % (c, r, p),
+                                  blob=(c, r, p),
+                                  label="%s, antal per %s och %s" % (c, r, p))
 
     def _fetch_data(self, dataset, query=None):
         yield Result(37, {"test": "test"})
