@@ -10,6 +10,7 @@ class TestInjuries(TestCase):
         self.scraper = WorkInjuries()
 
     def test_can_fetch(self):
-        dataset = self.scraper[1]  # "Arbetssjukdomar"
+        collection = self.scraper[1]  # "Arbetssjukdomar"
+        dataset = collection[3]
         data = dataset.data
         self.assertTrue(len(data))
