@@ -5,6 +5,8 @@
     This is an example of a scraper using Selenium.
 """
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from statscraper import BaseScraper, Collection, Dataset, Result
 from tempfile import gettempdir
 
@@ -15,9 +17,15 @@ class WorkInjuries(BaseScraper):
     def initiate_browser(self):
 
         profile = webdriver.FirefoxProfile()
-        profile.set_preference('browser.download.folderList', 2)  # custom download location
-        profile.set_preference('browser.download.manager.showWhenStarting', False)  # No download dialogue
+        # Set download location, avoid download dialogues if possible
+        # Different settings for different browser versions
+        profile.set_preference('browser.download.folderList', 2)
+        profile.set_preference('browser.download.manager.showWhenStarting', False)
+        profile.set_preference('browser.download.manager.closeWhenDone', True)
         profile.set_preference('browser.download.dir', gettempdir())
+        profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream;application/vnd.ms-excel")
+        profile.set_preference("browser.helperApps.alwaysAsk.force", False)
+        profile.set_preference("browser.download.manager.useWindow", False)
 
         self.browser = webdriver.Firefox(profile)
         self.browser.get('http://webbstat.av.se')
@@ -90,5 +98,9 @@ class WorkInjuries(BaseScraper):
         self.browser\
             .find_element_by_xpath("//div[@title='Skicka till Excel']")\
             .click()
+
+        actions = ActionChains(self.browser)
+        actions.send_keys(Keys.RETURN)
+        actions.perform()
         # TODO: Download and parse Excelfile
         yield Result(37, {"test": "test"})
