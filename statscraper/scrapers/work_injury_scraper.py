@@ -6,13 +6,20 @@
 """
 from selenium import webdriver
 from statscraper import BaseScraper, Collection, Dataset, Result
+from tempfile import gettempdir
 
 
 class WorkInjuries(BaseScraper):
 
     @BaseScraper.on("init")
     def initiate_browser(self):
-        self.browser = webdriver.Firefox()
+
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('browser.download.folderList', 2)  # custom download location
+        profile.set_preference('browser.download.manager.showWhenStarting', False)  # No download dialogue
+        profile.set_preference('browser.download.dir', gettempdir())
+
+        self.browser = webdriver.Firefox(profile)
         self.browser.get('http://webbstat.av.se')
         # Selenium has trouble understanding when this page is loaded,
         # so wait for 5 extra seconds, just in case
@@ -36,21 +43,25 @@ class WorkInjuries(BaseScraper):
 
         # select Kommun or Län
         xpath = '//div[@class="QvContent"]/div[@class="QvGrid"]//div[@title="Visa tabell per:"]'
-        target = self.browser.find_element_by_xpath(xpath)
-        target.click()
+        self.browser\
+            .find_element_by_xpath(xpath)\
+            .click()
         region = "Kommun" if r == "kommun" else "Län"
         xpath = "//div[@class='QvListbox']//div[@title='%s']" % region
-        target = self.browser.find_element_by_xpath(xpath)
-        target.click()
+        self.browser\
+            .find_element_by_xpath(xpath)\
+            .click()
 
         # select Månad or År
         xpath = '//div[@class="QvContent"]/div[@class="QvGrid"]//div[@title="Tidsenhet:"]'
-        target = self.browser.find_element_by_xpath(xpath)
-        target.click()
+        self.browser\
+            .find_element_by_xpath(xpath)\
+            .click()
         period = "Månad" if p == "månad" else "År och månad"
         xpath = "//div[@class='QvListbox']//div[@title='%s']" % period
-        target = self.browser.find_element_by_xpath(xpath)
-        target.click()
+        self.browser\
+            .find_element_by_xpath(xpath)\
+            .click()
 
     def _fetch_itemslist(self, item):
         """ We define two collection:
@@ -62,7 +73,6 @@ class WorkInjuries(BaseScraper):
         - Per municipality and month
         - Per municipality and year
         """
-        print "dags att hämta items för %s" % item
         if item.is_root:
             for c in ["Arbetsolycka", "Arbetssjukdom"]:
                 yield Collection(c, blob=(c, None, None))
@@ -75,6 +85,10 @@ class WorkInjuries(BaseScraper):
                                   label="%s, antal per %s och %s" % (c, r, p))
 
     def _fetch_data(self, dataset, query=None):
-        (c, r, p) = self.blob
+        (c, r, p) = dataset.blob
+
+        self.browser\
+            .find_element_by_xpath("//div[@title='Skicka till Excel']")\
+            .click()
         # TODO: Download and parse Excelfile
         yield Result(37, {"test": "test"})
