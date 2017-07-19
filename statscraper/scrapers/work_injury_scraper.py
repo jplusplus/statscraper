@@ -5,7 +5,7 @@
     This is an example of a scraper using Selenium.
 """
 from selenium import webdriver
-from statscraper import BaseScraper, Dataset, Result
+from statscraper import BaseScraper, Collection, Dataset, Result
 
 
 class WorkInjuries(BaseScraper):
@@ -16,6 +16,12 @@ class WorkInjuries(BaseScraper):
         self.browser.get('http://webbstat.av.se')
         # Selenium has trouble understanding when this page is loaded,
         # so wait for 5 extra seconds, just in case
+        self.browser.implicitly_wait(5)
+        detailed_cls = "Document_TX_GOTOTAB_Avancerad"
+        self.browser\
+            .find_element_by_class_name(detailed_cls)\
+            .find_element_by_tag_name("td")\
+            .click()
         self.browser.implicitly_wait(5)
 
     @BaseScraper.on("select")
@@ -28,8 +34,23 @@ class WorkInjuries(BaseScraper):
         button = self.browser.find_element_by_xpath(xpath)
         button.click()
 
-        # Select region
-        # Select period
+        # select Kommun or Län
+        xpath = '//div[@class="QvContent"]/div[@class="QvGrid"]//div[@title="Visa tabell per:"]'
+        target = self.browser.find_element_by_xpath(xpath)
+        target.click()
+        region = "Kommun" if r == "kommun" else "Län"
+        xpath = "//div[@class='QvListbox']//div[@title='%s']" % region
+        target = self.browser.find_element_by_xpath(xpath)
+        target.click()
+
+        # select Månad or År
+        xpath = '//div[@class="QvContent"]/div[@class="QvGrid"]//div[@title="Tidsenhet:"]'
+        target = self.browser.find_element_by_xpath(xpath)
+        target.click()
+        period = "Månad" if p == "månad" else "År och månad"
+        xpath = "//div[@class='QvListbox']//div[@title='%s']" % period
+        target = self.browser.find_element_by_xpath(xpath)
+        target.click()
 
     def _fetch_itemslist(self, item):
         """ We define two collection:
@@ -41,9 +62,10 @@ class WorkInjuries(BaseScraper):
         - Per municipality and month
         - Per municipality and year
         """
+        print "dags att hämta items för %s" % item
         if item.is_root:
             for c in ["Arbetsolycka", "Arbetssjukdom"]:
-                yield Dataset(c, blob=(c, None, None))
+                yield Collection(c, blob=(c, None, None))
         else:
             c = item.id
             for r in ["kommun", "län"]:
@@ -53,4 +75,6 @@ class WorkInjuries(BaseScraper):
                                   label="%s, antal per %s och %s" % (c, r, p))
 
     def _fetch_data(self, dataset, query=None):
+        (c, r, p) = self.blob
+        # TODO: Download and parse Excelfile
         yield Result(37, {"test": "test"})
