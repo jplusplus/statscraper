@@ -366,14 +366,14 @@ class Collection(Item):
         return self._items
 
     def __getitem__(self, key):
-        """Provide  bracket notation.
+        """Provide bracket notation.
 
-        collection["abc"] till return the item with id abc
+        collection["abc"] is shorthand for collection.items["abc"]
         """
         if self.scraper.current_item is not self:
             self._move_here()
         try:
-            return next(filter(lambda x: x.id == key, self.items))
+            return self.items[key]
         except IndexError:
             # No such id
             raise NoSuchItem("No such item in Collection")
