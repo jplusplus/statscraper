@@ -57,19 +57,26 @@ class WorkInjuries(BaseScraper):
         self.browser = webdriver.Firefox(profile)
 
         self.browser.get('http://webbstat.av.se')
+        detailed_cls = "Document_TX_GOTOTAB_Avancerad"
+        """ The button for expanded detailed options. This
+        also happens to be a good indicator as to wheter
+        all content is loaded.
+        """
+
         # Wait for a content element, and 3 extra seconds just in case
         WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
-            .until(EC.presence_of_element_located((By.ID, '41')))
+            .until(EC.presence_of_element_located((By.CLASS_NAME,
+                                                  detailed_cls)))
         self.browser.implicitly_wait(3)
 
-        detailed_cls = "Document_TX_GOTOTAB_Avancerad"
         self.browser\
             .find_element_by_class_name(detailed_cls)\
             .find_element_by_tag_name("td")\
             .click()
         # Wait for a content element, and 3 extra seconds just in case
         WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
-            .until(EC.presence_of_element_located((By.ID, '41')))
+            .until(EC.presence_of_element_located((By.CLASS_NAME,
+                                                   detailed_cls)))
         self.browser.implicitly_wait(3)
 
     @BaseScraper.on("select")
