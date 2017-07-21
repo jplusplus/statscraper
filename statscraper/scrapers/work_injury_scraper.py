@@ -9,11 +9,11 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-from statscraper import BaseScraper, Collection, Dataset, Result
+from statscraper import BaseScraper, Collection, Dataset, Result, Dimension
 import os
 from glob import iglob
 from uuid import uuid4
-from openpyxl import load_workbook
+from xlrd import open_workbook
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
@@ -111,6 +111,22 @@ class WorkInjuries(BaseScraper):
             .find_element_by_xpath(xpath)\
             .click()
 
+    def _fetch_dimensions(self, dataset):
+        """ Declaring available dimensions like this is not mandatory,
+         but nice, especially if they differ from dataset to dataset.
+
+         If you are using a built in datatype, you can specify the dialect
+         you are expecting, to have values normalized. This scraper will
+         look for Swedish month names (e.g. 'Januari'), but return them
+         according to the Statscraper standard ('january').
+        """
+        yield Dimension(u"region",
+                        label="municipality or county",
+                        datatype="region",
+                        dialect="arbetsmiljoverket")
+        yield Dimension(u"period",
+                        label="Year or month")
+
     def _fetch_itemslist(self, item):
         """ We define two collection:
         - Number of work injuries ("Arbetsolycka")
@@ -144,22 +160,26 @@ class WorkInjuries(BaseScraper):
         actions.send_keys(Keys.RETURN)
         actions.perform()
 
-        # WARNING: Assuming the latest download to be our file.
+        # WARNING: Assuming the latest downloaded xls to be our file.
         # This is obviously not 100 % water proof.
-        latest_download = min(iglob(self.tempdir), key=os.path.getctime)
-        workbook = load_workbook(latest_download)
-        sheet = workbook.active
-        periods = sheet.row_values(0)[2, -1]
-        print periods
-        for rownum in range(1, sheet.nrows):
-            row = sheet.row_values(rownum)
-            region = row.pop().value
+        latest_download = max(iglob(os.path.join(self.tempdir, "*.xls")),
+                              key=os.path.getctime)
+        workbook = open_workbook(latest_download)
+        sheet = workbook.sheet_by_index(0)
+        periods = sheet.row_values(0)[2:-1]
+        periods = [int(x) for x in periods]
+        for n in range(1, sheet.nrows):
+            row = sheet.row_values(n)
+            region = row.pop(0)
+            row.pop(0)  # empty due to merged cells
             if region == "Total":
                 break
-            for col in row[-1]:
-                print "A value", col.value
-
-        exit()
-        # TODO: Open and parse Excelfile
-        # The Excel-file should now be in the default temp dir of the system
-        yield Result(37, {"test": "test"})
+            i = 0
+            for col in row[:-1]:
+                yield Result(
+                    int(col),
+                    {
+                        "region": region,
+                        "period": periods[i],
+                    }
+                )
