@@ -149,9 +149,16 @@ class WorkInjuries(BaseScraper):
         latest_download = min(iglob(self.tempdir), key=os.path.getctime)
         workbook = load_workbook(latest_download)
         sheet = workbook.active
-        print latest_download
-        for rownum in xrange(sheet.nrows):
-            print sheet.row_values(rownum)
+        periods = sheet.row_values(0)[2, -1]
+        print periods
+        for rownum in range(1, sheet.nrows):
+            row = sheet.row_values(rownum)
+            region = row.pop().value
+            if region == "Total":
+                break
+            for col in row[-1]:
+                print "A value", col.value
+
         exit()
         # TODO: Open and parse Excelfile
         # The Excel-file should now be in the default temp dir of the system
