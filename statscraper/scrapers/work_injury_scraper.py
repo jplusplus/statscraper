@@ -3,6 +3,7 @@
     http://webbstat.av.se
 
     This is an example of a scraper using Selenium.
+    TODO: Move some useful functionality to a SeleciumFirefoxScraper
 """
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -15,11 +16,10 @@ from uuid import uuid4
 from openpyxl import load_workbook
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 
 DEFAULT_TEMPDIR = "./tmp"
 TEMPDIR_ENVVAR = "STATSCRAPER_TEMPDIR"
-PAGELOAD_TIMEOUT = 50  # seconds
+PAGELOAD_TIMEOUT = 90  # seconds
 
 
 class WorkInjuries(BaseScraper):
@@ -55,10 +55,9 @@ class WorkInjuries(BaseScraper):
         profile.set_preference("browser.download.manager.useWindow", False)
 
         self.browser = webdriver.Firefox(profile)
-        self.browser.get('http://webbstat.av.se')
-        # Selenium has trouble understanding when this page is loaded,
-        # so wait for 3 extra seconds, just in case
 
+        self.browser.get('http://webbstat.av.se')
+        # Wait for a content element, and 3 extra seconds just in case
         WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
             .until(EC.presence_of_element_located((By.ID, '41')))
         self.browser.implicitly_wait(3)
@@ -68,9 +67,9 @@ class WorkInjuries(BaseScraper):
             .find_element_by_class_name(detailed_cls)\
             .find_element_by_tag_name("td")\
             .click()
+        # Wait for a content element, and 3 extra seconds just in case
         WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
             .until(EC.presence_of_element_located((By.ID, '41')))
-
         self.browser.implicitly_wait(3)
 
     @BaseScraper.on("select")
