@@ -7,22 +7,49 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.wait import WebDriverWait
 from statscraper import BaseScraper, Collection, Dataset, Result
-from tempfile import gettempdir
+import os
+from glob import iglob
+from uuid import uuid4
+from openpyxl import load_workbook
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+
+DEFAULT_TEMPDIR = "./tmp"
+TEMPDIR_ENVVAR = "STATSCRAPER_TEMPDIR"
+PAGELOAD_TIMEOUT = 50  # seconds
 
 
 class WorkInjuries(BaseScraper):
 
+    tempdir = "./tmp"
+
     @BaseScraper.on("init")
     def initiate_browser(self):
 
+        # Create a unique tempdir for downloaded files
+        tempdir = os.getenv(TEMPDIR_ENVVAR, DEFAULT_TEMPDIR)
+        tempsubdir = uuid4().hex
+        # TODO: Remove this directory when finished!
+        self.tempdir = os.path.join(tempdir, tempsubdir)
+        try:
+            # Try and create directory before checking if it exists,
+            # to avoid race condition
+            os.makedirs(self.tempdir)
+        except OSError:
+            if not os.path.isdir(self.tempdir):
+                raise
+
         profile = webdriver.FirefoxProfile()
         # Set download location, avoid download dialogues if possible
-        # Different settings for different browser versions
+        # Different settings needed for different Firefox versions
+        # This will be a long list...
         profile.set_preference('browser.download.folderList', 2)
         profile.set_preference('browser.download.manager.showWhenStarting', False)
         profile.set_preference('browser.download.manager.closeWhenDone', True)
-        profile.set_preference('browser.download.dir', gettempdir())
+        profile.set_preference('browser.download.dir', self.tempdir)
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream;application/vnd.ms-excel")
         profile.set_preference("browser.helperApps.alwaysAsk.force", False)
         profile.set_preference("browser.download.manager.useWindow", False)
@@ -30,14 +57,21 @@ class WorkInjuries(BaseScraper):
         self.browser = webdriver.Firefox(profile)
         self.browser.get('http://webbstat.av.se')
         # Selenium has trouble understanding when this page is loaded,
-        # so wait for 5 extra seconds, just in case
-        self.browser.implicitly_wait(5)
+        # so wait for 3 extra seconds, just in case
+
+        WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
+            .until(EC.presence_of_element_located((By.ID, '41')))
+        self.browser.implicitly_wait(3)
+
         detailed_cls = "Document_TX_GOTOTAB_Avancerad"
         self.browser\
             .find_element_by_class_name(detailed_cls)\
             .find_element_by_tag_name("td")\
             .click()
-        self.browser.implicitly_wait(5)
+        WebDriverWait(self.browser, PAGELOAD_TIMEOUT)\
+            .until(EC.presence_of_element_located((By.ID, '41')))
+
+        self.browser.implicitly_wait(3)
 
     @BaseScraper.on("select")
     def switch_dataset(self, id_):
@@ -98,9 +132,21 @@ class WorkInjuries(BaseScraper):
         self.browser\
             .find_element_by_xpath("//div[@title='Skicka till Excel']")\
             .click()
-
+        # Press enter twice in case of any prompts
         actions = ActionChains(self.browser)
         actions.send_keys(Keys.RETURN)
+        actions.send_keys(Keys.RETURN)
         actions.perform()
-        # TODO: Download and parse Excelfile
+
+        # WARNING: Assuming the latest download to be our file.
+        # This is obviously not 100 % water proof.
+        latest_download = min(iglob(self.tempdir), key=os.path.getctime)
+        workbook = load_workbook(latest_download)
+        sheet = workbook.active
+        print latest_download
+        for rownum in xrange(sheet.nrows):
+            print sheet.row_values(rownum)
+        exit()
+        # TODO: Open and parse Excelfile
+        # The Excel-file should now be in the default temp dir of the system
         yield Result(37, {"test": "test"})
