@@ -4,6 +4,10 @@
 
     This is an example of a scraper using Selenium.
     TODO: Move some useful functionality to a SeleciumFirefoxScraper
+
+    To change download location:
+       export STATSCRAPER_TEMPDIR="/home/leo/skrejperpark/statscraper/tmp"
+
 """
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -12,6 +16,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from statscraper import BaseScraper, Collection, Dataset, Result, Dimension
 import os
 from glob import iglob
+from time import sleep
 from uuid import uuid4
 from xlrd import open_workbook
 from selenium.webdriver.support import expected_conditions as EC
@@ -154,17 +159,20 @@ class WorkInjuries(BaseScraper):
         self.browser\
             .find_element_by_xpath("//div[@title='Skicka till Excel']")\
             .click()
-        # Press enter twice in case of any prompts
+        # Press enter trice in case of any prompts
         actions = ActionChains(self.browser)
         actions.send_keys(Keys.RETURN)
         actions.send_keys(Keys.RETURN)
         actions.send_keys(Keys.RETURN)
         actions.perform()
         # Wait for download
-        # TODO: We should check when file is actually downloaded
-        print "wait start"
-        self.browser.implicitly_wait(PAGELOAD_TIMEOUT)
-        print "wait end"
+        i = 0
+        while not os.listdir(self.tempdir):
+            sleep(1)
+            i += 1
+            if i > PAGELOAD_TIMEOUT:
+                # TODO: Use a suitable basescraper exception
+                raise Exception("Download timed out")
 
         # WARNING: Assuming the latest downloaded xls to be our file.
         # This is obviously not 100 % water proof.
