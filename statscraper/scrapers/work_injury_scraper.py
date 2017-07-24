@@ -158,7 +158,13 @@ class WorkInjuries(BaseScraper):
         actions = ActionChains(self.browser)
         actions.send_keys(Keys.RETURN)
         actions.send_keys(Keys.RETURN)
+        actions.send_keys(Keys.RETURN)
         actions.perform()
+        # Wait for download
+        # TODO: We should check when file is actually downloaded
+        print "wait start"
+        self.browser.implicitly_wait(PAGELOAD_TIMEOUT)
+        print "wait end"
 
         # WARNING: Assuming the latest downloaded xls to be our file.
         # This is obviously not 100 % water proof.
