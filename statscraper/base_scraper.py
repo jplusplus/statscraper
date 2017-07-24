@@ -109,11 +109,11 @@ class ResultSet(list):
                     d = dataset_dimensions[k]
 
                 # Normalize if we have a datatype and a foreign dialect
-                normalized_value = str(v)
+                normalized_value = unicode(v)
                 if d.dialect and d.datatype:
                     if d.dialect in d.datatype.dialects:
                         for av in d.allowed_values:
-                            if str(v) in av.dialects[d.dialect]:
+                            if unicode(v) in av.dialects[d.dialect]:
                                 normalized_value = av.value
                                 # Use first match
                                 # We do not support multiple matches
