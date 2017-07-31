@@ -1,7 +1,7 @@
 # encoding: utf-8
 from unittest import TestCase
 
-from statscraper.scrapers.SMHIScraper import SMHIScraper, Collection, API, SMHIDataset, Station
+from statscraper.scrapers.SMHIScraper import SMHI, Collection, API, SMHIDataset, Station
 
 
 class TestSMHI(TestCase):
@@ -10,7 +10,7 @@ class TestSMHI(TestCase):
         """Setting up scraper."""
 
     def test_fetch_api(self):
-        scraper = SMHIScraper()
+        scraper = SMHI()
         apis = scraper.items
         self.assertTrue(len(apis) > 0)
         api = apis[0]
@@ -24,7 +24,7 @@ class TestSMHI(TestCase):
 
     def test_fetch_dataset(self):
         u"""Moving to an “API”."""
-        scraper = SMHIScraper()
+        scraper = SMHI()
         api = scraper.get("Meteorological Observations")
         for dataset in api:
             self.assertFalse(dataset.label is None)
@@ -35,7 +35,7 @@ class TestSMHI(TestCase):
             self.assertEqual(len(dataset.dimensions), 4)
 
     def test_fetch_allowed_values(self):
-        scraper = SMHIScraper()
+        scraper = SMHI()
         api = scraper.get("Meteorological Observations")
         dataset = api.items[0]
         stations = dataset.dimensions["station"].allowed_values
@@ -55,7 +55,7 @@ class TestSMHI(TestCase):
 
 
     def test_query(self):
-        scraper = SMHIScraper()
+        scraper = SMHI()
         api = scraper.get("Meteorological Observations")
         dataset = api.items[0]
         data = dataset.fetch({"station": u"Växjö A", "period": "latest-months"})

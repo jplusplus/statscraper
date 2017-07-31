@@ -21,7 +21,7 @@ PERIODS = [
 ]
 
 
-class SMHIScraper(BaseScraper):
+class SMHI(BaseScraper):
     base_url = "http://opendata.smhi.se/apidocs/"
 
     def _fetch_itemslist(self, current_item):
