@@ -9,7 +9,7 @@ import csvkit as csv
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-from statscraper import BaseScraper, Collection, Dataset
+from statscraper import BaseScraper, Collection, Dimension, Dataset, Result, ResultSet, NoSuchItem, DimensionValue
 
 VERSION = "1.0"
 # LEVELS = ["api","parameter"]
@@ -35,29 +35,49 @@ class SMHIScraper(BaseScraper):
                     label = item_html.select_one("h2").text
                 except Exception:
                     continue
-                yield API(label, html_blob=item_html)
+                yield API(label, blob=item_html)
         else:
             # parameter = current_item.parent
             # data = requests.get(parameter.url)
-            for resource in current_item.blob["resource"]:
+            for resource in current_item.json["resource"]:
                 label = u"{}, {}".format(resource["title"], resource["summary"])
                 yield SMHIDataset(label, blob=resource)
 
     def _fetch_dimensions(self, parameter):
         yield(Dimension("timepoint"))
-        yield(Dimension("station"))
+        yield(StationDimension("station"))
         yield(Dimension("period", allowed_values=PERIODS))
+        yield(Dimension("quality", allowed_values=["Y","G"]))
 
-    def _fetch_data(self, dataset, query={}):
+    def _fetch_allowed_values(self, dimension):
+        if dimension.id == "station":
+            for station in dimension.dataset.json["station"]:
+                yield Station(station["key"], dimension,
+                    label=station["name"],blob=station)
+
+        else:
+            yield None
+
+    def _fetch_data(self, dataset, query={}, include_inactive_stations=False):
         """ Should yield dataset rows
         """
         data = []
-        parameter = self.current_item
+        parameter = dataset
+        station_dim = dataset.dimensions["station"]
+        all_stations = station_dim.allowed_values
         # Step 1: Prepare query
         if "station" not in query:
-            query["station"] = []
-
-        all_stations = len(query["station"]) == 0
+            if include_inactive_stations:
+                # Get all stations
+                query["station"] = list(all_stations)
+            else:
+                # Get only active stations
+                query["station"] = list(station_dim.active_stations())
+        else:
+            if not isinstance(query["station"], list):
+                query["station"] = [query["station"]]
+            # Make sure that the queried stations actually exist
+            query["station"] = [ all_stations.get_by_label(x) for x in query["station"]]
 
         if "period" not in query:
             # TODO: I'd prepare to do dataset.get("period").allowed_values here
@@ -72,32 +92,17 @@ class SMHIScraper(BaseScraper):
                 raise Exception(msg)
 
 
-
-        # Step 2: Get ids for all statiosn
-        station_data = dataset.json_data
-        stations = []
-
-        for station in station_data["station"]:
-            if station["name"] in query["station"] or all_stations:
-                station = (station["key"], station["name"])
-                stations.append(station)
-
-        if len(stations) == 0:
-            # TODO: More relevant exception class
-            msg = u"No stations matched query: {}".format(query["station"])
-            raise Exception(msg)
-
         # Step 3: Get data
-        n_queries = len(stations) * len(query["period"])
+        n_queries = len(query["station"]) * len(query["period"])
+        counter = 0
         print("Fetching data with {} queries.".format(n_queries))
-        for station_key, station_name in stations:
+        for station in query["station"]:
             for period in query["period"]:
-
                 url = dataset.url\
                     .replace(".json", "/station/{}/period/{}/data.csv"\
-                        .format(station_key, period))
+                        .format(station.key, period))
 
-                print("/GET {}".format(url))
+                print("/GET {} ".format(url))
                 r = requests.get(url)
 
                 if r.status_code == 200:
@@ -116,33 +121,38 @@ class SMHIScraper(BaseScraper):
                         # HACK!
                         # Should rather be something like parameter.col_name
                         value_col = parameter.id.split(",")[0]
-                        data.append({
+                        datapoint = Result(row[value_col], {
                             "timepoint": timepoint,
                             "quality": row["Kvalitet"],
                             "parameter": parameter.id,
-                            "station": station_name,
+                            "station": station.label,
                             "period": period,
-                            "value": row[value_col],
                             })
+
+                        yield datapoint
 
                 elif r.status_code == 404:
                     print("Warning no data at {}".format(url))
                 else:
                     raise Exception("Connection error for {}".format(url))
 
-        return data
 
 class API(Collection):
+    """
+    """
     level = "api"
 
-    def __init__(self, _id, html_blob=None):
-        self.id = _id
-        self.key = html_blob.select_one("a").get("href").replace("/index.html", "")
-        self.url = "http://opendata-download-{}.smhi.se/api/version/{}.json"\
-            .format(self.key, VERSION)
+    @property
+    def key(self):
+        return self.blob.select_one("a").get("href").replace("/index.html", "")
 
     @property
-    def blob(self):
+    def url(self):
+        return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
+                .format(self.key, VERSION)
+
+    @property
+    def json(self):
         return self._get_json_blob()
 
     def _get_json_blob(self):
@@ -159,6 +169,31 @@ class API(Collection):
         return r.json()
 
 
+class StationDimension(Dimension):
+    def active_stations(self):
+        """ Get a list of all active stations
+        """
+        return (x for x in self.allowed_values if x.is_active)
+
+class Station(DimensionValue):
+    def __init__(self, value, dimension, label=None, blob=None):
+        super(Station, self).__init__(value, dimension, label=label)
+
+        self.key = value
+        self.summary = blob["summary"]
+        self.updated = datetime.fromtimestamp(blob["updated"]/1000)
+
+        # Was there an update in the last 100 days?
+        self.is_active = (datetime.now() - self.updated).days < 100
+
+    def __repr__(self):
+        if self.is_active:
+            status = "active"
+        else:
+            status = "inactive"
+        return "<Station: {} ({})>"\
+            .format(self.label.encode("utf-8"), status)
+
 class SMHIDataset(Dataset):
     @property
     def key(self):
@@ -166,16 +201,18 @@ class SMHIDataset(Dataset):
 
     @property
     def url(self):
-        api = self.scraper.parent
+        api = self.parent
         return "http://opendata-download-{}.smhi.se/api/version/{}/parameter/{}.json"\
             .format(api.key, VERSION, self.key)
 
     @property
-    def json_data(self):
-        if not hasattr(self, "_json_data"):
+    def json(self):
+        if not hasattr(self, "_json"):
             print(self.url)
-            self._json_data = requests.get(self.url).json()
-        return self._json_data
+            self._json = requests.get(self.url).json()
+        return self._json
+
+
 
 class DataCsv(object):
     def __init__(self):
