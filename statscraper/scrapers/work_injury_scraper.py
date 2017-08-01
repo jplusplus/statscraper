@@ -173,6 +173,7 @@ class WorkInjuries(BaseScraper):
             if i > PAGELOAD_TIMEOUT:
                 # TODO: Use a suitable basescraper exception
                 raise Exception("Download timed out")
+        sleep(20)  # TODO: We need to check that the file is complete.
 
         # WARNING: Assuming the latest downloaded xls to be our file.
         # This is obviously not 100 % water proof.
