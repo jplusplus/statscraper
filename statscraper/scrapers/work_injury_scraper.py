@@ -110,7 +110,7 @@ class WorkInjuries(BaseScraper):
         self.browser\
             .find_element_by_xpath(xpath)\
             .click()
-        period = "Månad" if p == "månad" else "År och månad"
+        period = "Månad" if p == u"månad" else "År och månad"
         xpath = "//div[@class='QvListbox']//div[@title='%s']" % period
         self.browser\
             .find_element_by_xpath(xpath)\
@@ -147,11 +147,11 @@ class WorkInjuries(BaseScraper):
                 yield Collection(c, blob=(c, None, None))
         else:
             c = item.id
-            for r in ["kommun", "län"]:
-                for p in ["år", "månad"]:
-                    yield Dataset("%s-%s-%s" % (c, r, p),
+            for r in [u"kommun", u"län"]:
+                for p in [u"år", u"månad"]:
+                    yield Dataset(u"%s-%s-%s" % (c, r, p),
                                   blob=(c, r, p),
-                                  label="%s, antal per %s och %s" % (c, r, p))
+                                  label=u"%s, antal per %s och %s" % (c, r, p))
 
     def _fetch_data(self, dataset, query=None):
         (c, r, p) = dataset.blob
