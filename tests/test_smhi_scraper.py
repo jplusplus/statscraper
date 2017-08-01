@@ -1,6 +1,6 @@
 # encoding: utf-8
 from unittest import TestCase
-
+import pandas as pd
 from statscraper.scrapers.SMHIScraper import SMHI, Collection, API, SMHIDataset, Station
 
 
@@ -61,5 +61,47 @@ class TestSMHI(TestCase):
         data = dataset.fetch({"station": u"Växjö A", "period": "latest-months"})
         self.assertTrue(len(data) > 0)
 
+
+    def test_get_stations_list(self):
+        scraper = SMHI()
+        api = scraper.get("Meteorological Observations")
+        dataset = api.items[0]
+        stations = dataset.get_stations_list()
+        self.assertTrue(len(stations) > 0)
+        for station in stations:
+            self.assertTrue("longitude" in station)
+
+        active_stations = dataset.get_active_stations_list()
+
+        self.assertTrue(len(active_stations) > 0)
+        self.assertTrue(len(stations) > len(active_stations))
+
+    def test_iterate_queries(self):
+        # Make same query to multiple datasets
+        scraper = SMHI()
+        api = scraper.get("Meteorological Observations")
+        datasets = [
+            u"Nederbördsmängd, summa, 1 gång per månad",
+            u"Lufttemperatur, medel, 1 gång per månad",
+        ]
+        dfs = []
+        for dataset_name in datasets:
+            query = {
+                "period": ["corrected-archive"],
+                "station": "Abisko"
+            }
+
+            res = api.get(dataset_name).fetch(query)
+            dfs.append(res.pandas)
+
+        # Merge the two resultsets to one dataframe
+        df = pd.concat(dfs)
+
+        # Make sure that both parameters (datasets) are in
+        # the final dataframe
+        parameters = df.default.unique()
+        self.assertTrue(len(parameters) == 2)
+        for parameter in parameters:
+            self.assertTrue(parameter in datasets)
 
 
