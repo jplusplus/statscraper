@@ -41,5 +41,5 @@ class DimensionValue(BaseScraperObject):
             dt = self.dimension.datatype
             if self.value in dt.allowed_values:
                 translations = dt.allowed_values[self.value]
-                translation = (",").join(translations.dialects[dialect].replace(",", "\,"))
+                translation = (",").join([x.replace(",", "\,") for x in translations.dialects[dialect]])
         return translation
