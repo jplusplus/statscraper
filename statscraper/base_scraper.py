@@ -386,10 +386,14 @@ class Collection(Item):
 class Dataset(Item):
     """A dataset. Can be empty."""
 
-    _data = {}  # We store one ResultSet for each unique query
+    _data = None  # We store one ResultSet for each unique query
     _dimensions = None
     dialect = None
     query = None
+
+    def __init__(self, id_, label=None, blob=None):
+        super(Dataset, self).__init__(id_, label, blob)
+        self._data = {}
 
     @property
     def items(self):
@@ -413,8 +417,14 @@ class Dataset(Item):
             self.query = query
 
         hash_ = self._hash
+        print ""
+        print query
+        print hash_
+        print self._data
+        print "---"
         if hash_ in self._data:
-            return self._data[hash_]
+            pass
+            # return self._data[hash_]
 
         if self.scraper.current_item is not self:
             self._move_here()
