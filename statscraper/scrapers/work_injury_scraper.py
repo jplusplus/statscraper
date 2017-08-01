@@ -6,7 +6,7 @@
     TODO: Move some useful functionality to a SeleciumFirefoxScraper
 
     To change download location:
-       export STATSCRAPER_TEMPDIR="/home/leo/skrejperpark/statscraper/tmp"
+       export STATSCRAPER_TEMPDIR="/path/to/temp/dir"
 
 """
 from selenium import webdriver
