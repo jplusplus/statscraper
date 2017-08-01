@@ -417,11 +417,6 @@ class Dataset(Item):
             self.query = query
 
         hash_ = self._hash
-        print ""
-        print query
-        print hash_
-        print self._data
-        print "---"
         if hash_ in self._data:
             pass
             # return self._data[hash_]
