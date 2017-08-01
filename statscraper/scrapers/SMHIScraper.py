@@ -21,7 +21,7 @@ PERIODS = [
 ]
 
 
-class SMHIScraper(BaseScraper):
+class SMHI(BaseScraper):
     base_url = "http://opendata.smhi.se/apidocs/"
 
     def _fetch_itemslist(self, current_item):
@@ -170,6 +170,7 @@ class API(Collection):
 
 
 class StationDimension(Dimension):
+
     def active_stations(self):
         """ Get a list of all active stations
         """
@@ -182,6 +183,7 @@ class Station(DimensionValue):
         self.key = value
         self.summary = blob["summary"]
         self.updated = datetime.fromtimestamp(blob["updated"]/1000)
+        self.blob = blob
 
         # Was there an update in the last 100 days?
         self.is_active = (datetime.now() - self.updated).days < 100
@@ -212,6 +214,31 @@ class SMHIDataset(Dataset):
             self._json = requests.get(self.url).json()
         return self._json
 
+
+    def get_stations_list(self):
+        """ Get a dict list of all stations with properties such as
+            latitude and longitude
+        """
+        stations = self.dimensions["station"].allowed_values
+        return self._format_station_list(stations)
+
+    def get_active_stations_list(self):
+        """ Get a dict list of all stations with properties such as
+            latitude and longitude
+        """
+        stations = self.dimensions["station"].active_stations()
+        return self._format_station_list(stations)
+
+
+    def _format_station_list(self, stations):
+        data = []
+        for station in stations:
+            json_data = station.blob
+            # Inlude all props but link
+            json_data.pop('link', None)
+            data.append(station.blob)
+
+        return data
 
 
 class DataCsv(object):
