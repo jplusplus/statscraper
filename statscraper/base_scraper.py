@@ -418,8 +418,7 @@ class Dataset(Item):
 
         hash_ = self._hash
         if hash_ in self._data:
-            pass
-            # return self._data[hash_]
+            return self._data[hash_]
 
         if self.scraper.current_item is not self:
             self._move_here()
