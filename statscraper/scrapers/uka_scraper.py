@@ -45,19 +45,25 @@ class UKA(BaseScraper):
             'municipalities': ["80"]
         }, ]
         for t in terms:
-            for c in counties:
-                for m in c["municipalities"]:
-                    html = requests.get(url % (t, c, m["id"])).text
+            for county in counties:
+                c = county["id"]
+                for m in county["municipalities"]:
+                    print t, c, m
+                    html = requests.get(url % (t, c, m)).text
                     soup = BeautifulSoup(html, 'html.parser')
                     table = soup.find("table")
-                    row = table.find_all("tr")[5:]
-                    cells = row.find_all("td")
-                    print cells[0].text,
-                    print cells[2].text
-                    """
-                    yield Result(value.text.encode("utf-8"), {
-                        "date": date,
-                        "month": month,
-                        "year": years[i],
-                    })
-                    """
+                    timestamp = soup.find("td", {'class': "nutabellgruppniva2"}).strip()
+                    if int(timestamp[2:]) > 50:
+                        year = "19" + timestamp[2:]
+                    else:
+                        year = "20" + timestamp[2:]
+
+                    rows = table.find_all("tr")[5:-2]
+                    for row in rows:
+                        cells = row.find_all("td")
+
+                        yield Result(cells[2].text.strip(), {
+                            "school": cells[0].text.strip(),
+                            "semester": timestamp[:2],
+                            "year": year,
+                        })
