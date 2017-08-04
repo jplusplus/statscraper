@@ -1,11 +1,12 @@
-id,description,value_type,allowed_values
-int,This datatype holds integer values,int,
-float,This datatype holds floating point values,float,
-bool,This datatype holds boolean values,bool,
-str,This datatype holds string values. Empty strings are considered null.,str,
-date,An ISO 8601 date/time stamp,date,
-gender,"A subjects gender, in most data by legal definition",str,genders
-marital_status,A subjects marital status,str,marital_statuses
-year,A (proleptic) gregorian year,int,
-month,A month in a (proleptic) gregorian year,str,periods/months
-region,An administrative territorial region.,str,regions
+"id","description","value_type","allowed_values"
+"int","This datatype holds integer values","int",
+"float","This datatype holds floating point values","float",
+"bool","This datatype holds boolean values","bool",
+"str","This datatype holds string values. Empty strings are considered null.","str",
+"date","An ISO 8601 date/time stamp","date",
+"gender","A subjects gender, in most data by legal definition","str","genders"
+"marital_status","A subjects marital status","str","marital_statuses"
+"year","A (proleptic) gregorian year","int",
+"month","A month in a (proleptic) gregorian year","str","periods/months"
+"academic_term","An academic term, e.g. a semester, trimester, etc","str","periods/academic-terms"
+"region","An administrative territorial region.","str","regions"

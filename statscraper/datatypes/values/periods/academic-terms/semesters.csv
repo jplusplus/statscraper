@@ -1,0 +1,3 @@
+"id","label","description","dialect:swedish","dialect:numeric"
+"semester_1","First semester","The first semester of the academic year, in a two term system. This semester will often, but not always, start in August, September, or October in the Northern Hemisphere, and in February or March in the Southern Hemiphere.","HT",1
+"semester_2","Second semester","The second semester of the academic year, in a two term system. This semester will often, but not always, start in January or February in the Northern Hemisphere, and in July, August, September, or October in the Southern Hemiphere.","VT",2
