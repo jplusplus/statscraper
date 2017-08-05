@@ -192,7 +192,7 @@ class Dimension(BaseScraperObject):
 
     def __init__(self, id_=None, label=None,
                  allowed_values=None, datatype=None,
-                 dialect=None):
+                 dialect=None, domain=None):
         """A single dimension.
 
         If allowed_values are specified, they will override any
