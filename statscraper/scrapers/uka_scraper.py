@@ -18,8 +18,8 @@ class UKA(BaseScraper):
             yield Collection("regional",
                              label="New students by area and school.")
         else:
-            yield Dataset("county",
-                          label="New students by county, school and semester.")
+            yield Dataset("municipality",
+                          label="Students by municipality, school, semester.")
 
     def _fetch_dimensions(self, dataset):
         """ Declaring available dimensions like this is not mandatory,
@@ -31,39 +31,53 @@ class UKA(BaseScraper):
          according to the Statscraper standard ('january').
         """
         yield Dimension(u"school")
-        yield Dimension(u"semester")
-        yield Dimension(u"year", datatype="year")
+        yield Dimension(u"year",
+                        datatype="year")
         yield Dimension(u"semester",
                         datatype="academic_term",
                         dialect="swedish")
+        yield Dimension(u"municipality",
+                        datatype="year",
+                        domain="sweden/municipalities")
 
     def _fetch_data(self, dataset, query=None):
         url = "http://statistik.uka.se/4.5d85793915901d205f935d0f.12.5d85793915901d205f965eab.portlet?action=resultat&view=resultTable&frageTyp=3&frageNr=240&tid=%s&grupp1=%s&grupp2=%s"
-        terms = [6]
-        counties = [{
-            'id': "10",
-            'municipalities': ["80"]
-        }, ]
+        thenmap_url = "http://api.thenmap.net/v1/se-7/data/%s?data_props=name|kommunkod"
+        terms = range(6, 53)  # 6 is 1993, the first year in the db
+        # TODO loop until out of results
         for t in terms:
-            for county in counties:
-                c = county["id"]
-                for m in county["municipalities"]:
-                    print t, c, m
-                    html = requests.get(url % (t, c, m)).text
-                    soup = BeautifulSoup(html, 'html.parser')
-                    table = soup.find("table")
-                    timestamp = soup.find("td", {'class': "nutabellgruppniva2"}).strip()
-                    if int(timestamp[2:]) > 50:
-                        year = "19" + timestamp[2:]
-                    else:
-                        year = "20" + timestamp[2:]
+            # Get all municipalities, and their codes, from this year
+            year = ((t - 5) / 2) + 1993
+            semester = ["HT", "VT"][6 % 2]
+            print year
+            municipalities = requests.get(thenmap_url % year).json()
+            for id_, municipality_ in municipalities["data"].items():
+                municipality = municipality_.pop()
+                code = municipality["kommunkod"].zfill(4)
+                c = code[:2]
+                m = code[2:]
+                print url % (t, c, m)
+                html = requests.get(url % (t, c, m)).text
+                soup = BeautifulSoup(html, 'html.parser')
+                table = soup.find("table")
+                """
+                timestamp = soup.find("td", {'class': "nutabellgruppniva2"}).strip()
+                if int(timestamp[2:]) > 50:
+                    parsed_year = "19" + timestamp[2:]
+                else:
+                    parsed_year = "20" + timestamp[2:]
+                if parsed_year != year:
+                    raise Exception("""
+#Recieved year does not match expected year (%s vs %s)."""
+#                                    % (parsed_year, year))
 
-                    rows = table.find_all("tr")[5:-2]
-                    for row in rows:
-                        cells = row.find_all("td")
+                rows = table.find_all("tr")[5:-2]
+                for row in rows:
+                    cells = row.find_all("td")
 
-                        yield Result(cells[2].text.strip(), {
-                            "school": cells[0].text.strip(),
-                            "semester": timestamp[:2],
-                            "year": year,
-                        })
+                    yield Result(cells[2].text.strip(), {
+                        "municipality": municipality["name"],
+                        "school": cells[0].text.strip(),
+                        "semester": semester,
+                        "year": year,
+                    })
