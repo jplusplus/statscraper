@@ -411,6 +411,33 @@ class Dataset(Item):
             dump = dump.encode('utf-8')
         return md5(dump).hexdigest()
 
+    def fetch_next(self, query=None, **kwargs):
+        """Generator to yield data one row at a time.
+        Yields a Result, not the entire ResultSet. The containing ResultSet
+        can be accessed through `Result.resultset`, but be careful not to
+        manipulate the ResultSet until it is populated (when this generator
+        is empty), or you may see unexpected results.
+        """
+        if query:
+            self.query = query
+
+        hash_ = self._hash
+        if hash_ in self._data:
+            for result in self._data[hash_]:
+                yield result
+
+        if self.scraper.current_item is not self:
+            self._move_here()
+
+        self._data[hash_] = ResultSet()
+        self._data[hash_].dialect = self.dialect
+        self._data[hash_].dataset = self
+        for result in self.scraper._fetch_data(self,
+                                               query=self.query,
+                                               **kwargs):
+            self._data[hash_].append(result)
+            yield result
+
     def fetch(self, query=None, **kwargs):
         """Ask scraper to return data for the current dataset."""
         if query:
@@ -426,7 +453,9 @@ class Dataset(Item):
         rs = ResultSet()
         rs.dialect = self.dialect
         rs.dataset = self
-        for result in self.scraper._fetch_data(self, query=self.query, **kwargs):
+        for result in self.scraper._fetch_data(self,
+                                               query=self.query,
+                                               **kwargs):
             rs.append(result)
         self._data[hash_] = rs
         return self._data[hash_]
