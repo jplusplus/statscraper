@@ -50,7 +50,7 @@ class UKA(BaseScraper):
         for t in terms:
             # Get all municipalities, and their codes, from this year
             year = ((t - 5) / 2) + 1993
-            semester = ["HT", "VT"][year % 2]
+            semester = ["HT", "VT"][t % 2]
             municipalities = requests.get(thenmap_url % year).json()
             for id_, municipality_ in municipalities["data"].items():
                 municipality = municipality_.pop()
