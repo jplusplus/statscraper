@@ -48,28 +48,16 @@ class UKA(BaseScraper):
         for t in terms:
             # Get all municipalities, and their codes, from this year
             year = ((t - 5) / 2) + 1993
-            semester = ["HT", "VT"][6 % 2]
-            print year
+            semester = ["HT", "VT"][year % 2]
             municipalities = requests.get(thenmap_url % year).json()
             for id_, municipality_ in municipalities["data"].items():
                 municipality = municipality_.pop()
                 code = municipality["kommunkod"].zfill(4)
                 c = code[:2]
                 m = code[2:]
-                print url % (t, c, m)
                 html = requests.get(url % (t, c, m)).text
                 soup = BeautifulSoup(html, 'html.parser')
                 table = soup.find("table")
-                """
-                timestamp = soup.find("td", {'class': "nutabellgruppniva2"}).strip()
-                if int(timestamp[2:]) > 50:
-                    parsed_year = "19" + timestamp[2:]
-                else:
-                    parsed_year = "20" + timestamp[2:]
-                if parsed_year != year:
-                    raise Exception("""
-#Recieved year does not match expected year (%s vs %s)."""
-#                                    % (parsed_year, year))
 
                 rows = table.find_all("tr")[5:-2]
                 for row in rows:
