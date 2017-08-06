@@ -40,11 +40,13 @@ class UKA(BaseScraper):
                         datatype="year",
                         domain="sweden/municipalities")
 
-    def _fetch_data(self, dataset, query=None):
+    def _fetch_data(self, dataset, query={'from': 1993,
+                                          'semesters': 46}):
         url = "http://statistik.uka.se/4.5d85793915901d205f935d0f.12.5d85793915901d205f965eab.portlet?action=resultat&view=resultTable&frageTyp=3&frageNr=240&tid=%s&grupp1=%s&grupp2=%s"
         thenmap_url = "http://api.thenmap.net/v1/se-7/data/%s?data_props=name|kommunkod"
-        terms = range(6, 53)  # 6 is 1993, the first year in the db
-        # TODO loop until out of results
+        # 6 is 1993, the first year in the db
+        terms = range(query["from"] - 1987,
+                      query["semesters"] + 7)
         for t in terms:
             # Get all municipalities, and their codes, from this year
             year = ((t - 5) / 2) + 1993
