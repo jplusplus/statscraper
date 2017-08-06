@@ -115,6 +115,7 @@ Changelog
 
 - 1.0.0.dev2
   - Implement translation
+  - Add Dataset.fetch_next() as generator for results
 
 - 1.0.0.dev1
   - Semantic versioning starts here
