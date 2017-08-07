@@ -22,13 +22,7 @@ class UKA(BaseScraper):
                           label="Students by municipality, school, semester.")
 
     def _fetch_dimensions(self, dataset):
-        """ Declaring available dimensions like this is not mandatory,
-         but nice, especially if they differ from dataset to dataset.
-
-         If you are using a built in datatype, you can specify the dialect
-         you are expecting, to have values normalized. This scraper will
-         look for Swedish month names (e.g. 'Januari'), but return them
-         according to the Statscraper standard ('january').
+        """ Iterate through semesters, counties and municipalities.
         """
         yield Dimension(u"school")
         yield Dimension(u"year",
@@ -40,23 +34,29 @@ class UKA(BaseScraper):
                         datatype="year",
                         domain="sweden/municipalities")
 
-    def _fetch_data(self, dataset, query={'from': 1993,
-                                          'semesters': 46}):
+    def _fetch_data(self, dataset, query):
         url = "http://statistik.uka.se/4.5d85793915901d205f935d0f.12.5d85793915901d205f965eab.portlet?action=resultat&view=resultTable&frageTyp=3&frageNr=240&tid=%s&grupp1=%s&grupp2=%s"
         thenmap_url = "http://api.thenmap.net/v1/se-7/data/%s?data_props=name|kommunkod"
         # 6 is 1993, the first year in the db
+        if query is None:
+            query = {}
+        if "from" not in query:
+            query['from'] = 1993
+        if "semester" not in query:
+            query['semesters'] = 46
         terms = range(query["from"] - 1987,
                       query["semesters"] + 7)
         for t in terms:
             # Get all municipalities, and their codes, from this year
             year = ((t - 5) / 2) + 1993
             semester = ["HT", "VT"][t % 2]
+            print t, year, semester
+            continue
             municipalities = requests.get(thenmap_url % year).json()
             for id_, municipality_ in municipalities["data"].items():
                 municipality = municipality_.pop()
                 code = municipality["kommunkod"].zfill(4)
-                c = code[:2]
-                m = code[2:]
+                c, m = code[:2], code[2:]
                 html = requests.get(url % (t, c, m)).text
                 soup = BeautifulSoup(html, 'html.parser')
                 table = soup.find("table")
