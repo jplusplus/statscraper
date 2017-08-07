@@ -42,16 +42,15 @@ class UKA(BaseScraper):
             query = {}
         if "from" not in query:
             query['from'] = 1993
-        if "semester" not in query:
-            query['semesters'] = 46
-        terms = range(query["from"] - 1987,
-                      query["semesters"] + 7)
+        if "semesters" not in query:
+            query['semesters'] = (2016 - query["from"]) * 2
+        start = (query["from"] - 1993) * 2 + 5
+        terms = range(start,
+                      start + query["semesters"] + 2)
         for t in terms:
             # Get all municipalities, and their codes, from this year
             year = ((t - 5) / 2) + 1993
             semester = ["HT", "VT"][t % 2]
-            print t, year, semester
-            continue
             municipalities = requests.get(thenmap_url % year).json()
             for id_, municipality_ in municipalities["data"].items():
                 municipality = municipality_.pop()
