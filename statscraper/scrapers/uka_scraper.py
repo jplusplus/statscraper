@@ -29,7 +29,7 @@ class UKA(BaseScraper):
                         datatype="year")
         yield Dimension(u"semester",
                         datatype="academic_term",
-                        dialect="swedish")
+                        dialect="swedish")  # HT/VT
         yield Dimension(u"municipality",
                         datatype="year",
                         domain="sweden/municipalities")
@@ -59,7 +59,7 @@ class UKA(BaseScraper):
                 html = requests.get(url % (t, c, m)).text
                 soup = BeautifulSoup(html, 'html.parser')
                 table = soup.find("table")
-
+                # The first rows are headers, the last are empty
                 rows = table.find_all("tr")[5:-2]
                 for row in rows:
                     cells = row.find_all("td")
