@@ -180,6 +180,14 @@ class Result(BaseScraperObject):
         return dict(self)
 
     @property
+    def int(self):
+        return int(self)
+
+    @property
+    def str(self):
+        return str(int(self))
+
+    @property
     def tuple(self):
         """ Tuple conversion to (value, dimensions), e.g.:
          (123, {dimension_1: "foo", dimension_2: "bar"})
