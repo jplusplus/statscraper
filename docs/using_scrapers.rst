@@ -57,6 +57,9 @@ Moving the cursor manually:
     >>> from statscraper.scrapers import PXWeb
 
     >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
+    >>> scraper.items
+    [<Collection: tym (Arbetsmarknaden)>, <Collection: vrm (Befolkning)>, ...]
+
     >>> scraper.move_to("vrm").move_to("synt").move_to("080_synt_tau_203.px")
     >>> scraper.current_item
     <Dataset: 080_synt_tau_203.px (Befolkningsförändringar efter område 1980 - 2016)>
@@ -152,3 +155,24 @@ Note however that a scraper does not necessarily need to provide dimensions. If 
 Dialects
 --------
 
+Scraper authors can use the included :code:`Datatypes` module to have a standardised ontology for common statistical dimensions. If a dimensions uses a bulid in datatype, it can be translated to a different dialect. For instance, Swedish municipalities come in the following dialects:
+
+ - :code:`short`: :code:`"Ale"`
+ - :code:`numerical`: :code:`"1440"`
+ - :code:`wikidata`: :code:`"Q498470"`
+ - :code:`brå`: :code:`"8617"`
+ - :code:`scb`: :code:`"1440 Ale kommun"`
+
+By default, Statscraper prefers human readable representations, and municipality values is internally stored like this: :code:`u"Borås kommun"`. The philosophy here is that human readable id's speed up debugging and makes it easy to spot errors during scraping and analysis. Yes, we do use Unicode for id's. It's 2017 after all.
+
+.. code:: python
+
+    >>> from statscraper.scrapers import Cranes
+
+    >>> scraper = Cranes()
+    >>> data = scraper.items[0].data
+    >>> row = data[0]
+    >>> row["month"]
+    <DimensionValue: march (month)>
+    >>> row["month"].translate("swedish")
+    u'mars'
