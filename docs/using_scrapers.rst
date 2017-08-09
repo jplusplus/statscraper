@@ -4,10 +4,10 @@ Using scrapers
 
 .. NOTE::
 
-   This documentation refers to version 1.0.0.dev1, a development version.
+   This documentation refers to version 1.0.0.dev2, a development version.
    There might be changes to the scraper interface before 1.0.0 is released.
 
-Every scraper built on Statscraper shares the same interface towards the user. Here's sample code using one of the included scrapers, to fetch the number of cranes spotted at Hornborgarsjön each day:
+Every scraper built on Statscraper shares the same interface towards the user. Here's sample code using one of the included demo scrapers, to fetch the number of cranes spotted at Hornborgarsjön each day from `Länsstyrelsen Östergötland <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_:
 
 .. code:: python
 
@@ -19,17 +19,17 @@ Every scraper built on Statscraper shares the same interface towards the user. H
 
   >>> dataset = scraper["Number of cranes"]
   >>> dataset.dimensions
-  [<Dimension: date (date)>]
+  [<Dimension: date (Day of the month)>, <Dimension: month>, <Dimension: year>]
 
   >>> row = dataset.data[0]  # first row in this dataset
   >>> row
-  '15'
-  >>> dict(row)
-  {'date': '2010-07-23', 'value': '15'}
-  >>> int(row)
-  15
+  <Result: 7 (value)>
+  >>> row.dict
+  {'value': '7', u'date': u'7', u'month': u'march', u'year': u'2015'}
+  >>> row.int
+  7
   >>> row.tuple
-  (15, {'date': '2010-07-23'})
+  ('7', {u'date': u'7', u'month': u'march', u'year': u'2015'})
 
   >>> df = dataset.data.pandas  # get this dataset as a Pandas dataframe
 
@@ -57,34 +57,22 @@ Moving the cursor manually:
     >>> from statscraper.scrapers import PXWeb
 
     >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
-    >>> scraper.move_to("Befolkning")\
-    ...        .move_to(u"Födda")\
-    ...        .move_to(u"Befolkningsförändringar efter område 1980 - 2016")
+    >>> scraper.move_to("vrm").move_to("synt").move_to("080_synt_tau_203.px")
     >>> scraper.current_item
-    <Dataset: Befolkningsförändringar efter område 1980 - 2016>
-    >>> data_1 = scraper.fetch()
+    <Dataset: 080_synt_tau_203.px (Befolkningsförändringar efter område 1980 - 2016)>
 
     >>> scraper.move_up()
     >>> scraper.current_item
-    <Collection: Födda>
-    >>> scraper.current_item.items
-    [<Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>, ...]
-
-    >>> scraper.move_to(0)  # Moving by index works too
+    <Collection: synt (Födda)>
+    >>> scraper.move_to("010_synt_tau_101.px")
     >>> scraper.current_item
-    <Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>
-    >>> scraper.current_item.items
-    None
-    >>> scraper.current_item.parent
-    <Collection: Födda>
-    >>> data_2 = scraper.fetch()
+    <Dataset: 010_synt_tau_101.px (Summerat fruktsamhetstal för åren 1776 - 2016)>
 
     >>> scraper.move_to_top()
-    >>> scraper.current_item
-    <Collection: <root>>
+    >>> scraper.move_to(0)  # Moving by index works too
 
 
-The above example could also be written like this:
+The datasets above could also be accessed like this:
 
 .. code:: python
 
@@ -92,18 +80,16 @@ The above example could also be written like this:
 
     >>> scraper = PXWeb(base_url="http://pxnet2.stat.fi/pxweb/api/v1/sv/StatFin/")
 
-    >>> collection = scraper["Befolkning"][u"Födda"]
+    >>> collection = scraper["vrm"]["synt"]
     >>> collection
-    <Collection: Födda>
-    >>> collection.items
-    [<Dataset: Summerat fruktsamhetstal för åren 1776 - 2016>, ...]
+    <Collection: synt (Födda)>
 
-    >>> data_1 = collection[u"Befolkningsförändringar efter område 1980 - 2016"].data
-    >>> data_2 = collection[0].data  # Selecting the first dataset in this collection
+    >>> dataset_1 = collection["080_synt_tau_203.px"]
+    >>> dataset_2 = collection["010_synt_tau_101.px"]
 
-scraper["Befolkning"] is shorthand for scraper.items["Befolkning"].
+At any given point, :code:`scraper["foo"]` is shorthand for :code:`scraper.current_item.items["foo"]`.
 
-If you want to loop throuh every available dataset a scraper can offer, there is a `Scraper.descendants` property that will recursively move to every item in the tree. Here is an example, that will find all datasets in the SCB API that has monthly data:
+If you want to loop throuh every available dataset a scraper can offer, there is a :code:`Scraper.descendants` property that will recursively move to every item in the tree. Here is an example, that will find all datasets in the SCB API that has monthly data:
 
 .. code:: python
 
@@ -117,7 +103,7 @@ If you want to loop throuh every available dataset a scraper can offer, there is
 Exploring datasets
 ------------------
 
-Much like itemslists (Colleciton.items), datasets are only fetched when you are inspecting or interacting with them. 
+Much like itemslists (:code:`Collection.items`), datasets are only fetched when you are inspecting or interacting with them.
 
 The actual data is stored in a property called data:
 
@@ -140,7 +126,7 @@ The data property will hold a list of result objects. The list can be converted 
     >>> dataset = scraper.items[0]
     >>> df = dataset.data.pandas  # convert to pandas dataframe
 
-If you want to querry a site or database for some subset of the available data, you can use the `fetch()` method on the dataset (or on the scraper, to fetch data from the current position, if any):
+If you want to querry a site or database for some subset of the available data, you can use the :code:`fetch()` method on the dataset (or on the scraper, to fetch data from the current position, if any):
 
 .. code:: python
 
@@ -158,14 +144,11 @@ Available dimensions can be inspected though the .dimensions property:
 
 .. code:: python
 
-    >>> print dataset.dimensions
-    [<Dimension: date (date)>, <Dimension: year (year)>]
+    >>> dataset.dimensions
+    [<Dimension: date>, <Dimension: year>]
 
-Note however that a scraper does not necessarily need to provide (or might not have any information on) dimensions. If `Dataset.dimensions` is None, it could simply mean that the scraper does not know what to expect from the data.
-
-A dimension object contains things like description, value type, allowed values, etc. 
+Note however that a scraper does not necessarily need to provide dimensions. If :code:`Dataset.dimensions` is None, it could simply mean that the scraper itself is not sure what to expect from the data.
 
 Dialects
 --------
-
 
