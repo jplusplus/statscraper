@@ -176,3 +176,5 @@ By default, Statscraper prefers human readable representations, and municipality
     <DimensionValue: march (month)>
     >>> row["month"].translate("swedish")
     u'mars'
+
+For available datatypes, domains, values and dialects, see the `statscraper-datatypes repo <https://github.com/jplusplus/statscraper-datatypes>`_.
