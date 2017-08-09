@@ -90,4 +90,4 @@ ENV/
 .ropeproject
 
 # OS X
-.DS_Store
+.DS_Storegeckodriver.log
