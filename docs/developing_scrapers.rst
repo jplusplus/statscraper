@@ -12,7 +12,7 @@ The scraper can navigate though an hierarchy of collections and datasets. Collec
                        ┗━ Dataset
 
   ╰─────────────────────────┬───────────────────────╯
-                       items
+                              items
 
 
 Scrapers are built by extending the BaseScraper class, or a subclass of it. Every scraper must override the methods :code:`_fetch_itemslist` and :code:`_fetch_data`:
@@ -90,3 +90,25 @@ Below if the full code for the CranesScraper scraper used in the chapter `Using 
                             "year": years[i],
                         })
                     i += 1
+
+-----
+Hooks
+-----
+Some scrapers might need to execute certains tasks as the user moves around the items tree. There are a number of hooks, that can be used to run code as a respons to an event. A scraper class method is attached to a hook by using the :code:`BaseScraper.on` decorator, with the name of the hook as the only argument. Here is an example of a hook in a Selenium based browser, used to refresh the browser each time the end user navigates to the top-most collection.
+
+.. code:: python
+
+    @BaseScraper.on("top")
+    def refresh_browser(self):
+        """ Refresh browser, to reset all forms """
+        self.browser.refresh()
+
+Available hooks are:
+
+ * init: Called when initiating the class
+ * up: Called when trying to go up one level (even if the scraper failed moving up)
+ * top: Called when moving to top level
+ * select: Called when trying to move to a specific Collection or Dataset. The target item will be provided as an artgument to the function.
+
+
+
