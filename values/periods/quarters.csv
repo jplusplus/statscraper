@@ -1,0 +1,5 @@
+id,label,description,dialect:numeric
+q1,First quarter,"January 1 – March 31 inclusive, in local timezone. 90 or 91 days.",1
+q2,Second quarter,"April 1 – June 30 inclusive, in local timezone. 91 days.",2
+q3,Third quarter,"July 1 – September 30 inclusive, in local timezone. 92 days.",3
+q4,Fourth quarter,"October 1 – December 31 inclusive, in local timezone. 92 days.",4
