@@ -108,7 +108,7 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
-- 1.0.1
+- 1.0.3
   - Re-add demo scrapers that accidently got left out in the first release
 
 - 1.0.0
