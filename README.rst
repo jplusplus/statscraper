@@ -32,7 +32,7 @@ Scrapers acts like “cursors” that move around a hierarchy of datasets and co
   ╰─────────────────────────┬───────────────────────╯
                        items
 
-Here's a simple example, with a scraper that returns only a single dataset:
+Here's a simple example, with a scraper that returns only a single dataset: The number of cranes spotted at Hornborgarsjön each day as scraped from `Länsstyrelsen Östergötland <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_.
 
 .. code:: python
 
@@ -42,14 +42,17 @@ Here's a simple example, with a scraper that returns only a single dataset:
   >>> scraper.items  # List available datasets
   [<Dataset: Number of cranes>]
 
-  >>> dataset = scraper.items[0]
+  >>> dataset = scraper["Number of cranes"]
   >>> dataset.dimensions
-  [<Dimension: date (date)>, <Dimension: month (month)>, <Dimension: year (year)>]
+  [<Dimension: date (Day of the month)>, <Dimension: month>, <Dimension: year>]
 
-  >>> dataset.data[0]  # Print first row of data
-  7
-  >>> dict(dataset.data[0])
-  {'date': '1', 'year': '2010', 'value': '7', 'month': 'januari'}
+  >>> row = dataset.data[0]  # first row in this dataset
+  >>> row
+  <Result: 7 (value)>
+  >>> row.dict
+  {'value': '7', u'date': u'7', u'month': u'march', u'year': u'2015'}
+
+  >>> df = dataset.data.pandas  # get this dataset as a Pandas dataframe
 
 Building a scraper
 ------------------
@@ -80,14 +83,6 @@ A number of hooks are avaiable for more advanced scrapers. These are called by a
   def my_method(self):
     # Do something when the user moves up one level
 
-Available hooks are:
-
-* `init`: Called when initiating the BaseScraper
-* `up`: Called when trying to go up one level
-* `select`: Called when trying to move to a Collection or Dataset
-* `top`: Called when reaching the top level
-
-
 For developers
 ==============
 These instructions are for developers working on the BaseScraper. See above for instructions for developing a scraper using the BaseScraper.
@@ -113,8 +108,15 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
+- 1.0.3
+  - Re-add demo scrapers that accidently got left out in the first release
+
+- 1.0.0
+  - First release
+
 - 1.0.0.dev2
   - Implement translation
+  - Add Dataset.fetch_next() as generator for results
 
 - 1.0.0.dev1
   - Semantic versioning starts here

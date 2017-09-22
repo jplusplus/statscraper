@@ -70,6 +70,10 @@ class BaseScraperObject(object):
             label = self.id
         else:
             label = self.label.encode("utf-8")
-        return '<%s: %s (%s)>' % (type(self).__name__,
-                                  str(self),
-                                  label)
+        if str(self) != str(label):
+            return '<%s: %s (%s)>' % (type(self).__name__,
+                                      str(self),
+                                      label)
+        else:
+            return '<%s: %s>' % (type(self).__name__,
+                                 str(self))

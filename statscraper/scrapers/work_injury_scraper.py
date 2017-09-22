@@ -174,6 +174,8 @@ class WorkInjuries(BaseScraper):
                 # TODO: Use a suitable basescraper exception
                 raise Exception("Download timed out")
         sleep(20)  # TODO: We need to check that the file is complete.
+        # Something like this:
+        # https://stackoverflow.com/questions/35891393/how-to-get-file-download-complete-status-using-selenium-web-driver-c-sharp#35892347
 
         # WARNING: Assuming the latest downloaded xls to be our file.
         # This is obviously not 100 % water proof.
