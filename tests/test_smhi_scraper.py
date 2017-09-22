@@ -32,7 +32,7 @@ class TestSMHI(TestCase):
             # Make sure its a dataset
             self.assertTrue(isinstance(dataset, SMHIDataset))
             # Get dimensions
-            self.assertEqual(len(dataset.dimensions), 4)
+            self.assertGreater(len(dataset.dimensions), 0)
 
     def test_fetch_allowed_values(self):
         scraper = SMHI()
@@ -48,10 +48,8 @@ class TestSMHI(TestCase):
 
         self.assertFalse(station.label is None)
 
-
-
         periods = dataset.dimensions["period"].allowed_values
-        self.assertEqual(len(periods),4)
+        self.assertEqual(len(periods), 4)
 
 
     def test_query(self):
@@ -99,9 +97,7 @@ class TestSMHI(TestCase):
 
         # Make sure that both parameters (datasets) are in
         # the final dataframe
-        parameters = df.default.unique()
+        parameters = df["parameter"].unique()
         self.assertTrue(len(parameters) == 2)
         for parameter in parameters:
             self.assertTrue(parameter in datasets)
-
-

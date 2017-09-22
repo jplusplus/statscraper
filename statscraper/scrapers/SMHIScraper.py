@@ -44,17 +44,20 @@ class SMHI(BaseScraper):
                 yield SMHIDataset(label, blob=resource)
 
     def _fetch_dimensions(self, parameter):
-        yield(Dimension("timepoint"))
         yield(StationDimension("station"))
         yield(Dimension("period", allowed_values=PERIODS))
-        yield(Dimension("quality", allowed_values=["Y","G"]))
+        yield(Dimension("parameter"))
+
+        example_data = parameter._get_example_csv()
+        for dim in example_data.columns:
+            yield(Dimension(dim))
+
 
     def _fetch_allowed_values(self, dimension):
         if dimension.id == "station":
             for station in dimension.dataset.json["station"]:
                 yield Station(station["key"], dimension,
                     label=station["name"],blob=station)
-
         else:
             yield None
 
@@ -101,7 +104,6 @@ class SMHI(BaseScraper):
                 url = dataset.url\
                     .replace(".json", "/station/{}/period/{}/data.csv"\
                         .format(station.key, period))
-
                 print("/GET {} ".format(url))
                 r = requests.get(url)
 
@@ -111,23 +113,17 @@ class SMHI(BaseScraper):
                     # TODO: This is a very hard coded parse function
                     # Expects fixed start row and number of cols
                     for row in raw_data:
-                        if "Datum" in row and "Tid (UTC)" in row:
-                            timepoint_str = "{} {}".format(
-                                row["Datum"], row["Tid (UTC)"])
-                        elif u"Från Datum Tid (UTC)":
-                            timepoint_str = row[u"Från Datum Tid (UTC)"]
-
-                        timepoint = datetime.strptime(timepoint_str, "%Y-%m-%d %H:%M:%S")
-                        # HACK!
-                        # Should rather be something like parameter.col_name
+                        #timepoint = datetime.strptime(timepoint_str, "%Y-%m-%d %H:%M:%S")
                         value_col = parameter.id.split(",")[0]
-                        datapoint = Result(row[value_col], {
-                            "timepoint": timepoint,
-                            "quality": row["Kvalitet"],
-                            "parameter": parameter.id,
-                            "station": station.label,
-                            "period": period,
-                            })
+                        value = float(row[value_col])
+
+                        row["parameter"] = parameter.id
+                        row["station"] = station.label
+                        row["period"] = period
+
+                        row.pop(value_col,None)
+
+                        datapoint = Result(value, row)
 
                         yield datapoint
 
@@ -222,12 +218,28 @@ class SMHIDataset(Dataset):
         stations = self.dimensions["station"].allowed_values
         return self._format_station_list(stations)
 
+
     def get_active_stations_list(self):
         """ Get a dict list of all stations with properties such as
             latitude and longitude
         """
         stations = self.dimensions["station"].active_stations()
         return self._format_station_list(stations)
+
+    def _get_example_csv(self):
+        """For dimension parsing
+        """
+        station_key = self.json["station"][0]["key"]
+        period = "corrected-archive"
+        url = self.url\
+                  .replace(".json", "/station/{}/period/{}/data.csv"\
+                  .format(station_key, period))
+
+        r = requests.get(url)
+        if r.status_code == 200:
+            return DataCsv().from_string(r.content)
+        else:
+            raise Exception("Error connecting to api")
 
 
     def _format_station_list(self, stations):
@@ -242,10 +254,8 @@ class SMHIDataset(Dataset):
 
 
 class DataCsv(object):
-    def __init__(self):
-        self.headers = None
-        self.data = None
-
+    columns = []
+    data = []
 
     def from_file(self, file_path):
         with open(file_path) as f:
@@ -260,7 +270,7 @@ class DataCsv(object):
         return self
 
     def to_dictlist(self):
-        return [dict(zip(self.headers, row))
+        return [dict(zip(self.columns, row))
             for row in self.data]
 
     def _parse(self, f):
@@ -287,7 +297,7 @@ class DataCsv(object):
                 tables.append(table)
 
         data_table = tables[-1]
-        self.headers = data_table[0]
+        self.columns = data_table[0]
         try:
             self.data = data_table[1:]
         except IndexError:
@@ -316,4 +326,3 @@ def table_width(row):
         if val == "":
             break
     return i
-
