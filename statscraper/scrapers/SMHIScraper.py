@@ -45,6 +45,12 @@ class SMHI(BaseScraper):
 
     def _fetch_dimensions(self, parameter):
         yield(StationDimension("station"))
+        # Hack: This redundant of the station dimension, but
+        # necessary to be able to include both station name
+        # (=readabilty) and key in resultset.
+        # It would be better if the ResultSet object could
+        # handle both label and key print.
+        yield(Dimension("station_key"))
         yield(Dimension("period", allowed_values=PERIODS))
         yield(Dimension("parameter"))
 
@@ -119,6 +125,7 @@ class SMHI(BaseScraper):
 
                         row["parameter"] = parameter.id
                         row["station"] = station.label
+                        row["station_key"] = station.key
                         row["period"] = period
 
                         row.pop(value_col,None)
@@ -183,6 +190,7 @@ class Station(DimensionValue):
 
         # Was there an update in the last 100 days?
         self.is_active = (datetime.now() - self.updated).days < 100
+
 
     def __repr__(self):
         if self.is_active:
