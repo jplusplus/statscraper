@@ -113,7 +113,8 @@ class ResultSet(list):
                 if d.dialect and d.datatype:
                     if d.dialect in d.datatype.dialects:
                         for av in d.allowed_values:
-                            if unicode(v) in av.dialects[d.dialect]:
+                            # Not all allowed_value have all dialects
+                            if unicode(v) in av.dialects.get(d.dialect, []):
                                 normalized_value = av.value
                                 # Use first match
                                 # We do not support multiple matches
