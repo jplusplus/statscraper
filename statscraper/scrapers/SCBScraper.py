@@ -3,7 +3,6 @@
     a scraper in the scraper park.
 """
 from .PXWebScraper import PXWeb, Dimension
-import requests
 
 
 class SCB(PXWeb):
