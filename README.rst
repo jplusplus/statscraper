@@ -9,7 +9,7 @@ Full documentation: ReadTheDocs_
 
 For updates and discussion: Facebook_
 
-By `Journalism++ Stockholm <http://jplusplus.se>`_, and Robin Linderborg.
+By `Journalism++ Stockholm <http://jplusplus.org/sv>`_, and Robin Linderborg.
 
 Installing
 ----------
@@ -22,7 +22,7 @@ Using a scraper
 ---------------
 Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
 
-:: 
+::
 
         ┏━ Collection ━━━ Collection ━┳━ Dataset
   ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
@@ -108,6 +108,17 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
+- 1.0.6
+  - Added dialect:skatteverket (two/four digit county/municipality codes)
+  - Added data type for road category
+  - Make SCB scraper treat “Region” as, well, a region
+
+- 1.0.5
+  - Added station key to SMHI scraper
+
+- 1.0.4
+  - Added SMHI scraper
+
 - 1.0.3
   - Re-add demo scrapers that accidently got left out in the first release
 
@@ -123,7 +134,7 @@ Changelog
   - Implement datatypes and dialects
 
 - 0.0.2
-    
+
   - Added some demo scrapers
   - The cursor is now moved when accessing datasets
   - Renamed methods for moving cursor: move_up(), move_to()
@@ -131,7 +142,7 @@ Changelog
   - Added datatypes subtree
 
 - 0.0.1
-    
+
   - First version
 
 .. _Facebook: https://www.facebook.com/groups/skrejperpark
