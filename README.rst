@@ -109,9 +109,10 @@ Changelog
 ---------
 
 - 1.0.6
+
   - Added dialect:skatteverket (two/four digit county/municipality codes)
   - Added data type for road category
-  - Make SCB scraper treat “Region” as, well, a region
+  - Make SCB scraper treat a “Region” as, well, a region
 
 - 1.0.5
   - Added station key to SMHI scraper
@@ -126,10 +127,12 @@ Changelog
   - First release
 
 - 1.0.0.dev2
+
   - Implement translation
   - Add Dataset.fetch_next() as generator for results
 
 - 1.0.0.dev1
+
   - Semantic versioning starts here
   - Implement datatypes and dialects
 
@@ -142,7 +145,6 @@ Changelog
   - Added datatypes subtree
 
 - 0.0.1
-
   - First version
 
 .. _Facebook: https://www.facebook.com/groups/skrejperpark
