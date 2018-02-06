@@ -1,0 +1,6 @@
+"id","label","description","dialect:wikidata","dialect:sv"
+"e-road","E-road","A road in the international E-road network","Q106123","e"
+"national_road","National road","A primary road class in many countries. Often crossing a large part of the country ","Q1716124","rv"
+"county_road","County road","A secondary road class in some countries.",,"lv"
+"street","Street","A public thoroughfare in a built environment, not part of a national road system","Q79007",
+"road","Other road","A generic road type","Q34442",

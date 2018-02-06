@@ -13,3 +13,5 @@
 "region","An administrative territorial region.","str","regions"
 "week","A ISO 8601 week number, week starting on Monday, first week of the year has at least four days","int",
 "currency","Currencies, following ISO 4217 where possible","str","currencies"
+"road_type","A road type and/or network","str","road_types"
+"road_number","A numeric roadnumber in a road system, eg 4 for the international e-road “E4”","int",
