@@ -3,7 +3,7 @@ from datetime import date
 
 name = "statscraper"
 
-short_version = "1.0.6"
+short_version = "1.0.7"
 long_version = short_version + ""
 
 short_desc = """\

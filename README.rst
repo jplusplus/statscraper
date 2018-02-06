@@ -108,6 +108,10 @@ Run `python setup.py test` from the root directory. This will install everything
 Changelog
 ---------
 
+- 1.0.7
+
+  - Remove logic from SCBScraper that is already handled by BaseScraper
+
 - 1.0.6
 
   - Added dialect:skatteverket (two/four digit county/municipality codes)
