@@ -16,7 +16,6 @@ class SCB(PXWeb):
             and dialect for regions.
         """
         for dimension in super(SCB, self)._fetch_dimensions(dataset):
-
             if dimension.id == "Region":
                 yield Dimension(dimension.id,
                                 datatype="region",
@@ -24,20 +23,3 @@ class SCB(PXWeb):
                                 label=dimension.label)
             else:
                 yield dimension
-
-    def _fetch_data(self, dataset, query, filtertype="item"):
-        """
-         Override to translate region values.
-        """
-        for data in super(SCB, self)._fetch_data(dataset, query, filtertype="item"):
-            # This is a hack. The basescraper should provide an interface for
-            # translating _from_ dialects in cases like this,
-            # e.g. a _reverse_translate_ method
-            if "Region" in data.raw_dimensions:
-                rregion = data.raw_dimensions["Region"]
-            # import pdb;pdb.set_trace();
-                for translation in self.current_item.dimensions["Region"].datatype.allowed_values:
-                    if "skatteverket" in translation.dialects and translation.dialects["skatteverket"] == rregion:
-                        rregion = translation.value
-                data.raw_dimensions["Region"] = rregion
-            yield data
