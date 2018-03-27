@@ -6,4 +6,4 @@ Statscraper is a base library for building web scrapers for statistical data, wi
 
 Statscraper is developed by Jens Finnäs and Leo Wallentin from Journalism++, and Robin Linderborg from SVT Nyheter.
 
-Version 1.0.0 is expected in August 2017. Statscraper is sponsored by Internetfonden/Stiftelsen för internetinfrastruktur and Journalism++ Stockholm.
+The first stable version was released in August 2017. Statscraper is sponsored by Internetfonden/Stiftelsen för internetinfrastruktur and Journalism++ Stockholm.
