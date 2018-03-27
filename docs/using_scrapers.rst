@@ -2,7 +2,7 @@
 Using scrapers
 ==============
 
-Every scraper built on Statscraper shares the same interface towards the user. Here's sample code using one of the included demo scrapers, to fetch the number of cranes spotted at Hornborgarsjön each day from `Länsstyrelsen Östergötland <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_:
+Every scraper built on Statscraper shares the same interface towards the user. Here's sample code using one of the included demo scrapers, to fetch the number of cranes spotted at Hornborgarsjön each day from `Länsstyrelsen i Västra Götalands län <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_:
 
 .. code:: python
 
@@ -31,9 +31,9 @@ Every scraper built on Statscraper shares the same interface towards the user. H
 
 Exploring sites
 ---------------
-Scrapers act like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
+Scrapers act like “cursors” that move around a hierarchy of datasets and collections of datasets. Collections and datasets are refered to as “items”.
 
-:: 
+::
 
         ┏━ Collection ━━━ Collection ━┳━ Dataset
   ROOT ━╋━ Collection ━┳━ Dataset     ┣━ Dataset
