@@ -20,7 +20,7 @@ Installing
 
 Using a scraper
 ---------------
-Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of dataset. Collections and datasets are refered to as “items”.
+Scrapers acts like “cursors” that move around a hierarchy of datasets and collections of datasets. Collections and datasets are refered to as “items”.
 
 ::
 
@@ -32,7 +32,7 @@ Scrapers acts like “cursors” that move around a hierarchy of datasets and co
   ╰─────────────────────────┬───────────────────────╯
                        items
 
-Here's a simple example, with a scraper that returns only a single dataset: The number of cranes spotted at Hornborgarsjön each day as scraped from `Länsstyrelsen Östergötland <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_.
+Here's a simple example, with a scraper that returns only a single dataset: The number of cranes spotted at Hornborgarsjön each day as scraped from `Länsstyrelsen i Västra Götalands län <http://web05.lansstyrelsen.se/transtat_O/transtat.asp>`_.
 
 .. code:: python
 
