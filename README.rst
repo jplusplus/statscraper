@@ -109,7 +109,7 @@ Changelog
 ---------
 
 - 1.0.7
-
+  - Bara kommun added to Swedish municipalities
   - Remove logic from SCBScraper that is already handled by BaseScraper
 
 - 1.0.6
@@ -125,7 +125,7 @@ Changelog
   - Added SMHI scraper
 
 - 1.0.3
-  - Re-add demo scrapers that accidently got left out in the first release
+  - Re-add demo scrapers that accidentally got left out in the first release
 
 - 1.0.0
   - First release
