@@ -109,6 +109,7 @@ Changelog
 ---------
 
 - 1.0.7
+
   - Bara kommun added to Swedish municipalities
   - Remove logic from SCBScraper that is already handled by BaseScraper
 
