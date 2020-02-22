@@ -1,4 +1,3 @@
-# encoding: utf-8
 from setuptools import setup
 from version import version, name, authors, email, short_desc
 
