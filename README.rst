@@ -92,7 +92,7 @@ Downloading
 
 .. code:: bash
 
-  git clone https://github.com/jplusplus/skrejperpark
+  git clone https://github.com/jplusplus/statscraper
   python setup.py install
 
 Tests
