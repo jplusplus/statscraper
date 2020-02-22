@@ -3,8 +3,8 @@
 """
 from glob import iglob
 from itertools import chain
-from csvkit import DictReader
-from csvkit import reader as CsvReader
+from csv import DictReader
+from csv import reader as CsvReader
 from .exceptions import NoSuchDatatype
 from .DimensionValue import DimensionValue
 from .ValueList import ValueList
@@ -51,15 +51,12 @@ class Datatype(object):
                         dialects = {x: None for x in self.dialects}
 
                         for d in dialect_names:
-                            f = StringIO(row[d].encode("utf-8"))
-                            csvreader = CsvReader(f,
+                            # parse this cell as a csv row
+                            csvreader = CsvReader([row[d]],
                                                   delimiter=VALUE_DELIMITOR,
                                                   skipinitialspace=True,
                                                   strict=True)
-                            try:
-                                values = csvreader.next()
-                            except Exception:
-                                continue
+                            values = next(csvreader)
                             dialects[d[8:]] = values
                         value.dialects = dialects
                         self.allowed_values.append(value)

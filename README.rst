@@ -98,15 +98,20 @@ Downloading
 Tests
 -----
 
+Since 2.0.0 we are using pytest. To run an individual test:
+
 .. code:: bash
 
-  python setup.py test
-
-Run `python setup.py test` from the root directory. This will install everything needed for testing, before running tests with `nosetests`.
+  python3 -m pytest tests/test-datatypes.py
 
 
 Changelog
 ---------
+
+- 2.0.0
+
+  - Python 2 support deprecated. We will slowly phase out support.
+  - Fix a bug with `DimensionValue.translate()` in Python 3.
 
 - 1.0.7
 
