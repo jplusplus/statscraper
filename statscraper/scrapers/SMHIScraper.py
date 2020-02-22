@@ -5,7 +5,7 @@ except ImportError:
     import io as StringIO
 
 import requests
-import csvkit as csv
+import csv
 from datetime import datetime
 from bs4 import BeautifulSoup
 

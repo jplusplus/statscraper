@@ -23,11 +23,8 @@ setup(
     install_requires=[
         "pandas",
         "six",
-        "csvkit",
         "requests",
     ],
-    test_suite="nose.collector",
-    tests_require=["nose"],
     include_package_data=True,
     download_url="https://github.com/jplusplus/skrejperpark/archive/%s.tar.gz"
                  % version,
