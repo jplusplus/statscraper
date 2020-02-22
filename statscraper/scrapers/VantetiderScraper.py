@@ -363,22 +363,22 @@ class PrintLogger():
     """
 
     def log(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
     def debug(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
     def info(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
     def warning(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
     def error(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
     def critical(self, msg, *args, **kwargs):
-        print msg
+        print(msg)
 
 
 # UTILS
