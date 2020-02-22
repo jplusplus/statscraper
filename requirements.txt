@@ -1,8 +1,8 @@
 # Core dependecies
 future==0.16.0
 alabaster==0.7.10
-pandas==0.22.0
-requests==2.20.0
+pandas==0.25.3
+requests==2.23.0
 six==1.11.0
 Sphinx==1.6.7
 pytest==5.3.5
