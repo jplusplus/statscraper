@@ -1,7 +1,6 @@
-# encoding: utf-8
-
+"""Tests related to the concept of certain datatypes having values with dialects."""
 from unittest import TestCase
-from statscraper import (BaseScraper, Dataset, Result, Dimension)
+from statscraper import (BaseScraper, Dataset, Result, Dimension, DimensionValue)
 
 
 class Scraper(BaseScraper):
@@ -20,14 +19,20 @@ class Scraper(BaseScraper):
 
 
 class TestDialects(TestCase):
+    """Test translated values."""
+
+    def test_translations(self):
+        """Test standalone translation."""
+        municipalities = Dimension("municipality",
+                                   datatype="region", domain="sweden/municipalities")
+        municipality = DimensionValue("Stockholms kommun", municipalities)
+        assert municipality.translate("numerical") == "180"
 
     def test_dialects(self):
-        """Covert a resultset to a different dialect."""
-
+        """Test translation inside a scraper."""
         scraper = Scraper()
         data1 = scraper.items[0].data
         self.assertEqual(str(data1[0]["municipality"]), "Robertsfors kommun")
 
         data2 = data1.translate("scb")
         self.assertEqual(str(data2[0]["municipality"]), "2409 Robertsfors kommun")
-
