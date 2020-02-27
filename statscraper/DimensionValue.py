@@ -1,3 +1,4 @@
+"""This file contanis a class representing a value in a dataset."""
 from .BaseScraperObject import BaseScraperObject
 
 
@@ -36,10 +37,17 @@ class DimensionValue(BaseScraperObject):
         self._dimension = value
 
     def translate(self, dialect):
-        translation = self.value
-        if self.dimension.datatype is not None:
-            dt = self.dimension.datatype
-            if self.value in dt.allowed_values:
-                translations = dt.allowed_values[self.value]
-                translation = (",").join([x.replace(",", "\,") for x in translations.dialects[dialect]])
+        """Translate this value to a different dialect."""
+        if self.dimension.datatype is None:
+            raise Exception(f"""\
+A value must belong to a dimension of a specific datatyp, to be translated. \
+{self.dimension} does not have a datatype.""")
+        dt = self.dimension.datatype
+        if self.value not in dt.allowed_values:
+            raise Exception(f"""\
+{self.value} is not an allowed value for this datatype, and can not be translated.""")
+
+        translations = dt.allowed_values[self.value]
+        translation = ",".join([x.replace(",", "\\,")
+                               for x in translations.dialects[dialect]])
         return translation
