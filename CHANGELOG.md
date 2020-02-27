@@ -4,6 +4,7 @@
   - Python 2 support deprecated. We will slowly phase out support.
   - Fix a bug with `DimensionValue.translate()` in Python 3.
   - Make `translate()` raise errors when it couldn't translate.
+  - The municipality of Gotland is now known as 'Region Gotland' (was: Gotlands kommun).
 
 - 1.0.7
 
