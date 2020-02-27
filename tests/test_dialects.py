@@ -16,6 +16,9 @@ class Scraper(BaseScraper):
         yield Result(127, {
             "municipality": "Robertsfors kommun",
         })
+        yield Result(17, {
+            "municipality": "Region Gotland",
+        })
 
 
 class TestDialects(TestCase):
