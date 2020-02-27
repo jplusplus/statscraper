@@ -95,6 +95,13 @@ Downloading
   git clone https://github.com/jplusplus/statscraper
   python setup.py install
 
+This repo includes `statscraper-datatypes` as a subtree. To update this, do:
+
+.. code:: bash
+
+  git subtree pull --prefix statscraper/datatypes git@github.com:jplusplus/statscraper-datatypes.git master --squash
+
+
 Tests
 -----
 
