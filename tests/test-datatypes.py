@@ -14,4 +14,3 @@ def test_b():
     d = Dimension("municipality", datatype="region", domain="sweden/municipalities")
     dv = DimensionValue("Ale kommun", d)
     assert(dv.translate("numerical") == "1440")
-
