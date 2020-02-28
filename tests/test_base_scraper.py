@@ -1,4 +1,4 @@
-# encoding:utf-8
+"""Tests for scraper base class."""
 from unittest import TestCase
 from statscraper import (BaseScraper, Dataset, Dimension, Result,
                          DimensionValue, Collection, ROOT, NoSuchItem)
@@ -13,11 +13,11 @@ class Scraper(BaseScraper):
         yield Dataset("Dataset_3")
 
     def _fetch_dimensions(self, dataset):
-        yield Dimension(u"date")
+        yield Dimension("date")
 
         # Assign a label to one of the allowed values
-        mun = Dimension(u"municipality", allowed_values=[
-            u"Umeå kommun",
+        mun = Dimension("municipality", allowed_values=[
+            "Umeå kommun",
             "Robertsfors kommun"])
         mun.allowed_values["Robertsfors kommun"].label = "Robertsfors kommun"
         yield mun
@@ -38,7 +38,7 @@ class Scraper(BaseScraper):
         elif dataset.id == "Dataset_2":
             yield Result(12, {
                 "date": "2017-02-06",
-                "municipality": u"Umeå kommun",
+                "municipality": "Umeå kommun",
             })
             yield Result(130, {
                 "date": "2017-02-07",
@@ -67,8 +67,7 @@ class NestedScraper(Scraper):
 
 
 class CallbackScraper(Scraper):
-    """A scraper with callbacks
-    """
+    """A scraper with callbacks."""
 
     @BaseScraper.on("init")
     def initiation_code(self):
@@ -160,7 +159,7 @@ class TestBaseScraper(TestCase):
         scraper = Scraper()
         data_1 = scraper["Dataset_1"].data
         scraper.move_up().move_to("Dataset_2")
-        self.assertEqual(data_1[0]["municipality"], u"Robertsfors kommun")
+        self.assertEqual(data_1[0]["municipality"], "Robertsfors kommun")
 
     def test_get_dimension(self):
         """Get dimensions for a dataset."""
@@ -206,7 +205,7 @@ class TestBaseScraper(TestCase):
         self.assertEqual(female.label, "Women")
 
     def test_move_deep_manually(self):
-        """Use the NestedScraper to move more than one step"""
+        """Use the NestedScraper to move more than one step."""
         scraper = NestedScraper()
         scraper.move_to("Collection_1")
         self.assertTrue("Dataset_1" in scraper.items)
