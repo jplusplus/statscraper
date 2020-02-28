@@ -5,6 +5,7 @@
   - Fix a bug with `DimensionValue.translate()` in Python 3.
   - Make `translate()` raise errors when it couldn't translate.
   - The municipality of Gotland is now known as 'Region Gotland' (was: Gotlands kommun).
+  - Added some useful built-in filters to the SCB-scraper, to get results by eg municipality.
 
 - 1.0.7
 
