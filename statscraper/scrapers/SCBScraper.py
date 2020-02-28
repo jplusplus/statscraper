@@ -6,6 +6,10 @@ class SCB(PXWeb):
     """The SCB API uses PXWeb. We just hardcode the url."""
 
     base_url = 'http://api.scb.se/OV0104/v1/doris/sv/ssd'
+    COUNTIES = [
+        "01", "03", "04", "05", "06", "07", "08", "09", "10", "12", "13",
+        "14", "17", "18", "19", "20", "21", "22", "23", "24", "25"
+    ]
     MUNICIPALITIES = [
         "0114", "0115", "0117", "0120", "0123", "0125", "0126", "0127", "0128",
         "0136", "0138", "0139", "0140", "0160", "0162", "0163", "0180", "0181",
@@ -59,6 +63,8 @@ class SCB(PXWeb):
 
     def _fetch_data(self, dataset, query={}, by=None):
         """Allow adding municipalities or counties to a query."""
-        if by:
+        if by == "municipality":
             query["Region"] = ("vs:RegionKommun07EjAggr", self.MUNICIPALITIES)
+        elif by == "county":
+            query["Region"] = ("vs:RegionLän07EjAggr", self.COUNTIES)
         return super()._fetch_data(dataset, query)
