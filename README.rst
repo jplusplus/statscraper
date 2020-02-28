@@ -114,7 +114,7 @@ Since 2.0.0 we are using pytest. To run an individual test:
 
 Changelog
 ---------
-The changelog has been moved to <CHANGELOG.md>.
+The changelog has been moved to `CHANGELOG.md <CHANGELOG.md>`_.
 
 .. _Facebook: https://www.facebook.com/groups/skrejperpark
 .. _ReadTheDocs: http://statscraper.readthedocs.io
