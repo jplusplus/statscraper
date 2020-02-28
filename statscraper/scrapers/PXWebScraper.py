@@ -1,13 +1,13 @@
-# encoding: utf-8
-""" A wrapper around the PX-Web API. As implementations
-    and versions vary, this is best used as a base class,
-    for more specific scrapers to extend.
+"""A wrapper around the PX-Web API.
 
-    If used directly, an API endpoint must be set:
-        scraper = PXWeb(base_url="http://api.example.com/")
-        # ...or:
-        scraper = PXWeb()
-        scraper.base_url = "http://api.example.com/"
+As implementations and versions vary, this is best used as a base class,
+for more specific scrapers to extend.
+
+If used directly, an API endpoint must be set:
+    scraper = PXWeb(base_url="http://api.example.com/")
+    # ...or:
+    scraper = PXWeb()
+    scraper.base_url = "http://api.example.com/"
 """
 
 import requests
@@ -17,13 +17,15 @@ from statscraper.compat import JSONDecodeError
 
 
 class PXWeb(BaseScraper):
+    """Scraper."""
 
     base_url = None  # API endpoint
 
     @BaseScraper.on("init")
     def _get_args(self, *args, **kwargs):
-        """ Store `base_url`, if given on init. This is convenient when
-            the PXWeb scraper is used directly by an end user.
+        """Store `base_url`, if given on init.
+
+        This is convenient when the PXWeb scraper is used directly by an end user.
         """
         if "base_url" in kwargs and kwargs["base_url"]:
             self.base_url = kwargs["base_url"]
@@ -55,7 +57,7 @@ class PXWeb(BaseScraper):
         except KeyError:
             yield None
 
-    def _fetch_data(self, dataset, query, filtertype="item"):
+    def _fetch_data(self, dataset, query):
         if query is None:
             query = {}
         body = {
@@ -66,7 +68,7 @@ class PXWeb(BaseScraper):
                     # value can be a list or a value
                     'values': value if isinstance(value, list) else [value]
                 }
-            } for key, value in query.iteritems()],
+            } for key, (filtertype, value) in query.items()],
             'response': {
                 'format': "json"
             }
