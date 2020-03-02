@@ -20,4 +20,3 @@ class TestPXWeb(TestCase):
                .move_to(u"statfin_pxt_tym_tyonv_001.px")
         data = scraper.fetch()
         self.assertTrue(len(data))
-
