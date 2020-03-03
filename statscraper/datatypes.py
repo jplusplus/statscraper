@@ -1,6 +1,4 @@
-# encoding: utf-8
-""" Contains code for parsing datatypes from the statscraper-datatypes repo
-"""
+"""Contains code for parsing datatypes from the statscraper-datatypes repo."""
 from glob import iglob
 from itertools import chain
 from csv import DictReader
@@ -8,7 +6,6 @@ from csv import reader as CsvReader
 from .exceptions import NoSuchDatatype
 from .DimensionValue import DimensionValue
 from .ValueList import ValueList
-from .compat import StringIO
 import os
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
