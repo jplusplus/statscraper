@@ -1,5 +1,7 @@
 """Test SCB/PXWeb scraper."""
 from statscraper.scrapers import SCB
+from statscraper.exceptions import InvalidData
+import pytest
 
 
 def test_get_data():
@@ -18,3 +20,13 @@ def test_get_data():
     assert "value" in df.columns
     assert "Region" in df.columns
     assert "InkomstTyp" in df.columns
+
+
+def test_invalid_query():
+    """We should raise an error on invalid queries."""
+    scraper = SCB()
+    scraper.move_to("HE").move_to("HE0110").move_to("HE0110F").move_to("Tab1DispInkN")
+    with pytest.raises(InvalidData):
+        scraper.fetch({
+          "foo": ("bar", "buzz"),
+        }, by="municipality")

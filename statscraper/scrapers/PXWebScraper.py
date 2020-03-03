@@ -75,6 +75,14 @@ class PXWeb(BaseScraper):
         }
         try:
             raw = requests.post(self._api_path(dataset), json=body)
+            if raw.headers["content-type"] == "text/html":
+                # This is an error message
+                raise(InvalidData(f"""Error message from PX Web:
+
+{raw.content}
+
+Check your query for spelling errors, or try reducing the size.
+"""))
             data = raw.json()
         except JSONDecodeError:
             raise InvalidData("""No valid response from PX Web.
