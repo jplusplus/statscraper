@@ -7,6 +7,7 @@
   - The municipality of Gotland is now known as 'Region Gotland' (was: Gotlands kommun).
   - Added some useful built-in filters to the SCB-scraper, to get results by eg municipality.
   - Upstream fix for typo in datatype region:sweden/municipality Vännäs kommun
+  - SCB scraper will raises exception when an error message is returned
 
 - 1.0.7
 
