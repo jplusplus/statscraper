@@ -272,6 +272,8 @@ class DataCsv(object):
         return self
 
     def from_string(self, csv_content):
+        if isinstance(csv_content, bytes):
+            csv_content = csv_content.decode("utf-8")
         f = StringIO.StringIO(csv_content)
         self._parse(f)
 
