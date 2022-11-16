@@ -5,7 +5,7 @@ from .PXWebScraper import PXWeb, Dimension
 class SCB(PXWeb):
     """The SCB API uses PXWeb. We just hardcode the url."""
 
-    base_url = 'http://api.scb.se/OV0104/v1/doris/sv/ssd'
+    base_url = 'https://api.scb.se/OV0104/v1/doris/sv/ssd'
     COUNTIES = [
         "01", "03", "04", "05", "06", "07", "08", "09", "10", "12", "13",
         "14", "17", "18", "19", "20", "21", "22", "23", "24", "25"
