@@ -1,3 +1,6 @@
+- 2.0.1
+
+  - Use https endpoint in SCB Scraper.
 
 - 2.0.0
 
