@@ -1,4 +1,4 @@
-- next
+- 2.0.2
 
   - remove debug prints from SMHI scraper
   - upgrade BeautifulSoup to work with Pyhon 3.10+
