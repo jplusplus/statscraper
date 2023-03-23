@@ -1,3 +1,8 @@
+- next
+
+  - remove debug prints from SMHI scraper
+  - upgrade BeautifulSoup to work with Pyhon 3.10+
+
 - 2.0.1
 
   - Use https endpoint in SCB Scraper.

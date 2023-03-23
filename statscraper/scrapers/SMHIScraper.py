@@ -1,4 +1,3 @@
-# encoding: utf-8
 try:
     import StringIO
 except ImportError:
@@ -9,7 +8,7 @@ import csv
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-from statscraper import BaseScraper, Collection, Dimension, Dataset, Result, ResultSet, NoSuchItem, DimensionValue
+from statscraper import BaseScraper, Collection, Dimension, Dataset, Result, DimensionValue
 
 VERSION = "1.0"
 # LEVELS = ["api","parameter"]
@@ -44,33 +43,35 @@ class SMHI(BaseScraper):
                 yield SMHIDataset(label, blob=resource)
 
     def _fetch_dimensions(self, parameter):
-        yield(StationDimension("station"))
+        yield StationDimension("station")
         # Hack: This redundant of the station dimension, but
         # necessary to be able to include both station name
         # (=readabilty) and key in resultset.
         # It would be better if the ResultSet object could
         # handle both label and key print.
-        yield(Dimension("station_key"))
-        yield(Dimension("period", allowed_values=PERIODS))
-        yield(Dimension("parameter"))
+        yield Dimension("station_key")
+        yield Dimension("period", allowed_values=PERIODS)
+        yield Dimension("parameter")
 
         example_data = parameter._get_example_csv()
         for dim in example_data.columns:
-            yield(Dimension(dim))
-
+            yield Dimension(dim)
 
     def _fetch_allowed_values(self, dimension):
         if dimension.id == "station":
             for station in dimension.dataset.json["station"]:
-                yield Station(station["key"], dimension,
-                    label=station["name"],blob=station)
+                yield Station(
+                    station["key"],
+                    dimension,
+                    label=station["name"],
+                    blob=station
+                )
         else:
             yield None
 
     def _fetch_data(self, dataset, query={}, include_inactive_stations=False):
         """ Should yield dataset rows
         """
-        data = []
         parameter = dataset
         station_dim = dataset.dimensions["station"]
         all_stations = station_dim.allowed_values
@@ -86,7 +87,7 @@ class SMHI(BaseScraper):
             if not isinstance(query["station"], list):
                 query["station"] = [query["station"]]
             # Make sure that the queried stations actually exist
-            query["station"] = [ all_stations.get_by_label(x) for x in query["station"]]
+            query["station"] = [all_stations.get_by_label(x) for x in query["station"]]
 
         if "period" not in query:
             # TODO: I'd prepare to do dataset.get("period").allowed_values here
@@ -100,17 +101,13 @@ class SMHI(BaseScraper):
                 msg = u"{} is not an allowed period".format(period)
                 raise Exception(msg)
 
-
         # Step 3: Get data
-        n_queries = len(query["station"]) * len(query["period"])
-        counter = 0
-        print("Fetching data with {} queries.".format(n_queries))
         for station in query["station"]:
             for period in query["period"]:
-                url = dataset.url\
-                    .replace(".json", "/station/{}/period/{}/data.csv"\
-                        .format(station.key, period))
-                print("/GET {} ".format(url))
+                url = dataset.url.replace(
+                    ".json",
+                    f"/station/{station.key}/period/{period}/data.csv"
+                )
                 r = requests.get(url)
 
                 if r.status_code == 200:
@@ -119,7 +116,6 @@ class SMHI(BaseScraper):
                     # TODO: This is a very hard coded parse function
                     # Expects fixed start row and number of cols
                     for row in raw_data:
-                        #timepoint = datetime.strptime(timepoint_str, "%Y-%m-%d %H:%M:%S")
                         value_col = parameter.id.split(",")[0]
                         value = float(row[value_col])
 
@@ -128,7 +124,7 @@ class SMHI(BaseScraper):
                         row["station_key"] = station.key
                         row["period"] = period
 
-                        row.pop(value_col,None)
+                        row.pop(value_col, None)
 
                         datapoint = Result(value, row)
 
@@ -179,6 +175,7 @@ class StationDimension(Dimension):
         """
         return (x for x in self.allowed_values if x.is_active)
 
+
 class Station(DimensionValue):
     def __init__(self, value, dimension, label=None, blob=None):
         super(Station, self).__init__(value, dimension, label=label)
@@ -191,7 +188,6 @@ class Station(DimensionValue):
         # Was there an update in the last 100 days?
         self.is_active = (datetime.now() - self.updated).days < 100
 
-
     def __repr__(self):
         if self.is_active:
             status = "active"
@@ -199,6 +195,7 @@ class Station(DimensionValue):
             status = "inactive"
         return "<Station: {} ({})>"\
             .format(self.label.encode("utf-8"), status)
+
 
 class SMHIDataset(Dataset):
     @property
@@ -214,10 +211,8 @@ class SMHIDataset(Dataset):
     @property
     def json(self):
         if not hasattr(self, "_json"):
-            print(self.url)
             self._json = requests.get(self.url).json()
         return self._json
-
 
     def get_stations_list(self):
         """ Get a dict list of all stations with properties such as
@@ -225,7 +220,6 @@ class SMHIDataset(Dataset):
         """
         stations = self.dimensions["station"].allowed_values
         return self._format_station_list(stations)
-
 
     def get_active_stations_list(self):
         """ Get a dict list of all stations with properties such as
@@ -239,16 +233,16 @@ class SMHIDataset(Dataset):
         """
         station_key = self.json["station"][0]["key"]
         period = "corrected-archive"
-        url = self.url\
-                  .replace(".json", "/station/{}/period/{}/data.csv"\
-                  .format(station_key, period))
+        url = self.url.replace(
+            ".json",
+            f"/station/{station_key}/period/{period}/data.csv"
+        )
 
         r = requests.get(url)
         if r.status_code == 200:
             return DataCsv().from_string(r.content)
         else:
             raise Exception("Error connecting to api")
-
 
     def _format_station_list(self, stations):
         data = []
@@ -280,8 +274,10 @@ class DataCsv(object):
         return self
 
     def to_dictlist(self):
-        return [dict(zip(self.columns, row))
-            for row in self.data]
+        return [
+            dict(zip(self.columns, row))
+            for row in self.data
+        ]
 
     def _parse(self, f):
         rows = list(csv.reader(f, delimiter=';'))
@@ -313,6 +309,7 @@ class DataCsv(object):
         except IndexError:
             self.data = []
 
+
 def is_empty(row):
     """ Check if a csv row (represented as a list
         of values) is empty.
@@ -326,6 +323,7 @@ def is_empty(row):
     if row[0] == "":
         return True
     return False
+
 
 def table_width(row):
     """ Get number of cols in row
