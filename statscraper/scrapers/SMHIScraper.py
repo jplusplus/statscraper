@@ -153,9 +153,14 @@ class API(Collection):
     level = "api"
 
     @property
+    def key(self):
+        return self.blob["key"]
+
+    @property
     def url(self):
+        print(self.key, VERSION)
         return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
-            .format(self.blob["key"], VERSION)
+            .format(self.key, VERSION)
 
     @property
     def json(self):
@@ -266,7 +271,7 @@ class DataCsv(object):
     def from_string(self, csv_content):
         if isinstance(csv_content, bytes):
             csv_content = csv_content.decode("utf-8")
-        f = StringIO.StringIO(csv_content)
+        f = StringIO(csv_content)
         self._parse(f)
 
         return self
