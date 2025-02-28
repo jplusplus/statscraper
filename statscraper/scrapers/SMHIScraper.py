@@ -150,36 +150,18 @@ class SMHI(BaseScraper):
 
 
 class API(Collection):
-    """
-    """
     level = "api"
 
     @property
-    def key(self):
-        return self.blob["key"]
-
-    @property
     def url(self):
-        print(self.key, VERSION)
         return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
-            .format(self.key, VERSION)
+            .format(self.blob["key"], VERSION)
 
     @property
     def json(self):
-        return self._get_json_blob()
-
-    def _get_json_blob(self):
-        # Update blob
-        error_msg = "Scraper does not support parsing of '{}' yet.".format(self.id)
-        try:
-            print(self.url)
-            r = requests.get(self.url)
-        except Exception as e:
-            print(e)
-            # Catch ie. "opendata-download-grid.smhi.se"
-            raise NotImplementedError(error_msg)
+        r = requests.get(self.url)
         if r.status_code == 404:
-            raise NotImplementedError(error_msg)
+            raise NotImplementedError(f"No such dataset: {self.id}")
 
         return r.json()
 
