@@ -158,7 +158,6 @@ class API(Collection):
 
     @property
     def url(self):
-        print(self.key, VERSION)
         return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
             .format(self.key, VERSION)
 
