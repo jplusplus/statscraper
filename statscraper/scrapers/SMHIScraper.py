@@ -1,8 +1,4 @@
-try:
-    import StringIO
-except ImportError:
-    import io as StringIO
-
+from io import StringIO
 import requests
 import csv
 from datetime import datetime
