@@ -6,5 +6,5 @@ pytest==8.3.4
 
 # Scraper dependencies
 beautifulsoup4==4.13.3
-selenium==3.14.1
-xlrd==1.1.0
+selenium==4.29.0
+xlrd==1.2.0
