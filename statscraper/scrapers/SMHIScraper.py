@@ -25,30 +25,27 @@ class SMHI(BaseScraper):
                 {
                     "label": "Meteorological Observations",
                     "key": "metobs",
-                },
-                {
+                }, {
                     "label": "Hydrological Observations",
                     "key": "hydroobs",
-                },
-                {
+                }, {
                     "label": "Oceanographic Observations",
                     "key": "ocobs",
-                }
-                {
+                }, {
                     "label": "Lightning Strikes",
                     "key": "pls",
-                },
-                {
+                }, {
                     "label": "Lightning Archive",
                     "key": "lightning",
-                },
-                {
+                }, {
                     "label": "Ice Maps",
                     "key": "icemaps",
-                },
-                {
+                }, {
                     "label": "Algae Maps - API",
                     "key": "algae",
+                }, {
+                    "label": "Fire risk Forecasts",
+                    "key": "fireriskforecast",
                 }
             ]
             for item in items:
