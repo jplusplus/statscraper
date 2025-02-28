@@ -144,9 +144,9 @@ class SMHI(BaseScraper):
                         yield datapoint
 
                 elif r.status_code == 404:
-                    print("Warning no data at {}".format(url))
+                    raise Exception(f"Warning no data at {url}")
                 else:
-                    raise Exception("Connection error for {}".format(url))
+                    raise Exception(f"Unknown error connecting to {url}")
 
 
 class API(Collection):
