@@ -1,7 +1,10 @@
-- 3.0.0
+- 3.0.0-rc0
 
   - Requires Python 3.9 
   - Remove `six` dependency, as we no longer try to support Python2 since 2.0.0 
+  - Remove various code snippets suporting Py2 
+  - SMHI scraper no longer scrapes the SMHI web pages for available datasets (this caused scrapers to break on webpage updates).
+    A subset of interesting datasets are hardcoded, as there is no machine-readable list.
 
 - 2.0.2
 
