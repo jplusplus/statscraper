@@ -1,5 +1,3 @@
-import six
-from .compat import unicode
 from .exceptions import NoSuchItem
 
 
@@ -22,13 +20,9 @@ class BaseScraperList(list):
 
     def __getitem__(self, key):
         """ Make it possible to get item by id or value identity."""
-        if isinstance(key, six.string_types):
-            if isinstance(key, unicode):
-                def f(x):
-                    return (x.id == key)
-            else:
-                def f(x):
-                    return (x.id == unicode(key, encoding="utf-8"))
+        if isinstance(key, str):
+            def f(x):
+                return (x.id == key)
         elif isinstance(key, self._CONTAINS):
             def f(x):
                 return (x is key)
@@ -43,7 +37,7 @@ class BaseScraperList(list):
 
     def __contains__(self, item):
         """ Make the 'in' keyword check for value/id """
-        if isinstance(item, six.string_types):
+        if isinstance(item, str):
             return bool(len(list(filter(lambda x: x.value == item, self))))
         else:
             return super(BaseScraperList, self).__contains__(item)

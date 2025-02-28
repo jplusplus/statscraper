@@ -26,7 +26,6 @@ u"""
     # Do something when the cusor moves up one level
 
 """
-import six
 from hashlib import md5
 from json import dumps
 import pandas as pd
@@ -39,13 +38,6 @@ from .BaseScraperList import BaseScraperList
 from .DimensionValue import DimensionValue
 from .ValueList import ValueList
 
-if six.PY3:
-    unicode = str
-
-try:
-    from itertools import ifilter as filter
-except ImportError:
-    pass
 
 TYPE_DATASET = "Dataset"
 TYPE_COLLECTION = "Collection"
@@ -109,12 +101,12 @@ class ResultSet(list):
                     d = dataset_dimensions[k]
 
                 # Normalize if we have a datatype and a foreign dialect
-                normalized_value = unicode(v)
+                normalized_value = str(v)
                 if d.dialect and d.datatype:
                     if d.dialect in d.datatype.dialects:
                         for av in d.allowed_values:
                             # Not all allowed_value have all dialects
-                            if unicode(v) in av.dialects.get(d.dialect, []):
+                            if str(v) in av.dialects.get(d.dialect, []):
                                 normalized_value = av.value
                                 # Use first match
                                 # We do not support multiple matches
@@ -162,7 +154,7 @@ class Result(BaseScraperObject):
 
     def __getitem__(self, key):
         """ Make it possible to get dimensions by name. """
-        if isinstance(key, six.string_types):
+        if isinstance(key, str):
             return self.dimensionvalues[key]
         else:
             return list.__getitem__(self, key)
@@ -293,7 +285,8 @@ class Item(BaseScraperObject):
             self.label = id_
         else:
             self.label = label
-        self._collection_path = deque([self])  # Will be overwritten when attached to an ItemList
+        # Will be overwritten when attached to an ItemList
+        self._collection_path = deque([self])
 
     def _move_here(self):
         """Move the cursor to this item."""
