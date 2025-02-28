@@ -49,7 +49,7 @@ class SMHI(BaseScraper):
                 }
             ]
             for item in items:
-                yield API(item["label"], item)
+                yield API(item["label"], blob=item)
         else:
             for resource in current_item.json["resource"]:
                 label = u"{}, {}".format(resource["title"], resource["summary"])
@@ -160,6 +160,7 @@ class API(Collection):
 
     @property
     def url(self):
+        print(self.key, VERSION)
         return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
             .format(self.key, VERSION)
 
@@ -171,8 +172,10 @@ class API(Collection):
         # Update blob
         error_msg = "Scraper does not support parsing of '{}' yet.".format(self.id)
         try:
+            print(self.url)
             r = requests.get(self.url)
-        except Exception:
+        except Exception as e:
+            print(e)
             # Catch ie. "opendata-download-grid.smhi.se"
             raise NotImplementedError(error_msg)
         if r.status_code == 404:
