@@ -2,8 +2,6 @@ from io import StringIO
 import requests
 import csv
 from datetime import datetime
-from bs4 import BeautifulSoup
-
 from statscraper import BaseScraper, Collection, Dimension, Dataset, Result, DimensionValue
 
 VERSION = "1.0"
@@ -17,23 +15,45 @@ PERIODS = [
 
 
 class SMHI(BaseScraper):
-    base_url = "http://opendata.smhi.se/apidocs/"
 
     def _fetch_itemslist(self, current_item):
         """ Get a all available apis
         """
         if current_item.is_root:
-            html = requests.get(self.base_url).text
-            soup = BeautifulSoup(html, 'html.parser')
-            for item_html in soup.select(".row .col-md-6"):
-                try:
-                    label = item_html.select_one("h2").text
-                except Exception:
-                    continue
-                yield API(label, blob=item_html)
+            # Selected items from https://opendata-download.smhi.se/
+            items = [
+                {
+                    "label": "Meteorological Observations",
+                    "key": "metobs",
+                },
+                {
+                    "label": "Hydrological Observations",
+                    "key": "hydroobs",
+                },
+                {
+                    "label": "Oceanographic Observations",
+                    "key": "ocobs",
+                }
+                {
+                    "label": "Lightning Strikes",
+                    "key": "pls",
+                },
+                {
+                    "label": "Lightning Archive",
+                    "key": "lightning",
+                },
+                {
+                    "label": "Ice Maps",
+                    "key": "icemaps",
+                },
+                {
+                    "label": "Algae Maps - API",
+                    "key": "algae",
+                }
+            ]
+            for item in items:
+                yield API(item["label"], item)
         else:
-            # parameter = current_item.parent
-            # data = requests.get(parameter.url)
             for resource in current_item.json["resource"]:
                 label = u"{}, {}".format(resource["title"], resource["summary"])
                 yield SMHIDataset(label, blob=resource)
@@ -139,12 +159,12 @@ class API(Collection):
 
     @property
     def key(self):
-        return self.blob.select_one("a").get("href").replace("/index.html", "")
+        return self.blob["key"]
 
     @property
     def url(self):
         return "http://opendata-download-{}.smhi.se/api/version/{}.json"\
-                .format(self.key, VERSION)
+            .format(self.key, VERSION)
 
     @property
     def json(self):
