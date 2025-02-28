@@ -13,7 +13,7 @@ If used directly, an API endpoint must be set:
 import requests
 from statscraper import (BaseScraper, Collection, Result,
                          Dataset, Dimension, InvalidData)
-from statscraper.compat import JSONDecodeError
+from json import JSONDecodeError
 
 
 class PXWeb(BaseScraper):
