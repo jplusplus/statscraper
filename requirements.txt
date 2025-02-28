@@ -1,11 +1,10 @@
 # Core dependecies
-pandas==0.25.3
-requests==2.28.2
-six==1.11.0
+pandas==2.2.3
+requests==2.32.3
 Sphinx==1.6.7
-pytest==5.3.5
+pytest==8.3.4
 
 # Scraper dependencies
-beautifulsoup4==4.11.1
-selenium==3.9.0
-xlrd==1.0.0
+beautifulsoup4==4.13.3
+selenium==3.14.1
+xlrd==1.1.0

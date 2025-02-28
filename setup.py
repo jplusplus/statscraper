@@ -20,8 +20,7 @@ setup(
     packages=["statscraper"],
     zip_safe=False,
     install_requires=[
-        "pandas",
-        "six",
+        "pandas>=2.2.0",
         "requests",
     ],
     include_package_data=True,

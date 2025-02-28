@@ -1,3 +1,8 @@
+- 3.0.0
+
+  - Requires Python 3.9 
+  - Remove `six` dependency, as we no longer try to support Python2 since 2.0.0 
+
 - 2.0.2
 
   - remove debug prints from SMHI scraper
