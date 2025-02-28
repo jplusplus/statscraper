@@ -186,7 +186,9 @@ class TestBaseScraper(TestCase):
         self.assertEqual(allowed_value, "Robertsfors kommun")
 
         # We also want to be able to fetch allowed values by label
-        allowed_value_by_label = municipality.allowed_values.get_by_label("Robertsfors kommun")
+        allowed_value_by_label = municipality.allowed_values.get_by_label(
+            "Robertsfors kommun"
+        )
         self.assertEqual(allowed_value, allowed_value_by_label)
 
         gender = dataset.dimensions["gender"]
