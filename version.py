@@ -3,7 +3,7 @@ from datetime import date
 name = "statscraper"
 
 short_version = "3.0.0"
-long_version = short_version
+long_version = "3.0.0-rc0"
 
 short_desc = """\
 A base class for building web scrapers for statistical data.\
